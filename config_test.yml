@@ -1,0 +1,48 @@
+# config/config.yaml
+vllm_endpoints:
+  - name: "gemma27b"
+    address: "127.0.0.1"
+    port: 8000
+    models: ["google/gemma-3-27b-it"]
+    weight: 1
+
+  - name: "qwen-vl-7b"
+    address: "127.0.0.1"
+    port: 8002
+    models: ["Qwen/Qwen2.5-VL-7B-Instruct"]
+    weight: 2
+
+  - name: "qwen-vl-3b"
+    address: "127.0.0.1"
+    port: 8013
+    models: ["Qwen/Qwen2.5-VL-3B-Instruct"]
+    weight: 1
+
+  - name: "kimi-a3b"
+    address: "127.0.0.1"
+    port: 8021
+    models: ["moonshotai/Kimi-VL-A3B-Thinking-2506"]
+    weight: 1
+
+model_config:
+  "google/gemma-3-27b-it":
+    pii_policy:
+      allow_by_default: false
+      pii_types_allowed: ["EMAIL_ADDRESS","PERSON","GPE","PHONE_NUMBER"]
+    preferred_endpoints: ["gemma27b"]
+
+  "Qwen/Qwen2.5-VL-7B-Instruct":
+    pii_policy:
+      allow_by_default: false
+      pii_types_allowed: ["PERSON"]
+    preferred_endpoints: ["qwen-vl-7b"]
+
+  "Qwen/Qwen2.5-VL-3B-Instruct":
+    pii_policy:
+      allow_by_default: false
+    preferred_endpoints: ["qwen-vl-3b"]
+
+  "moonshotai/Kimi-VL-A3B-Thinking-2506":
+    pii_policy:
+      allow_by_default: false
+    preferred_endpoints: ["kimi-a3b"]
