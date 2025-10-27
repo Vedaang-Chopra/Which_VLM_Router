@@ -218,4 +218,13 @@ __marimo__/
 
 # Files to ignore for VLM Routing project   
 code_base/tokens.env
+
+# Environment folders
 project_8803_env/
+vlm_router/
+
+
+# Git Repos Integrated in VLM Routing Project
+code_base/frugal_gpt/FrugalGPT
+
+code_base/vllm_semantic_router/semantic-router
