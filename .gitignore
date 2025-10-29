@@ -218,6 +218,9 @@ __marimo__/
 
 # Files to ignore for VLM Routing project   
 code_base/tokens.env
+.DS_Store
+code_base/.DS_Store
+code_base/vllm_semantic_router/.DS_Store
 
 # Environment folders
 project_8803_env/
