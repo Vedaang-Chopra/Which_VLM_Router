@@ -1,0 +1,5 @@
+/storage/ice1/1/0/vchopra37/projects/vlm_router/vlm_router_env/lib/python3.12/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+INFO 11-01 22:56:33 [__init__.py:216] Automatically detected platform cuda.
+usage: vllm [-h] [-v] {chat,complete,serve,bench,collect-env,run-batch} ...
+vllm: error: unrecognized arguments: \

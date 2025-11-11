@@ -231,3 +231,5 @@ vlm_router/
 code_base/frugal_gpt/FrugalGPT
 
 code_base/vllm_semantic_router/semantic-router
+
+vlm_router_env/

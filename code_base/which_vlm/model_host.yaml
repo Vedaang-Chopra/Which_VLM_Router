@@ -1,0 +1,37 @@
+models:
+  - name: gemma3-27b-it
+    base_url: "http://localhost:8010/v1"
+    api_key: "EMPTY"  # vLLM usually ignores; must be non-empty for SDK
+    model_id: "google/gemma-3-27b-it"
+    pricing:
+      prompt_per_1k: 0.0108
+      completion_per_1k: 0.0021
+    extra_params: {}
+
+  - name: qwen3-vl-8b
+    base_url: "http://localhost:8011/v1"
+    api_key: "EMPTY"
+    model_id: "Qwen/Qwen3-VL-8B-Thinking"
+    pricing:
+      prompt_per_1k: 0.0020
+      completion_per_1k: 0.0040
+    extra_params:
+      enable_thinking: true
+
+  - name: qwen2p5-vl-7b
+    base_url: "http://localhost:8022/v1"
+    api_key: "EMPTY"
+    model_id: "Qwen/Qwen2.5-VL-7B-Instruct"
+    pricing:
+      prompt_per_1k: 0.0015
+      completion_per_1k: 0.0030
+    extra_params: {}
+
+  - name: qwen2p5-vl-3b
+    base_url: "http://localhost:8023/v1"
+    api_key: "EMPTY"
+    model_id: "Qwen/Qwen2.5-VL-3B-Instruct"
+    pricing:
+      prompt_per_1k: 0.0010
+      completion_per_1k: 0.0020
+    extra_params: {}
