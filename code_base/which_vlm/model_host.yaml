@@ -15,8 +15,8 @@ models:
     pricing:
       prompt_per_1k: 0.0020
       completion_per_1k: 0.0040
-    extra_params:
-      enable_thinking: true
+    # extra_params:
+    #   enable_thinking: true
 
   - name: qwen2p5-vl-7b
     base_url: "http://localhost:8022/v1"
