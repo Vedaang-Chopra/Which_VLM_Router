@@ -1,0 +1,6 @@
+model,n_samples,exact_match_acc,contains_match_acc,letter_match_acc,avg_latency_ms,p50_latency_ms,p95_latency_ms,total_cost,error_rate
+deepseek-ocr,40,0.3,0.325,0.15,151.8,118.5,318.65,0.0,0.0
+gemma-27b,40,0.425,0.55,0.225,461.725,323.0,909.25,0.0,0.0
+qwen-3b,40,0.525,0.525,0.225,298.875,276.5,453.65,0.0,0.0
+qwen-7b,40,0.25,0.6,0.175,342.15,341.0,506.1,0.0,0.0
+qwen3-8b-thinking,40,0.0,0.65,0.0,1022.15,948.0,1892.75,0.0,0.0

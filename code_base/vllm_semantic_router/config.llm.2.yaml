@@ -1,0 +1,196 @@
+# =========================
+# vLLM Semantic Router - config/config.yaml
+# =========================
+
+# --- Embedding model for similarity & cache fallback thresholds
+bert_model:
+  model_id: sentence-transformers/all-MiniLM-L12-v2
+  threshold: 0.6
+  use_cpu: true
+
+# --- Global semantic cache (keep off while iterating)
+semantic_cache:
+  backend_type: "memory"      # "memory" or "milvus"
+  enabled: false
+  similarity_threshold: 0.8
+  max_entries: 1000
+  ttl_seconds: 3600
+  eviction_policy: "fifo"     # "fifo", "lru", "lfu"
+
+# --- Tool auto-selection (enable only if you've populated tools_db.json)
+tools:
+  enabled: false
+  top_k: 3
+  similarity_threshold: 0.2
+  tools_db_path: "config/tools_db.json"
+  fallback_to_empty: true
+
+# --- Jailbreak / prompt guard (turn on in production)
+prompt_guard:
+  enabled: false
+  use_modernbert: true
+  model_id: "models/jailbreak_classifier_modernbert-base_model"
+  threshold: 0.7
+  use_cpu: true
+
+# =========================
+# Backend vLLM endpoints
+# IMPORTANT: address must be an IP (no hostnames)
+# =========================
+vllm_endpoints:
+  - name: "qwen2p5-vl-3b-endpoint"
+    address: "192.168.65.254"
+    port: 8043
+    models:
+      - "Qwen/Qwen2.5-VL-3B-Instruct"     # must match --served-model-name
+    weight: 1
+
+  - name: "qwen2p5-vl-7b-endpoint"
+    address: "192.168.65.254"
+    port: 8032
+    models:
+      - "Qwen/Qwen2.5-VL-7B-Instruct"
+    weight: 1
+
+  - name: "qwen3-vl-8b-endpoint"
+    address: "192.168.65.254"
+    port: 8033                            # <-- update if your actual port differs
+    models:
+      - "Qwen/Qwen3-VL-8B-Thinking"
+    weight: 1
+
+  - name: "gemma-endpoint"
+    address: "192.168.65.254"
+    port: 8034                            # <-- update if your actual port differs
+    models:
+      - "google/gemma-3-27b-it"
+    weight: 1
+
+# =========================
+# Classifiers (paths match repo defaults)
+# =========================
+classifier:
+  category_model:
+    model_id: "models/category_classifier_modernbert-base_model"
+    use_modernbert: true
+    threshold: 0.6
+    use_cpu: true
+  pii_model:
+    model_id: "models/pii_classifier_modernbert-base_presidio_token_model"
+    use_modernbert: true
+    threshold: 0.7
+    use_cpu: true
+
+# =========================
+# Reasoning families (how to enable “thinking” per family)
+# =========================
+reasoning_families:
+  deepseek:
+    type: "chat_template_kwargs"
+    parameter: "thinking"
+  qwen3:
+    type: "chat_template_kwargs"
+    parameter: "enable_thinking"
+  gpt-oss:
+    type: "reasoning_effort"
+    parameter: "reasoning_effort"
+  gpt:
+    type: "reasoning_effort"
+    parameter: "reasoning_effort"
+
+# Global default reasoning effort when a category enables reasoning
+default_reasoning_effort: "medium"
+
+# =========================
+# Model configuration
+# - preferred_endpoints required for any model used in categories or as default_model
+# - pricing optional (enables cost metrics)
+# - pii_policy optional
+# =========================
+model_config:
+  "Qwen/Qwen2.5-VL-3B-Instruct":
+    preferred_endpoints: ["qwen2p5-vl-3b-endpoint"]
+    pii_policy:
+      allow_by_default: true
+      pii_types_allowed: []
+    pricing:
+      currency: USD
+      prompt_per_1m: 2.0
+      completion_per_1m: 4.0
+
+  "Qwen/Qwen2.5-VL-7B-Instruct":
+    preferred_endpoints: ["qwen2p5-vl-7b-endpoint"]
+    pii_policy:
+      allow_by_default: true
+      pii_types_allowed: []
+    pricing:
+      currency: USD
+      prompt_per_1m: 3.0
+      completion_per_1m: 5.0
+
+  "Qwen/Qwen3-VL-8B-Thinking":
+    preferred_endpoints: ["qwen3-vl-8b-endpoint"]
+    reasoning_family: qwen3          # router injects enable_thinking=true when reasoning is on
+    pii_policy:
+      allow_by_default: true
+      pii_types_allowed: []
+    pricing:
+      currency: USD
+      prompt_per_1m: 4.0
+      completion_per_1m: 6.0
+
+  "google/gemma-3-27b-it":
+    preferred_endpoints: ["gemma-endpoint"]
+    reasoning_family: gpt            # uses reasoning_effort when reasoning is on
+    pii_policy:
+      allow_by_default: true
+      pii_types_allowed: []
+    pricing:
+      currency: USD
+      prompt_per_1m: 10.8
+      completion_per_1m: 2.1
+
+# =========================
+# Categories & routing
+# =========================
+categories:
+  - name: math
+    reasoning_effort: "high"
+    model_scores:
+      - model: "Qwen/Qwen3-VL-8B-Thinking"
+        score: 1.0
+        use_reasoning: true
+
+  - name: computer science
+    reasoning_effort: "high"
+    model_scores:
+      - model: "Qwen/Qwen3-VL-8B-Thinking"
+        score: 1.0
+        use_reasoning: true
+
+  - name: other
+    model_scores:
+      - model: "Qwen/Qwen2.5-VL-7B-Instruct"
+        score: 1.0
+        use_reasoning: false
+    # Example per-category cache override (optional):
+    # semantic_cache_similarity_threshold: 0.75
+
+# Fallback when no category matches
+default_model: "Qwen/Qwen2.5-VL-7B-Instruct"
+
+# =========================
+# Batch classification API (optional metrics)
+# =========================
+api:
+  batch_classification:
+    max_batch_size: 100
+    concurrency_threshold: 5
+    max_concurrency: 8
+    metrics:
+      enabled: true
+      detailed_goroutine_tracking: false
+      high_resolution_timing: false
+      sample_rate: 1.0
+      duration_buckets: [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]
+      size_buckets: [1, 2, 5, 10, 20, 50, 100]

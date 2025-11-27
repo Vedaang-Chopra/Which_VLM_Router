@@ -1,0 +1,6 @@
+datasets:
+  - name: the_cauldron_ai2d
+    hf_dataset: HuggingFaceM4/the_cauldron
+    hf_config: ai2d
+    router_task: reasoning        # diagram-style QA
+    max_samples: 1000             # small POC slice

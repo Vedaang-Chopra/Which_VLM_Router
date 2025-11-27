@@ -1,0 +1,71 @@
+models:
+
+  # -----------------------------------------------------
+  # 1. Google Gemma 3 - 27B Instruct (VLM-capable locally)
+  # -----------------------------------------------------
+  - name: gemma-27b
+    base_url: http://localhost:8800/v1
+    api_key: EMPTY
+    model_id: google/gemma-3-27b-it
+    model_type: vlm
+    default_temperature: 0.0
+    pricing:
+      prompt_per_1k: 0.00009        # OpenRouter: $0.00009 per 1k input tokens
+      completion_per_1k: 0.00016    # OpenRouter: $0.00016 per 1k output tokens
+    extra_params: {}
+
+  # -----------------------------------------------------
+  # 2. Qwen3-VL-8B-Thinking (VLM)
+  # -----------------------------------------------------
+  - name: qwen3-vl-8b-thinking
+    base_url: http://localhost:8801/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen3-VL-8B-Thinking
+    model_type: vlm
+    default_temperature: 0.0
+    pricing:
+      prompt_per_1k: 0.00018        # OpenRouter row: qwen/qwen3-vl-8b-thinking
+      completion_per_1k: 0.0021
+    extra_params: {}
+
+  # -----------------------------------------------------
+  # 3. Qwen2.5-VL-7B-Instruct (VLM)
+  # -----------------------------------------------------
+  - name: qwen-7b
+    base_url: http://localhost:8802/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen2.5-VL-7B-Instruct
+    model_type: vlm
+    default_temperature: 0.0
+    pricing:
+      prompt_per_1k: 0.0002         # OpenRouter: qwen/qwen-2.5-vl-7b-instruct
+      completion_per_1k: 0.0002
+    extra_params: {}
+
+  # -----------------------------------------------------
+  # 4. Qwen2.5-VL-3B-Instruct (VLM)
+  # -----------------------------------------------------
+  - name: qwen-3b
+    base_url: http://localhost:8803/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen2.5-VL-3B-Instruct
+    model_type: vlm
+    default_temperature: 0.0
+    pricing:
+      prompt_per_1k: 0.0001         # Approx: scaled down from 7B pricing
+      completion_per_1k: 0.0001
+    extra_params: {}
+
+  # -----------------------------------------------------
+  # 5. DeepSeek-OCR (Vision OCR Model)
+  # -----------------------------------------------------
+  - name: deepseek-ocr
+    base_url: http://localhost:8804/v1
+    api_key: EMPTY
+    model_id: deepseek-ai/DeepSeek-OCR
+    model_type: vlm
+    default_temperature: 0.0
+    pricing:
+      prompt_per_1k: 0.00003        # $0.03 per 1M input tokens → 0.00003 per 1k
+      completion_per_1k: 0.0001     # $0.10 per 1M output tokens → 0.0001 per 1k
+    extra_params: {}

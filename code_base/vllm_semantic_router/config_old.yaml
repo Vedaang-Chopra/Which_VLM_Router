@@ -1,0 +1,115 @@
+api:
+    batch_classification:
+        concurrency_threshold: 5
+        max_batch_size: 100
+        max_concurrency: 8
+        metrics:
+            detailed_goroutine_tracking: false
+            duration_buckets:
+                - 0.001
+                - 0.005
+                - 0.01
+                - 0.025
+                - 0.05
+                - 0.1
+                - 0.25
+                - 0.5
+                - 1
+                - 2.5
+                - 5
+                - 10
+            enabled: true
+            high_resolution_timing: false
+            sample_rate: 1
+            size_buckets:
+                - 1
+                - 2
+                - 5
+                - 10
+                - 20
+                - 50
+                - 100
+bert_model:
+    model_id: sentence-transformers/all-MiniLM-L12-v2
+    threshold: 0.6
+    use_cpu: true
+categories:
+    - model_scores:
+        - model: Qwen/Qwen3-VL-8B-Thinking
+          score: 1
+          use_reasoning: true
+      name: math
+      reasoning_effort: high
+    - model_scores:
+        - model: Qwen/Qwen3-VL-8B-Thinking
+          score: 1
+          use_reasoning: true
+      name: computer science
+      reasoning_effort: high
+    - model_scores:
+        - model: Qwen/Qwen2.5-VL-7B-Instruct
+          score: 1
+          use_reasoning: false
+      name: other
+classifier:
+    category_model:
+        model_id: models/category_classifier_modernbert-base_model
+        threshold: 0.6
+        use_cpu: true
+        use_modernbert: true
+    pii_model:
+        model_id: models/pii_classifier_modernbert-base_presidio_token_model
+        threshold: 0.7
+        use_cpu: true
+        use_modernbert: true
+default_model: Qwen/Qwen2.5-VL-7B-Instruct
+default_reasoning_effort: medium
+model_config:
+    qwen/qwen3-vl-4b:
+        pii_policy:
+            allow_by_default: true
+            pii_types_allowed: []
+        preferred_endpoints:
+            - llm-studio
+        pricing:
+            completion_per_1m: 12
+            currency: USD
+            prompt_per_1m: 12
+        reasoning_family: qwen3
+prompt_guard:
+    enabled: false
+    model_id: models/jailbreak_classifier_modernbert-base_model
+    threshold: 0.7
+    use_cpu: true
+    use_modernbert: true
+reasoning_families:
+    deepseek:
+        parameter: thinking
+        type: chat_template_kwargs
+    gpt:
+        parameter: reasoning_effort
+        type: reasoning_effort
+    gpt-oss:
+        parameter: reasoning_effort
+        type: reasoning_effort
+    qwen3:
+        parameter: enable_thinking
+        type: chat_template_kwargs
+semantic_cache:
+    backend_type: memory
+    enabled: false
+    eviction_policy: fifo
+    max_entries: 1000
+    similarity_threshold: 0.8
+    ttl_seconds: 3600
+tools:
+    enabled: false
+    fallback_to_empty: true
+    similarity_threshold: 0.2
+    tools_db_path: config/tools_db.json
+    top_k: 3
+vllm_endpoints:
+    - address: 10.137.22.140
+      name: llm-studio
+      port: 9000
+      weight: 1

@@ -1,0 +1,229 @@
+# =========================================================
+# Semantic Router config — LM Studio (4 endpoints, 1/model)
+# =========================================================
+
+api:
+  batch_classification:
+    max_batch_size: 100
+    concurrency_threshold: 5
+    max_concurrency: 8
+    metrics:
+      enabled: true
+      detailed_goroutine_tracking: true
+      high_resolution_timing: false
+      sample_rate: 1.0
+      duration_buckets: [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30]
+      size_buckets: [1, 2, 5, 10, 20, 50, 100, 200]
+
+# ----------------
+# Embedding / intent model
+# ----------------
+bert_model:
+  model_id: models/all-MiniLM-L12-v2
+  threshold: 0.6
+  use_cpu: true
+
+# ----------------
+# Global semantic cache
+# ----------------
+semantic_cache:
+  enabled: true
+  backend_type: "memory"
+  similarity_threshold: 0.8
+  max_entries: 1000
+  ttl_seconds: 3600
+  eviction_policy: "fifo"
+
+# ----------------
+# Tool selection
+# ----------------
+tools:
+  enabled: true
+  top_k: 3
+  similarity_threshold: 0.2
+  tools_db_path: "config/tools_db.json"
+  fallback_to_empty: true
+
+# ----------------
+# Security / jailbreak
+# ----------------
+prompt_guard:
+  enabled: true
+  use_modernbert: true
+  model_id: "models/jailbreak_classifier_modernbert-base_model"
+  jailbreak_mapping_path: "models/jailbreak_classifier_modernbert-base_model/jailbreak_type_mapping.json"
+  threshold: 0.7
+  use_cpu: true
+
+# =========================================================
+# >>> LM Studio endpoints (OpenAI-like). Make sure each
+#     LM Studio window runs at the matching port.
+#     Use the EXACT API identifiers from LM Studio UI.
+# =========================================================
+vllm_endpoints:
+  - name: "llama31-8b"
+    address: "10.137.22.140"
+    port: 9000                 # your screenshot shows 9000 reachable
+    weight: 1
+    health_check_path: "/v1/models"
+    models: ["meta-llama-3-8b-instruct"]
+
+  - name: "deepseek-r1-qwen3-8b"
+    address: "10.137.22.140"
+    port: 9000
+    weight: 1
+    health_check_path: "/v1/models"
+    models: ["deepseek/deepseek-r1-0528-qwen3-8b"]
+
+  - name: "qwen3-vl-4b"
+    address: "10.137.22.140"
+    port: 9000
+    weight: 1
+    health_check_path: "/v1/models"
+    models: ["qwen/qwen3-vl-4b"]
+
+  - name: "gemma-3n-e4b"
+    address: "10.137.22.140"
+    port: 9000
+    weight: 1
+    health_check_path: "/v1/models"
+    models: ["google/gemma-3n-e4b"]
+
+# =========================================================
+# Model configuration — map model IDs → preferred endpoints
+# =========================================================
+model_config:
+  "meta-llama-3-8b-instruct":
+    preferred_endpoints: ["llama31-8b"]
+    reasoning_family: gpt
+    pii_policy:
+      allow_by_default: true
+      pii_types_allowed: []
+    pricing: { currency: USD, prompt_per_1m: 0.0, completion_per_1m: 0.0 }
+
+  "deepseek/deepseek-r1-0528-qwen3-8b":
+    preferred_endpoints: ["deepseek-r1-qwen3-8b"]
+    reasoning_family: deepseek
+    pii_policy:
+      allow_by_default: true
+      pii_types_allowed: []
+    pricing: { currency: USD, prompt_per_1m: 0.0, completion_per_1m: 0.0 }
+
+  "qwen/qwen3-vl-4b":
+    preferred_endpoints: ["qwen3-vl-4b"]
+    reasoning_family: qwen3
+    pii_policy:
+      allow_by_default: true
+      pii_types_allowed: []
+    pricing: { currency: USD, prompt_per_1m: 0.0, completion_per_1m: 0.0 }
+
+  "google/gemma-3n-e4b":
+    preferred_endpoints: ["gemma-3n-e4b"]
+    reasoning_family: gpt
+    pii_policy:
+      allow_by_default: true
+      pii_types_allowed: []
+    pricing: { currency: USD, prompt_per_1m: 0.0, completion_per_1m: 0.0 }
+
+# =========================================================
+# Categories — every model_scores entry needs use_reasoning
+# =========================================================
+categories:
+  - name: math
+    system_prompt: "You are a careful math tutor. Show steps."
+    model_scores:
+      - model: "deepseek/deepseek-r1-0528-qwen3-8b"
+        score: 1.0
+        use_reasoning: true
+
+  - name: computer-science
+    system_prompt: "You are a CS expert. Provide runnable code when helpful."
+    model_scores:
+      - model: "meta-llama-3-8b-instruct"
+        score: 0.9
+        use_reasoning: false
+      - model: "deepseek/deepseek-r1-0528-qwen3-8b"
+        score: 1.0
+        use_reasoning: true
+
+  - name: vision-assistant
+    system_prompt: "You are a vision-language assistant. You can analyze images."
+    model_scores:
+      - model: "qwen/qwen3-vl-4b"
+        score: 1.0
+        use_reasoning: false
+
+  - name: general
+    system_prompt: "You are a helpful, knowledgeable assistant."
+    model_scores:
+      - model: "meta-llama-3-8b-instruct"
+        score: 1.0
+        use_reasoning: false
+
+# Router fallback model
+default_model: "meta-llama-3-8b-instruct"
+
+# =========================================================
+# Reasoning families
+# =========================================================
+reasoning_families:
+  deepseek:
+    type: "chat_template_kwargs"
+    parameter: "thinking"
+  qwen3:
+    type: "chat_template_kwargs"
+    parameter: "enable_thinking"
+  gpt:
+    type: "reasoning_effort"
+    parameter: "reasoning_effort"
+
+default_reasoning_effort: high
+
+# =========================================================
+# Classification models
+# =========================================================
+classifier:
+  category_model:
+    model_id: "models/category_classifier_modernbert-base_model"
+    category_mapping_path: "models/category_classifier_modernbert-base_model/category_mapping.json"
+    use_modernbert: true
+    threshold: 0.6
+    use_cpu: true
+  pii_model:
+    model_id: "models/pii_classifier_modernbert-base_presidio_token_model"
+    pii_mapping_path: "models/pii_classifier_modernbert-base_presidio_token_model/pii_type_mapping.json"
+    threshold: 0.7
+    use_modernbert: true
+    use_cpu: true
+
+# =========================================================
+# Observability
+# =========================================================
+observability:
+  tracing:
+    enabled: true
+    provider: opentelemetry
+    exporter:
+      type: otlp
+      endpoint: jaeger:4317
+      insecure: true
+    resource:
+      service_name: vllm-semantic-router
+      service_version: v0.1.0
+      deployment_environment: development
+    sampling:
+      type: always_on
+      rate: 1
+
+# =========================================================
+# Router internal knobs
+# =========================================================
+router:
+  default_confidence_threshold: 0.95
+  default_max_latency_ms: 5000
+  default_batch_size: 4
+  success_confidence_threshold: 0.8
+  high_confidence_threshold: 0.99
+  low_latency_threshold_ms: 2000
+  embedding_baseline_score: 0.75
+
