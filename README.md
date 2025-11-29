@@ -1,22 +1,33 @@
-# Which VLM Router
+# 🏹 ARTEMIS
+## Adaptive Routing for Task-Efficient Multimodal Inference System
 
 A research-grade toolkit for benchmarking **Vision-Language Models (VLMs)** across dozens of multimodal tasks, deriving router-friendly supervision, and standing up a unified inference layer that can talk to any OpenAI-compatible model host. The project pairs a highly parallelized data-collection pipeline with Glider- and semantic-F1-based judges so you can quickly discover *which* model you should route a request to.
 
 ---
 
 ## Table of Contents
-1. [Why This Project Exists](#why-this-project-exists)
-2. [Key Capabilities](#key-capabilities)
-3. [Repository Layout](#repository-layout)
-4. [Environment & Dependencies](#environment--dependencies)
-5. [Quick Start](#quick-start)
-6. [Evaluation Pipeline](#evaluation-pipeline)
-7. [Results, Metrics & Router Labels](#results-metrics--router-labels)
-8. [Inference API Layer](#inference-api-layer)
-9. [Configuration](#configuration)
-10. [Troubleshooting](#troubleshooting)
-11. [Documentation Map](#documentation-map)
-12. [Contributing & Next Steps](#contributing--next-steps)
+- [🏹 ARTEMIS](#-artemis)
+  - [Adaptive Routing for Task-Efficient Multimodal Inference System](#adaptive-routing-for-task-efficient-multimodal-inference-system)
+  - [Table of Contents](#table-of-contents)
+  - [Why This Project Exists](#why-this-project-exists)
+  - [Key Capabilities](#key-capabilities)
+  - [Repository Layout](#repository-layout)
+  - [Environment \& Dependencies](#environment--dependencies)
+  - [Quick Start](#quick-start)
+  - [Evaluation Pipeline](#evaluation-pipeline)
+    - [1. Dataset ingestion](#1-dataset-ingestion)
+    - [2. Feature extraction \& scoring](#2-feature-extraction--scoring)
+    - [3. Multi-level parallel execution](#3-multi-level-parallel-execution)
+    - [4. Notebooks](#4-notebooks)
+    - [5. Utility scripts](#5-utility-scripts)
+  - [Results, Metrics \& Router Labels](#results-metrics--router-labels)
+  - [Inference API Layer](#inference-api-layer)
+    - [Highlights](#highlights)
+    - [Usage Snippet](#usage-snippet)
+  - [Configuration](#configuration)
+  - [Troubleshooting](#troubleshooting)
+  - [Documentation Map](#documentation-map)
+  - [Contributing \& Next Steps](#contributing--next-steps)
 
 ---
 
