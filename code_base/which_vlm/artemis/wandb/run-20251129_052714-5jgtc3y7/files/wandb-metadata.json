@@ -1,0 +1,37 @@
+{
+  "os": "macOS-15.6-arm64-arm-64bit",
+  "python": "CPython 3.12.12",
+  "startedAt": "2025-11-29T10:27:14.834849Z",
+  "program": "/Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/which_vlm/artemis/06_training_router.ipynb",
+  "codePath": "/Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/which_vlm/artemis/06_training_router.ipynb",
+  "codePathLocal": "06_training_router.ipynb",
+  "git": {
+    "remote": "https://github.com/Vedaang-Chopra/Which_VLM_Router.git",
+    "commit": "25791a01c2d0522952837deb9da8d7473b01eaff"
+  },
+  "email": "vedaangchopra@hotmail.com",
+  "root": "/Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/which_vlm/artemis",
+  "host": "ipsec-10-2-128-25.vpn.gatech.edu",
+  "executable": "/Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/vlm_router_env/bin/python",
+  "cpu_count": 16,
+  "cpu_count_logical": 16,
+  "disk": {
+    "/": {
+      "total": "994662584320",
+      "used": "382386544640"
+    }
+  },
+  "memory": {
+    "total": "68719476736"
+  },
+  "apple": {
+    "name": "Apple M4 Max",
+    "ecpuCores": 4,
+    "pcpuCores": 12,
+    "gpuCores": 40,
+    "memoryGb": 64,
+    "swapTotalBytes": "23622320128",
+    "ramTotalBytes": "68719476736"
+  },
+  "writerId": "ykgwc4hahn51u5mnnv5bc1ldrqirkyi0"
+}

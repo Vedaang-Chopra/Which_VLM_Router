@@ -8,10 +8,19 @@ Usage:
 """
 
 import argparse
-from pathlib import Path
-import pandas as pd
 import json
 from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Sequence
+
+import pandas as pd
+
+try:
+    import yaml
+except ImportError:  # pragma: no cover - optional dependency
+    yaml = None  # type: ignore
+
+DEFAULT_MODEL_CONFIG = Path(__file__).resolve().parents[1] / "configs" / "inference_vlm.yaml"
 
 
 def find_latest_run(base_dir: Path) -> Path:
@@ -22,7 +31,38 @@ def find_latest_run(base_dir: Path) -> Path:
     return run_dirs[-1]
 
 
-def verify_run(run_dir: Path, verbose: bool = True):
+def load_expected_model_names(config_path: Path) -> List[str]:
+    """Return model names declared in a YAML config, if any."""
+    if yaml is None:
+        print("⚠️  PyYAML is not installed. Skipping model coverage checks.")
+        return []
+
+    try:
+        with config_path.expanduser().open("r", encoding="utf-8") as f:
+            cfg = yaml.safe_load(f) or {}
+    except FileNotFoundError:
+        print(f"⚠️  Model config not found at {config_path}. Skipping model coverage checks.")
+        return []
+    except Exception as exc:
+        print(f"⚠️  Could not read model config {config_path}: {exc}. Skipping model coverage checks.")
+        return []
+
+    models = cfg.get("models")
+    if not isinstance(models, list):
+        print(f"⚠️  No 'models' list found in {config_path}. Skipping model coverage checks.")
+        return []
+
+    names = [m.get("name") for m in models if isinstance(m, dict) and m.get("name")]
+    if not names:
+        print(f"⚠️  Config {config_path} does not define any model names. Skipping model coverage checks.")
+    return names
+
+
+def verify_run(
+    run_dir: Path,
+    verbose: bool = True,
+    expected_models: Sequence[str] | None = None,
+) -> Dict:
     """Verify results from a run directory."""
 
     if verbose:
@@ -51,16 +91,23 @@ def verify_run(run_dir: Path, verbose: bool = True):
         "configs": {},
         "total_records": 0,
         "models": set(),
+        "missing_models": {},
+        "unexpected_models": {},
     }
+    expected_model_set = set(expected_models or [])
 
     for config_file in sorted(config_files):
         config_name = config_file.stem
         try:
             df = pd.read_parquet(config_file)
+            model_count = df["model_name"].nunique() if "model_name" in df.columns else 0
+            sample_count = df["sample_id"].nunique() if "sample_id" in df.columns else 0
             results["configs"][config_name] = {
                 "records": len(df),
-                "models": df["model_name"].nunique() if "model_name" in df.columns else 0,
-                "samples": df["sample_id"].nunique() if "sample_id" in df.columns else 0,
+                "models": model_count,
+                "samples": sample_count,
+                "missing_models": [],
+                "unexpected_models": [],
             }
             results["total_records"] += len(df)
             if "model_name" in df.columns:
@@ -68,8 +115,25 @@ def verify_run(run_dir: Path, verbose: bool = True):
 
             if verbose:
                 print(f"✅ {config_name:30s} {len(df):6d} records, "
-                      f"{df['sample_id'].nunique():4d} samples, "
-                      f"{df['model_name'].nunique():2d} models")
+                      f"{sample_count:4d} samples, "
+                      f"{model_count:2d} models")
+
+            if expected_model_set and "model_name" in df.columns:
+                actual_models = set(df["model_name"].dropna().unique().tolist())
+                missing = sorted(expected_model_set - actual_models)
+                unexpected = sorted(actual_models - expected_model_set)
+
+                if missing:
+                    results["configs"][config_name]["missing_models"] = missing
+                    results["missing_models"][config_name] = missing
+                    if verbose:
+                        print(f"   ⚠️ Missing models: {', '.join(missing)}")
+                if unexpected:
+                    results["configs"][config_name]["unexpected_models"] = unexpected
+                    results["unexpected_models"][config_name] = unexpected
+                    if verbose:
+                        print(f"   ⚠️ Unexpected models: {', '.join(unexpected)}")
+
         except Exception as e:
             print(f"❌ {config_name:30s} ERROR: {e}")
             results["configs"][config_name] = {"error": str(e)}
@@ -113,6 +177,14 @@ def verify_run(run_dir: Path, verbose: bool = True):
         print(f"  Models: {', '.join(results['models'])}")
         print(f"{'='*80}\n")
 
+    if expected_model_set and verbose:
+        if results["missing_models"]:
+            print("\n⚠️  Configs with missing model outputs detected:")
+            for cfg, missing in sorted(results["missing_models"].items()):
+                print(f"   - {cfg}: {', '.join(missing)}")
+        else:
+            print("\n✅ All configs include the expected models.")
+
     return results
 
 
@@ -124,12 +196,24 @@ def find_missing_configs(run_dir: Path, all_configs: list) -> list:
 
 
 def main():
+    default_model_config = DEFAULT_MODEL_CONFIG
+
     parser = argparse.ArgumentParser(description="Verify evaluation results")
     parser.add_argument("--run-id", help="Specific run ID to verify (e.g., exp_20250127_123456)")
     parser.add_argument("--latest", action="store_true", help="Verify latest run")
     parser.add_argument("--base-dir", default="./experiment_data/runs", help="Base directory for runs")
     parser.add_argument("--check-missing", action="store_true", help="Check for missing configs")
     parser.add_argument("--quiet", action="store_true", help="Minimal output")
+    parser.add_argument(
+        "--model-config",
+        default=str(default_model_config),
+        help="Path to YAML file listing expected model names (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--skip-model-check",
+        action="store_true",
+        help="Disable per-config model coverage checks",
+    )
 
     args = parser.parse_args()
 
@@ -144,8 +228,17 @@ def main():
         # Default to latest
         run_dir = find_latest_run(base_dir)
 
+    expected_models: Sequence[str] = []
+    if not args.skip_model_check:
+        model_config_path = Path(args.model_config)
+        expected_models = load_expected_model_names(model_config_path)
+
     # Verify results
-    results = verify_run(run_dir, verbose=not args.quiet)
+    results = verify_run(
+        run_dir,
+        verbose=not args.quiet,
+        expected_models=expected_models,
+    )
 
     # Check for missing configs if requested
     if args.check_missing:

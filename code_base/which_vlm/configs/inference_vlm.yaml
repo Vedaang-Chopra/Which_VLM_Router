@@ -10,8 +10,8 @@ models:
     model_type: vlm
     default_temperature: 0.0
     pricing:
-      prompt_per_1k: 0.00009        # OpenRouter: $0.00009 per 1k input tokens
-      completion_per_1k: 0.00016    # OpenRouter: $0.00016 per 1k output tokens
+      prompt_per_1k: 0.00007        # OpenRouter: $0.00007 per 1k input tokens
+      completion_per_1k: 0.00050    # OpenRouter: $0.00050 per 1k output tokens
     extra_params: {}
 
   # -----------------------------------------------------
