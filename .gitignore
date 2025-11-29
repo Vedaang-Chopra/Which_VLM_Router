@@ -232,7 +232,10 @@ code_base/frugal_gpt/FrugalGPT
 
 code_base/vllm_semantic_router/semantic-router
 
+vlm_router/
 vlm_router_env/
 
+code_base/cascadeflow/cascadeflow_env/
+code_base/cascadeflow/cascadeflow/
 
 *.jsonl
