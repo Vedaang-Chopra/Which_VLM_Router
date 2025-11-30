@@ -45,37 +45,71 @@ def normalize_glider(
 # 2. Sample-level score: sample_score(s, m)
 # ---------------------------------------------------------------------
 
+# def compute_sample_score_from_columns(
+#     is_correct: pd.Series,
+#     acc_soft: pd.Series,
+#     glider_norm: pd.Series,
+#     w_g_correct: float = 0.2,
+#     w_near: float = 0.4,
+#     w_g_wrong: float = 0.1,
+# ) -> pd.Series:
+#     """Compute a blended score for an individual (sample, model) pair.
+
+#     Inputs are the boolean correctness flag, a soft accuracy metric (F1, EM,
+#     etc.), and the normalized Glider score. Correct answers get a base score of
+#     1 plus a small Glider bump, while incorrect answers fall back to the soft
+#     accuracy + Glider mix. The coefficients let you emphasize near misses vs.
+#     confident wins.
+
+#     Returns a Series that can be appended to the dataframe as
+#     `<model_name>__sample_score` and later feed into routing analyses.
+#     """
+#     is_corr_float = pd.Series(is_correct, copy=False).astype(float)
+#     acc_soft = pd.Series(acc_soft, copy=False).fillna(0.0).astype(float)
+#     g_norm = pd.Series(glider_norm, copy=False).fillna(0.0).astype(float)
+
+#     correct_mask = is_corr_float >= 0.5
+
+#     score_correct = 1.0 + w_g_correct * g_norm
+#     score_wrong = w_near * acc_soft + w_g_wrong * g_norm
+
+#     sample_score = pd.Series(0.0, index=is_corr_float.index, dtype=float)
+#     sample_score.loc[correct_mask] = score_correct[correct_mask]
+#     sample_score.loc[~correct_mask] = score_wrong[~correct_mask]
+
+#     return sample_score
+
+
 def compute_sample_score_from_columns(
     is_correct: pd.Series,
     acc_soft: pd.Series,
     glider_norm: pd.Series,
-    w_g_correct: float = 0.2,
-    w_near: float = 0.4,
-    w_g_wrong: float = 0.1,
+   w_g_correct: float = 0.7,
+    w_near: float = 0.1,
+    w_g_wrong: float = 0.2,
 ) -> pd.Series:
-    """Compute a blended score for an individual (sample, model) pair.
+    """Compute a linear score for an individual (sample, model) pair.
 
-    Inputs are the boolean correctness flag, a soft accuracy metric (F1, EM,
-    etc.), and the normalized Glider score. Correct answers get a base score of
-    1 plus a small Glider bump, while incorrect answers fall back to the soft
-    accuracy + Glider mix. The coefficients let you emphasize near misses vs.
-    confident wins.
+    This now matches the linear performance formula:
+        sample_score = w_corr * is_correct
+                     + w_f1   * acc_soft
+                     + w_glid * glider_norm
 
-    Returns a Series that can be appended to the dataframe as
-    `<model_name>__sample_score` and later feed into routing analyses.
+    Here we reuse the existing arguments:
+        w_g_correct → w_corr
+        w_near      → w_f1
+        w_g_wrong   → w_glid
     """
-    is_corr_float = pd.Series(is_correct, copy=False).astype(float)
+    is_corr_float = pd.Series(is_correct, copy=False).fillna(0.0).astype(float)
     acc_soft = pd.Series(acc_soft, copy=False).fillna(0.0).astype(float)
     g_norm = pd.Series(glider_norm, copy=False).fillna(0.0).astype(float)
 
-    correct_mask = is_corr_float >= 0.5
-
-    score_correct = 1.0 + w_g_correct * g_norm
-    score_wrong = w_near * acc_soft + w_g_wrong * g_norm
-
-    sample_score = pd.Series(0.0, index=is_corr_float.index, dtype=float)
-    sample_score.loc[correct_mask] = score_correct[correct_mask]
-    sample_score.loc[~correct_mask] = score_wrong[~correct_mask]
+    # Interpret weights as the linear weights: (w_corr, w_f1, w_glid)
+    sample_score = (
+        w_g_correct * is_corr_float  # acts as w_corr
+        + w_near * acc_soft          # acts as w_f1
+        + w_g_wrong * g_norm         # acts as w_glid
+    )
 
     return sample_score
 
@@ -85,9 +119,9 @@ def add_sample_scores_for_models(
     model_names: Sequence[str],
     glider_low: float = 1.0,
     glider_high: float = 5.0,
-    w_g_correct: float = 0.2,
-    w_near: float = 0.4,
-    w_g_wrong: float = 0.1,
+    w_g_correct: float = 0.7,   # w_corr
+    w_near: float = 0.1,        # w_f1
+    w_g_wrong: float = 0.2,     # w_glid
     suffix_is_correct: str = "__is_correct",
     suffix_score_soft: str = "__score_f1",
     suffix_glider: str = "__glider_score",

@@ -238,13 +238,21 @@ vlm_router_env/
 code_base/cascadeflow/cascadeflow_env/
 code_base/cascadeflow/cascadeflow/
 
+code_base/lovm/LOVM/
 
+dataset/images/
 code_base/which_vlm/artemis/router_checkpoints_1/
 code_base/which_vlm/artemis/router_checkpoints/
 
 
 *.wandb
 code_base/which_vlm/artemis/wandb/
+
+
+
+dataset/final_dataset/router_lexico/router_train_trainer.parquet
+dataset/final_dataset/router_lexico/router_test_trainer.parquet
+dataset/final_dataset/router_lexico/router_val_trainer.parquet
 
 
 *.jsonl

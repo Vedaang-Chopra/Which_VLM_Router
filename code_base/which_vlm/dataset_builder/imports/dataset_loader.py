@@ -1,4 +1,4 @@
-from config import CONFIG_TO_TASK, TASK_GT_TYPE
+from imports.config import CONFIG_TO_TASK, TASK_GT_TYPE
 import re
 from datasets import load_dataset, get_dataset_config_names
 from typing import List, Dict, Any, Optional
