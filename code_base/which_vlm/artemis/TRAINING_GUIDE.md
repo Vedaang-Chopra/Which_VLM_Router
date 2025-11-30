@@ -208,7 +208,7 @@ model = torch.nn.DataParallel(model)
 ### Resume from Checkpoint
 
 ```python
-checkpoint = torch.load('checkpoints/best_model.pt')
+checkpoint = torch.load('checkpoints/best_model.pt', weights_only=False)
 model.load_state_dict(checkpoint['model_state_dict'])
 optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 start_epoch = checkpoint['epoch']
@@ -224,7 +224,7 @@ from train_router import VLMRouter, RouterConfig
 config = RouterConfig()
 model = VLMRouter(config)
 
-checkpoint = torch.load('checkpoints/best_model.pt')
+checkpoint = torch.load('checkpoints/best_model.pt', weights_only=False)
 model.load_state_dict(checkpoint['model_state_dict'])
 model.eval()
 ```
