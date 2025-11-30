@@ -1,0 +1,268 @@
+{
+  "n_total": 1000,
+  "n_success": 1000,
+  "overall_accuracy": 0.173,
+  "total_cost": 0.0,
+  "avg_cost": 0.0,
+  "avg_latency_ms": 323.68733835220337,
+  "per_model": [
+    {
+      "cascade_logical_model": "Qwen/Qwen2.5-VL-7B-Instruct",
+      "n_samples": 286,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 355.5427656307087,
+      "accuracy": 0.22727272727272727
+    },
+    {
+      "cascade_logical_model": "deepseek-ai/DeepSeek-OCR+Qwen/Qwen2.5-VL-3B-Instruct",
+      "n_samples": 714,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 310.9273212630542,
+      "accuracy": 0.15126050420168066
+    }
+  ],
+  "per_task": [
+    {
+      "router_task": "abstract_reasoning",
+      "n_samples": 18,
+      "accuracy": 0.6666666666666666,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 622.9572031233046
+    },
+    {
+      "router_task": "chart_captioning",
+      "n_samples": 33,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 437.30238712195194
+    },
+    {
+      "router_task": "chart_reasoning",
+      "n_samples": 99,
+      "accuracy": 0.18181818181818182,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 95.50070040153734
+    },
+    {
+      "router_task": "code_generation",
+      "n_samples": 17,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 1152.9611419228947
+    },
+    {
+      "router_task": "counting",
+      "n_samples": 27,
+      "accuracy": 0.1111111111111111,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 85.32127627619991
+    },
+    {
+      "router_task": "dense_captioning",
+      "n_samples": 22,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 489.9019653146917
+    },
+    {
+      "router_task": "diagram_captioning",
+      "n_samples": 4,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 802.6659488677979
+    },
+    {
+      "router_task": "diagram_reasoning",
+      "n_samples": 21,
+      "accuracy": 0.5714285714285714,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 53.707100096203035
+    },
+    {
+      "router_task": "difference_detection",
+      "n_samples": 19,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 456.75601457294664
+    },
+    {
+      "router_task": "document_ocr",
+      "n_samples": 78,
+      "accuracy": 0.01282051282051282,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 103.51042258433806
+    },
+    {
+      "router_task": "general_vqa",
+      "n_samples": 68,
+      "accuracy": 0.2647058823529412,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 93.8386180821587
+    },
+    {
+      "router_task": "geometry_reasoning",
+      "n_samples": 38,
+      "accuracy": 0.07894736842105263,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 965.7940237145675
+    },
+    {
+      "router_task": "handwriting_ocr",
+      "n_samples": 15,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 184.55686569213867
+    },
+    {
+      "router_task": "icon_reasoning",
+      "n_samples": 23,
+      "accuracy": 0.30434782608695654,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 48.01885978035305
+    },
+    {
+      "router_task": "image_captioning",
+      "n_samples": 16,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 267.44014024734497
+    },
+    {
+      "router_task": "knowledge_vqa",
+      "n_samples": 24,
+      "accuracy": 0.2916666666666667,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 293.6746875445048
+    },
+    {
+      "router_task": "map_reasoning",
+      "n_samples": 23,
+      "accuracy": 0.2608695652173913,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 193.65996899812117
+    },
+    {
+      "router_task": "medical_report",
+      "n_samples": 23,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 195.11754616447118
+    },
+    {
+      "router_task": "medical_vqa",
+      "n_samples": 3,
+      "accuracy": 1.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 328.20765177408856
+    },
+    {
+      "router_task": "meme_classification",
+      "n_samples": 20,
+      "accuracy": 0.8,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 143.57638359069824
+    },
+    {
+      "router_task": "rendered_text_ocr",
+      "n_samples": 15,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 538.7897173563639
+    },
+    {
+      "router_task": "scene_text_ocr",
+      "n_samples": 44,
+      "accuracy": 0.11363636363636363,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 93.0459282614968
+    },
+    {
+      "router_task": "science_reasoning",
+      "n_samples": 18,
+      "accuracy": 0.6111111111111112,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 77.97540558709039
+    },
+    {
+      "router_task": "spatial_reasoning",
+      "n_samples": 68,
+      "accuracy": 0.39705882352941174,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 76.43034177667954
+    },
+    {
+      "router_task": "table_math",
+      "n_samples": 43,
+      "accuracy": 0.16279069767441862,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 633.6928023848423
+    },
+    {
+      "router_task": "table_reasoning",
+      "n_samples": 148,
+      "accuracy": 0.10135135135135136,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 560.5394389178302
+    },
+    {
+      "router_task": "textbook_qa",
+      "n_samples": 15,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 61.76905632019043
+    },
+    {
+      "router_task": "ui_captioning",
+      "n_samples": 20,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 686.1706972122192
+    },
+    {
+      "router_task": "visual_mrc",
+      "n_samples": 19,
+      "accuracy": 0.10526315789473684,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 300.9232721830669
+    },
+    {
+      "router_task": "web_understanding",
+      "n_samples": 19,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 757.0501503191496
+    }
+  ]
+}

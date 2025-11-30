@@ -1,0 +1,799 @@
+sample_id,source_config,router_task,prompt,ground_truth,model_used,response,cascaded,draft_accepted,latency_ms,total_cost,total_tokens,is_correct,exact_match,timestamp,error
+robut_wtq_01038_fc90a68db1a72ace,robut_wtq,table_reasoning,How many years before was the film bacchae out before the watermelon?,6.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"This is a fun question that plays on a bit of internet culture! Here's the breakdown:
+
+*   **The Bacchae:** This refers to the ancient Greek tragedy *The Bacchae* written by Euripides in **405 BC**.
+*   **Watermelon:** The viral video of a man dramatically smashing a watermelon while yelling ""Watermelon!"" was uploaded to YouTube in **February 2023**.
+
+To calculate the difference:
+
+*   From 405 BC to 1 BC is 404 years.
+*   From 1 BC to 1 AD is 1 year.
+*   From 1 AD to 2023 AD is 2022 years.
+
+Tota",True,False,4063.1659030914307,3.161e-05,0,False,False,2025-11-29T18:10:52.425213,
+infographic_vqa_00595_426273dc3cbe8f6a,infographic_vqa,document_ocr,"What percentage of children in the age group of 5-8 years old used mobile phones for contacting families in Australia?
+Keep it brief.",95%.,google/gemma-3-27b-it,"Around **48%** of Australian children aged 5-8 used mobile phones to contact family in 2023.
+
+
+
+Source: [https://www.acma.gov.au/publications/research-reports/childrens-use-of-social-media-2023](https://www.acma.gov.au/publications/research-reports/childrens-use-of-social-media-2023)",False,False,1707.8087329864502,2.7200000000000004e-05,0,False,False,2025-11-29T18:10:54.133935,
+hitab_00165_8c400217d8665af2,hitab,table_reasoning,What cups or leagues did the oxford united participated in expect for the league two?,fa cup league cup fl trophy.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Oxford United, an English football club based in Oxford, has participated in various levels of English football over the years. Here is a list of the main cup competitions and leagues they have competed in, excluding League Two:
+
+1. **FA Cup** - Oxford United has reached the semi-finals of the FA Cup on three occasions:
+   - 2007-08: They reached the semi-finals but lost to Arsenal.
+   - 2013-14: They reached the semi-finals but lost to Manchester City.
+   - 2019-20: They reached the semi-finals",True,True,2188.037872314453,3.830000000000001e-06,0,False,False,2025-11-29T18:10:56.322809,
+mapqa_01035_d41e64da1f9dc29f,mapqa,map_reasoning,"Which states have the lowest value in the West?
+Be succinct.","colorado, nevada.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Based on cost of living & home values (as of late 2023/early 2024):
+
+*   **Idaho**
+*   **Montana**
+*   **Wyoming**
+*   **New Mexico**
+*   **Colorado** (certain areas)
+*   **Arizona** (certain areas)
+
+
+
+It's important to note ""value"" is subjective and depends on what you're looking for (housing, land, lifestyle).",True,False,1822.3721981048584,1.225e-05,0,False,False,2025-11-29T18:10:58.146210,
+diagram_image_to_text_00159_f73d1aaac212ee9c,diagram_image_to_text,diagram_captioning,Illustrate the network of connections presented in this diagram.,"mail invoice to accounts payable is connected with review invoice for compliance which is then connected with invoice meets requirement?. if invoice meets requirement? is no then don't accept and if invoice meets requirement? is yes then approval?. if approval? is no then place in queue and if approval? is yes then invoice placed in payment queue which is then connected with payment processed. if action taken, issue resolved? is no then place in queue and if action taken, issue resolved? is yes then approval?",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the diagram! I need to see the diagram to illustrate the network of connections. 
+
+Once you provide the diagram (you can describe it in detail if you can't visually share it), I will do my best to:
+
+* **Describe the nodes:**  What are the entities represented in the diagram (people, objects, concepts, etc.)?
+* **Describe the connections:** What kind of relationships exist between the nodes (e.g., ""reports to"", ""is a part of"", ""influences"", ""communicates with"")?
+* **Illustr",True,False,4922.011137008667,4.752e-05,0,False,False,2025-11-29T18:11:03.069378,
+st_vqa_01607_0b55dca306236db3,st_vqa,scene_text_ocr,"What number is on the truck door?
+Be succinct.",30.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"72.
+",True,False,198.01974296569824,2.1000000000000003e-07,0,False,False,2025-11-29T18:11:03.268779,
+chart2text_01038_8c3257f13a61823c,chart2text,chart_captioning,Can you elaborate on the message conveyed by this graph?,"the statistic shows the youth unemployment rate in south africa from 1999 and 2020. according to the source, the data are ilo estimates. in 2020, the estimated youth unemployment rate in south africa was at 55.75 percent.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the graph! I need to *see* the graph to be able to elaborate on the message it conveys. 
+
+Once you provide the graph (you can describe it in detail, link to an image, or even try to recreate it with text), I can help you by:
+
+* **Identifying the type of graph:** (e.g., line graph, bar graph, pie chart, scatter plot)
+* **Describing the variables:** What is being measured on the x and y axes (or within the sections of a pie chart)?
+* **Explaining the trends:** Are things inc",True,False,3820.1842308044434,3.897e-05,0,False,False,2025-11-29T18:11:07.091131,
+localized_narratives_00908_3085406f6653d575,localized_narratives,dense_captioning,How would you summarize this image in a sentence or two?,"there are two members sitting in the chairs in front of a table on which a book, spectacles and a mic was placed. two of them were men. in the background there is a cupboard lamp and a wall here. there are some books placed on the table in the background.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the image! I need to see the image to be able to summarize it for you. 
+
+Once you provide the image, I will give you a concise sentence or two describing its content.
+",True,False,1035.6669425964355,1.0050000000000002e-05,0,False,False,2025-11-29T18:11:08.127696,
+robut_sqa_01102_e5e6e1ad4b8dc0ac,robut_sqa,table_reasoning,Who are all of the players?,"garra dembele, daniel mladenov, ismail isa, hristo yovov, joazinho, vladimir gadzhev, darko tasevski, alex, jeanvion yulu-matondo, mariyan ognyanov, serginho greene, yordan miliev, ivo ivanov.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Okay, let's break down the players involved in the Baltimore non-fatal shooting case. This is a complex situation with many people connected, so I'll try to be thorough and categorize them.  I'll focus on those directly named in reports and legal documents as of today, November 2, 2023.  Keep in mind this is a developing story, and information can change.
+
+**I. The Core Individuals Directly Involved in the Shooting:**
+
+*   **Justin Timberlake:** The alleged shooter. He's been charged with attemp",True,False,8894.106149673462,8.652e-05,0,False,False,2025-11-29T18:11:17.022393,
+multihiertt_01498_6bc9d6c1739f43c7,multihiertt,table_reasoning,"What is the sum of Policy loans, Other long-term investments and Short-term investments for Fair Value of Total? (in million)","computations: ((11657 + 1653) + 618)
+answer: 13928.0.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"To calculate the sum of Policy loans, Other long-term investments, and Short-term investments for the Fair Value of Total, you would need to add up their individual values.
+
+Here's how you can do it:
+
+1. Identify the Fair Value of Policy loans.
+2. Identify the Fair Value of Other long-term investments.
+3. Identify the Fair Value of Short-term investments.
+4. Add these three values together.
+
+For example, if the Fair Values were as follows:
+- Policy loans: $50 million
+- Other long-term investment",True,True,934.0178966522217,1.6300000000000003e-06,0,False,False,2025-11-29T18:11:17.957414,
+dvqa_00218_2aa4245691d5ad16,dvqa,chart_reasoning,"How many items sold more than 6 units in at least one store?
+Offer a very short reply.",two.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"7
+",True,False,121.6120719909668,2.1000000000000003e-07,0,False,False,2025-11-29T18:11:18.080067,
+geomverse_01814_6ee4d15a9f180506,geomverse,geometry_reasoning,"If the ABCDE shape is a combination of a rectangle and an equilateral triangle, the perimeter of the ABCDE shape is 78, the perimeter of the BGHF square is 44, the degree of the JIB angle is $2x + 55$","the perimeter of the bghf square is 44, so the length of the bf side is $\frac{44}{4} = 11$. the three degrees of the bij triangle are $2x + 55$, $2x + 25$ and $x + 50$. therefore, $2x + 55 + 2x + 25 + x + 50 = 180$, so $5x + 130 = 180$, so $5x = 50$, so $x = \frac{50}{5} = 10$. the degree of the jbi angle equals $x + 50 = 10 + 50 = 60$. the angle fbc is vertical to the angle jbi so the degree of the fbc angle = 60. the degrees of the fbc and the cfb angles of the bcf triangle are 60 and 65, so the degree of the fcb angle $= 180 - 60 - 65 = 55$. for the bcf triangle the length of the bf side is 11 and its opposite angle is 55 so the ratio is $\frac{11}{sin(55)} = \frac{11}{0.82} = 13.41$. the degree of the angle opposite to the bc side is equal to 65 so its length can be computed as $13.41 * \sin(65) = 13.41 * 0.91 = 12.2$. the side of the equilateral triangle in the abcde shape is equal to the side of the rectangle with length 12.2 so the shape has two rectangle sides with equal but unknown lengths, one rectangle side with length 12.2, and two triangle sides with length 12.2. the perimeter of the abcde shape is 78 so $2 * unknownside + 3 * 12.2 = 78$. so $2 * unknownside = 78 - 36.6 = 41.4$, and the length of the ab side is $\frac{41.4}{2} = 20.7$. therefore the final answer is 20.7.",google/gemma-3-27b-it,"Let the side length of the square BGHF be $s$. Since the perimeter of the square BGHF is 44, we have $4s = 44$, so $s = 44/4 = 11$. Thus, $BF = BG = GH = HF = 11$. Since ABCDE is a combination of a rectangle and an equilateral triangle, we have $BC = CD = DE = EA$. Also, $AB = CD$ and $AE = BC$.
+The sum of the angles in a triangle is 180 degrees. In triangle JBI, we have $\angle JIB + \angle BJI + \angle JBI = 180$.
+So, $(2x + 55) + (2x + 25) + (x + 50) = 180$.
+$5x + 130 = 180$
+$5x = 180 - 130 =",False,False,8715.385913848877,0.00013120000000000002,0,False,False,2025-11-29T18:11:26.796254,
+hitab_00819_d73cde7a89077c39,hitab,table_reasoning,"The western provinces all reported relatively high csis and crime rates compared to the national csi in 2015, with saskatchewan continuing to record both the highest csi and crime rate (11,178 inciden",11178.0.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"The text states Saskatchewan's crime rate was 11,178 incidents per 100,000 population.  To express this as a percentage, we assume the ""100,000 population"" is the whole, and therefore the crime rate is **11,178%** of that population.
+
+However, it's important to understand this isn't a typical percentage in the way we usually use the term. It's a *rate* expressed *per* 100,000 people.  It means for every 100,000 people in Saskatchewan, there were 11,178 reported crime incidents.
+
+",True,False,4293.056011199951,2.194e-05,0,False,False,2025-11-29T18:11:31.090465,
+ocrvqa_01302_fd9aa80c734e3088,ocrvqa,document_ocr,"Who wrote this book?
+Provide a succinct answer.",steven m. goodman.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the book title! I need to know which book you're asking about to tell you who wrote it. 😊
+",True,False,581.341028213501,5.83e-06,0,False,False,2025-11-29T18:11:31.673340,
+hitab_00815_08919980503605a2,hitab,table_reasoning,"Non-employer businesses in the goods (non-resource) and goods (resource) industries which operate in inuit csds break from this trend, which type of employer had higher percent as in both cases the sh",non-employer.,google/gemma-3-27b-it,"Okay, let's break down this question. It's asking us to compare revenue shares from high-revenue businesses (over $1,000,000) between **non-employer** and **employer** businesses specifically within the **Inuit Census Statistical Divisions (CSDs)**, and for the **goods (non-resource)** and **goods (resource)** industries.  The question states that these non-employer businesses *break from a trend*, and we need to figure out *which* type of business (non-employer or employer) had a higher percent",False,False,8721.368074417114,0.0001176,0,False,False,2025-11-29T18:11:40.396763,
+cocoqa_00295_67b8fd5ea9f56961,cocoqa,general_vqa,"What numbered 9one , two , three and seven
+Quick response, please.",airplanes.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"This is a classic riddle! The answer is **matches**. 
+
+Here's why:
+
+* **One** match
+* **Two** matches
+* **Three** matches
+* **Seven** matches (looks like the number 7 when placed correctly)
+
+
+
+",True,False,1103.2819747924805,8.050000000000001e-06,0,False,False,2025-11-29T18:11:41.501361,
+aokvqa_00759_a9e585d9e34c344b,aokvqa,knowledge_vqa,"Why does the clock show different times?
+Indicate the correct response by choosing from the four available options to answer the question.
+Options: Dead battery, for fun, different countries, as prank",different countries.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"The most likely and correct answer is **different countries**.
+
+Here's why:
+
+* **Different countries** have different time zones. A clock showing a different time simply indicates it's set to the time in another location.
+
+Let's look at why the other options are less likely:
+
+* **Dead battery:** A dead battery would usually stop the clock altogether, not show a *different* time.
+* **For fun:** While someone *could* do it for fun, it's not a standard reason for a clock to show the wrong time.
+* *",True,False,2722.8071689605713,2.8020000000000003e-05,0,False,False,2025-11-29T18:11:44.226032,
+robut_sqa_01588_2ab58f0d74a3f9f3,robut_sqa,table_reasoning,Which teams scored 35 points or more in total?,"hartford whalers, @ boston bruins, new york islanders, montreal canadiens, tampa bay lightning, @ tampa bay lightning.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the data (like a table or list of teams and their scores) so I can tell you which teams scored 35 points or more! 
+
+For example, you could give me something like this:
+
+Team | Score
+------- | --------
+Team A | 42
+Team B | 28
+Team C | 35
+Team D | 17
+
+Then I could tell you that Team A and Team C scored 35 points or more.",True,False,1997.5731372833252,1.973e-05,0,False,False,2025-11-29T18:11:46.225346,
+raven_01810_0238903e1007d674,raven,abstract_reasoning,Which figure would finalize the logical sequence and replace the question mark?,b,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the figures! I need to see the sequence to determine the logical pattern and identify the figure that should replace the question mark. 
+
+Once you provide the images or a description of the figures, I'll do my best to help you.",True,False,1176.0048866271973,1.197e-05,0,True,False,2025-11-29T18:11:47.403578,
+tat_qa_00631_2e78db0d8c046f53,tat_qa,table_reasoning,"Net Cash Provided By Operating Activities and Free Cash Flow
+The following table presents a reconciliation of net cash provided by operating activities to free cash flow (in thousands, except for perc","the increase was primarily due to improved profitability, improved collections, and other working capital changes.",google/gemma-3-27b-it,"According to the text, the increase in net cash provided by operating activities between 2018 and 2019 was primarily due to:
+
+* **Improved profitability**
+* **Improved collections**
+* **Other working capital changes**
+
+
+
+",False,False,951.9922733306885,7.14e-05,0,False,False,2025-11-29T18:11:48.357298,
+robut_wtq_00298_868dee922b7f1805,robut_wtq,table_reasoning,Which year had the most credits?,2004.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the data you are referring to! I need to know what ""credits"" are in this context and have the data showing credits per year to determine which year had the most. 
+
+For example, tell me:
+
+* **What kind of credits are we talking about?** (e.g., movie credits, academic credits, airline miles, tax credits, etc.)
+* **Where is the data located?** (e.g., a table, a list, a file, a website link)
+
+Once you give me this information, I can analyze it and tell you which year had the m",True,False,2489.6440505981445,2.44e-05,0,False,False,2025-11-29T18:11:50.848940,
+tallyqa_01552_71a0a8fcd3602662,tallyqa,counting,"How many headlights?
+Give a very brief answer.",2.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Two.
+
+
+
+",True,False,134.27400588989258,2.1000000000000003e-07,0,False,False,2025-11-29T18:11:50.984164,
+tallyqa_00878_b586f016b31ba3db,tallyqa,counting,"How many buildings are in the photo?
+Give a very brief answer.",1.,google/gemma-3-27b-it,"Four.
+",False,False,96.62795066833496,5.600000000000001e-06,0,False,False,2025-11-29T18:11:51.081539,
+dvqa_01762_854343540a360295,dvqa,chart_reasoning,"Which bar has the largest value?
+Ensure brevity in your answer. ",trial.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide the bar chart or data you are referring to. I need to see the values to determine which bar is largest.
+",True,False,583.8010311126709,5.950000000000001e-06,0,False,False,2025-11-29T18:11:51.665731,
+tallyqa_00490_477d41fdeaa30aaf,tallyqa,counting,"How many empty chairs are in the photo?
+Give a very brief answer.",4.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Without the photo, I cannot answer this question.",True,False,267.96793937683105,2.0100000000000002e-06,0,False,False,2025-11-29T18:11:51.935297,
+ai2d_01321_c06410f73c053b80,ai2d,diagram_reasoning,"Question: In the diagram shown, which is the producer?
+Choices:
+A. frogs
+B. rats
+C. grasshoppers
+D. rice plants
+Answer with the letter.",answer: d,google/gemma-3-27b-it,"D. 
+
+**Explanation:**
+
+* **Producers** are organisms that make their own food through photosynthesis (like plants).
+* **Rice plants** are plants, and therefore producers.
+* Frogs, rats, and grasshoppers are all consumers – they eat other organisms for energy.
+",False,False,1093.5847759246826,2.2000000000000003e-05,0,False,False,2025-11-29T18:11:53.031297,
+ocrvqa_01491_5ac5c1bc8da69cdd,ocrvqa,document_ocr,"What is the title of this book?
+Make the answer very short.",intractable disputes about the natural law: alasdair macintyre and critics.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with information about the book! I need some context – a description, an image of the cover, or any details about its content – to tell you the title.
+",True,False,754.7640800476074,8.27e-06,0,False,False,2025-11-29T18:11:53.787036,
+docvqa_00895_14257aa2cbc5c837,docvqa,document_ocr,"How much are the Owned Pounds?
+Your response must be concise.","137,225.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Owned Pounds are currently worth **£1.00 each**. 
+
+They are a digital currency used within the PoundToy community.
+
+
+
+",True,False,582.629919052124,4.41e-06,0,False,False,2025-11-29T18:11:54.371342,
+infographic_vqa_01631_cca19e5825f612dc,infographic_vqa,document_ocr,"How many people including babies and kids are shown in the infographic?
+Quick response, please.",17.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Based on the infographic, there are **14** people shown, including babies and kids.
+",True,False,436.91420555114746,3.21e-06,0,False,False,2025-11-29T18:11:54.810051,
+datikz_01727_f283fcffaf76f5ca,datikz,code_generation,Convert this image into TikZ code.,"\documentclass{elsarticle}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage[size=scriptsize, color=yellow]{todonotes}
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations.pathmorphing,snakes,backgrounds,positioning,fit}
+\usetikzlibrary{automata}
+
+\begin{document}
+
+\begin{tikzpicture}[scale=1]
+				\footnotesize
+				\draw[thick, fill=gray!10] (0,0) ellipse [x radius=70pt, y radius =30pt];
+				\draw[red,thick,fill=red!10] (-0.9,0) ellipse [x radius=32pt, y radius =18pt];
+				\draw[red] (-0.1,0) node {$a$};
+				\draw[blue,thick,fill=blue!10] (1.4,0) ellipse [x radius=18pt, y radius =13pt];
+				\draw (1.4,0) node {$[a_0]_{\sim_\pi}$};
+				\draw[blue,thick,fill=blue!10] (-1,0) ellipse [x radius=18pt, y radius =13pt];
+				\draw (-1,0) node {$[a_1]_{\sim_\pi}$};
+			\end{tikzpicture}
+
+\end{document}",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"```tikz
+\documentclass[tikz,border=5mm]{standalone}
+
+\begin{document}
+\begin{tikzpicture}
+  % Define colors
+  \definecolor{myblue}{RGB}{66,133,244}
+  \definecolor{mygreen}{RGB}{66,244,133}
+  \definecolor{myred}{RGB}{244,66,66}
+
+  % Nodes
+  \node (A) at (0,0) [circle, draw, fill=myblue!20, minimum size=1.5cm] {A};
+  \node (B) at (3,0) [circle, draw, fill=mygreen!20, minimum size=1.5cm] {B};
+  \node (C) at (1.5,-2) [circle, draw, fill=myred!20, minimum size=1.5cm] {C};
+
+  % Edges
+  \draw[myblue, t",True,False,9092.577934265137,4.198e-05,0,False,False,2025-11-29T18:12:03.904343,
+infographic_vqa_01115_2c79324a93dbd632,infographic_vqa,document_ocr,"What is the percent distribution of COVID-19 cases in people aged under 40 years due to community transmission as of April 7, 2020 in Canada?
+Keep it brief.",30.,google/gemma-3-27b-it,"Approximately **52%** of COVID-19 cases in Canada under 40 years old were due to community transmission as of April 7, 2020.
+
+(Source: Canada.ca - *COVID-19 in Canada: Epidemiology Report* - April 7, 2020 - see page 11)
+
+
+
+",False,False,1318.396806716919,2.5200000000000003e-05,0,False,False,2025-11-29T18:12:05.223870,
+figureqa_00701_b728ea35342a0201,figureqa,chart_reasoning,"Is Web Maroon the minimum?
+Answer yes or no.",yes.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"No.
+
+
+
+",True,False,182.5718879699707,2.1000000000000003e-07,0,False,False,2025-11-29T18:12:05.408183,
+vistext_01536_111ff97fb8811a30,vistext,chart_captioning,Summarize the key information in this chart.,"this is a area plot labeled cyprus : infant mortality rate from 2009 to 2019 (in deaths per 1,000 live births). the x-axis measures year on linear scale from 2010 to 2018 while the y-axis measures deaths per 1,000 live births on linear scale with a minimum of 0.0 and a maximum of 3.5. mortality has reduced during the last 8 years. it has been in steady decline during the monitored period.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the chart! I need to see the chart to be able to summarize the key information within it. 
+
+Once you provide the chart (either as an image, a link, or the data itself), I will do my best to give you a concise and accurate summary.",True,False,1295.832872390747,1.3450000000000002e-05,0,False,False,2025-11-29T18:12:06.704686,
+mimic_cgd_01379_9d58c6856c2ae21b,mimic_cgd,medical_report,What is the difference between the two hotel rooms?,"in the first hotel room, both beds are twin-sized and have been made up, while in the second hotel room, one bed is queen-sized and the other is a single-sized bed with two nightstands and two side lamps.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with information about the two hotel rooms! I need some details to tell you the difference between them. For example, you could tell me:
+
+*   **Room types:** (e.g., Standard, Deluxe, Suite, etc.)
+*   **Prices:** (e.g., Room A is $100/night, Room B is $150/night)
+*   **Descriptions:** (e.g., Room A has one queen bed, Room B has two double beds and a balcony)
+*   **Amenities:** (e.g., Room A has a mini-fridge, Room B has a full kitchen)
+*   **A link to a website** showing the roo",True,False,3148.360013961792,2.646e-05,0,False,False,2025-11-29T18:12:09.853997,
+robut_sqa_00519_3c38c48a23dc24aa,robut_sqa,table_reasoning,When did each player join?,"1 august 1964, 6 march 1965, 14 april 1962, 20 august 1955, 6 march 1965, 1 august 1964, 6 february 1965, 24 september 1965, 22 august 1964, 1 september 1965, 21 august 1965, 1 august 1964, 7 march 1964, 30 october 1965, 21 august 1965.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the list of players you are referring to! I need to know *who* you want to know the join dates for. 
+
+For example, you could say:
+
+""When did each player join the **Los Angeles Lakers**? (LeBron James, Anthony Davis, Austin Reaves)""
+
+Or:
+
+""When did each member join **BTS**? (RM, Jin, Suga, J-Hope, Jimin, V, Jungkook)""
+
+Once you give me the players and the team/group/organization they belong to, I can look up their join dates for you.",True,False,2387.6442909240723,2.1190000000000002e-05,0,False,False,2025-11-29T18:12:12.242846,
+cocoqa_00292_d7616091c72f58aa,cocoqa,general_vqa,"Where is the train traveling down tracks
+Quick response, please.",station.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"This is a classic riddle! The answer is **downhill**. 
+
+It's a play on words - trains travel *down* tracks, and ""downhill"" is a direction.
+
+
+
+",True,False,787.0819568634033,6.21e-06,0,False,False,2025-11-29T18:12:13.031742,
+geomverse_00776_aa9ce54cb9f3bb1d,geomverse,geometry_reasoning,"If the area of the ABC sector is 56.52 and the area of the DBC sector is 127.17, compute the degree of the CBA angle. Assume $\pi=3.14$. Round computations to 2 decimal places.",the cbd angle of the dbc sector is 65 and the area is 127.17 so the bc radius can be computed as $\sqrt{\frac{127.17}{\frac{65}{360} * \pi}} = \sqrt{\frac{127.17}{0.18 * \pi}} = \sqrt{\frac{127.17}{0.57}} = \sqrt{223.11} = 14.94$. the bc radius of the abc sector is 14.94 and the area is 56.52. so the cba angle can be computed as $\frac{area}{\pi * r^2} * 360 = \frac{56.52}{\pi * 14.94^2} * 360 = \frac{56.52}{700.86} * 360 = 0.08 * 360 = 28.8$. therefore the final answer is 28.8.,google/gemma-3-27b-it,"Let $A(ABC)$ be the area of the sector ABC and $A(DBC)$ be the area of the sector DBC.
+Let $\theta$ be the angle CBA in degrees.
+The area of a sector is given by the formula $A = \frac{\theta}{360} \pi r^2$, where $\theta$ is the angle in degrees and $r$ is the radius.
+We are given that $A(ABC) = 56.52$ and $A(DBC) = 127.17$.
+Since the sectors ABC and DBC share the same radius, let $r$ be the radius of both sectors.
+Then, we have:
+$56.52 = \frac{\theta}{360} \pi r^2$
+$127.17 = \frac{360 - \theta",False,False,8731.067180633545,0.0001152,0,False,False,2025-11-29T18:12:21.764261,
+ai2d_00725_7e8f2020554c568d,ai2d,diagram_reasoning,"Question: What is the life cycle of?
+Choices:
+A. ladybug
+B. none of the above
+C. ant
+D. firefly
+Answer with the letter.",answer: a,google/gemma-3-27b-it,"A. ladybug 
+
+Here's why: Ladybugs undergo complete metamorphosis, a distinct life cycle with four stages: egg, larva, pupa, and adult. Ants and fireflies also have complete metamorphosis, but since ladybug is listed first, it's the most direct answer. ""None of the above"" is incorrect as these insects *do* have life cycles.
+
+
+
+",False,False,1402.7299880981445,2.5600000000000002e-05,0,False,False,2025-11-29T18:12:23.167661,
+multihiertt_01740_6f3b3fffdec6a610,multihiertt,table_reasoning,"If Firm transportation in Revenues in Millions develops with the same growth rate in 2012, what will it reach in 2013? (in millions)","computations: ((1 + ((76 - 71) / 71)) * 76)
+answer: 81.35211.",google/gemma-3-27b-it,"Please provide the data for ""Firm transportation in Revenues in Millions"" for the years leading up to 2012. I need at least two years of data (e.g., 2010 and 2011, or 2011 and 2012) to calculate the growth rate and then project the revenue for 2013.
+
+For example, if you tell me:
+
+*   2011: $100 million
+*   2012: $110 million
+
+I can calculate the growth rate and then predict the 2013 revenue.
+
+Once you provide the necessary data, I'll be happy to help!",False,False,2599.844217300415,3.88e-05,0,False,False,2025-11-29T18:12:25.768731,
+scienceqa_00276_a0b6bbeadaa1b73d,scienceqa,science_reasoning,"Question: Which country is highlighted?
+Choices:
+A. The Bahamas
+B. Dominica
+C. Jamaica
+D. the Dominican Republic
+Answer with the letter.",answer: b,google/gemma-3-27b-it,"Please provide me with the image or a description of the highlighted country! I need to know *which* country is highlighted to be able to answer. 
+
+For example, tell me:
+
+* ""The country highlighted is an island in the Caribbean with a distinctive shape...""
+* ""The country highlighted is colored red on the map...""
+
+Once you give me that information, I can tell you the correct letter (A, B, C, or D).
+",False,False,1672.7616786956787,2.7800000000000005e-05,0,False,False,2025-11-29T18:12:27.442211,
+iam_01494_82ff3ded073765ca,iam,handwriting_ocr,What is scribbled in this image?,he plunges on into reminiscences of his trips.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Based on the image, the scribbles appear to be a mix of:
+
+*   **Letters and numbers:** There are recognizable letters like ""a"", ""b"", ""d"", ""e"", ""g"", ""h"", ""i"", ""k"", ""l"", ""m"", ""n"", ""o"", ""p"", ""r"", ""s"", ""t"", ""u"", ""v"", ""w"", ""x"", ""y"", and numbers like ""1"", ""2"", ""3"", ""4"", ""5"", ""6"", ""7"", ""8"", ""9"", and ""0"".
+*   **Symbols:** There are also various symbols, including plus signs (+), minus signs (-), equal signs (=), and other abstract marks.
+*   **Random lines and shapes:** The scribbles also include a lot ",True,False,4032.250165939331,3.296e-05,0,False,False,2025-11-29T18:12:31.475465,
+clevr_01916_f8b228f1161b3430,clevr,spatial_reasoning,"What material is the cyan object that is the same size as the red metal sphere?
+Make the answer very short.",rubber.,google/gemma-3-27b-it,"Wood.
+
+
+
+",False,False,99.10869598388672,7.4e-06,0,False,False,2025-11-29T18:12:31.575603,
+intergps_00511_4b432789007d5987,intergps,geometry_reasoning,"Question: Find x in parallelogram A B C D.
+Choices:
+A. 5
+B. 6
+C. 7.2
+D. 8.1
+Answer with the letter.",answer: c,google/gemma-3-27b-it,"We need more information to solve for x. A parallelogram has opposite sides that are parallel and equal in length. Also, opposite angles are equal.  Without a diagram or additional information about the angles or side lengths, we cannot determine the value of x.
+
+However, if we assume that the diagram shows angles (2x+10) and (x+30) are opposite angles in the parallelogram, then they must be equal.
+2x + 10 = x + 30
+2x - x = 30 - 10
+x = 20
+
+If we assume that the angles (2x+10) and (x+30) are cons",False,False,8750.516891479492,0.000113,0,False,False,2025-11-29T18:12:40.326966,
+dvqa_00520_3f33dd38ebd41591,dvqa,chart_reasoning,"Which bar has the largest value?
+Your answer should be compact.",period.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide the bar graph or data you are referring to. I need to see the values to determine which bar is largest.
+",True,False,617.7341938018799,5.950000000000001e-06,0,False,False,2025-11-29T18:12:40.945689,
+robut_wikisql_00765_c42d6d487f045d17,robut_wikisql,table_reasoning,When was the first season?,1997.0.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please tell me what ""first season"" you are referring to! I need more context. 
+
+For example, are you asking about:
+
+* **A specific TV show?** (e.g., ""When was the first season of *Stranger Things*?"")
+* **A sports league?** (e.g., ""When was the first season of the NFL?"")
+* **Something else entirely?**
+
+Once you tell me what you're asking about, I can give you an accurate answer.
+
+
+
+",True,False,2078.95827293396,1.7360000000000003e-05,0,False,False,2025-11-29T18:12:43.026183,
+finqa_01348_d33e583fc33926d3,finqa,table_math,"Zimmer holdings , inc .
+2013 form 10-k annual report notes to consolidated financial statements ( continued ) unrealized gains and losses on cash flow hedges , unrealized gains and losses on available","computations: ((32.9 - 38.4) / 38.4)
+answer: -0.14323.",google/gemma-3-27b-it,"The provided text does *not* include the actual share-based compensation expense amounts for 2012 and 2013. It only states that share-based compensation expense is ""as follows (in millions)"" but doesn't provide the numbers. 
+
+Therefore, it is **impossible** to calculate the percentage change in share-based compensation expense between 2012 and 2013 with the information given.
+",False,False,1684.1380596160889,0.000254,0,False,False,2025-11-29T18:12:44.712005,
+visual7w_01280_c570531c4a627ca9,visual7w,general_vqa,"Question: where was the photo taken?
+Choices:
+A. At the beach.
+B. In a tent.
+C. At a party.
+D. At a park.
+Answer with the letter.",answer: b,google/gemma-3-27b-it,"Please provide the photo! I need to see the image to determine where it was taken. 
+
+Once you provide the photo, I will answer with the letter (A, B, C, or D) that corresponds to the correct location.
+",False,False,912.4300479888916,2.1e-05,0,False,False,2025-11-29T18:12:45.625562,
+robut_sqa_01610_08fcb42000b09496,robut_sqa,table_reasoning,Which nations won gold medals?,"cuba, canada, united states, mexico, ecuador.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Here's a breakdown of the nations that won gold medals at the 2024 Paris Olympics (as of August 11, 2024 - the Games are still ongoing, so this list will change!):
+
+**Top 10 (as of August 11th):**
+
+1.  **United States:** 37
+2.  **China:** 26
+3.  **France:** 26
+4.  **Great Britain:** 22
+5.  **Australia:** 18
+6.  **Japan:** 17
+7.  **Germany:** 13
+8.  **Italy:** 12
+9.  **Canada:** 11
+10. **Netherlands:** 10
+
+**Other Nations with Gold Medals (as of August 11th):**
+
+*   **Brazil:** 7
+*   **Spain:** 7",True,False,8986.631870269775,5.246e-05,0,False,False,2025-11-29T18:12:54.613743,
+chart2text_01815_4b8b7a8482239e22,chart2text,chart_captioning,I'd like to understand the message this graph is trying to highlight.,"the majority of immigrants in poland in 2019 were from ukraine (34.9 thousand immigrants), an increase of nearly 10 percent compared to the previous year.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the graph! I need to see it to understand the message it's trying to highlight. 
+
+Once you provide the graph (you can describe it, link to it, or upload an image), I can help you by:
+
+*   **Identifying the type of graph:** (e.g., bar chart, line graph, pie chart, scatter plot)
+*   **Describing the variables:** What is being measured on each axis (or in each section)?
+*   **Analyzing the trends:** What patterns do you see in the data? Is there an increase, decrease, correla",True,False,3310.6369972229004,3.2200000000000003e-05,0,False,False,2025-11-29T18:12:57.925312,
+raven_00334_0aea6985fc13c8e4,raven,abstract_reasoning,"Is the correctness of the image, which logically completes the sequence, confirmed? Yes, no?",no.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"To determine if the correctness of the image that logically completes the sequence is confirmed, we need to analyze the sequence and see if the proposed completion makes logical sense.
+
+Let's assume the sequence is as follows: A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z.
+
+The proposed completion is: A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Z.
+
+Since the sequence is simply repeating the letters from A to Z, adding another Z at ",True,True,984.7779273986816,1.7000000000000002e-06,0,False,False,2025-11-29T18:12:58.911017,
+vsr_00403_fbc8234c2325797e,vsr,spatial_reasoning,"Evaluate: Does the caption ""The pizza is inside the oven."" match the image?
+Answer yes or no.",no.,google/gemma-3-27b-it,"Please provide me with the image! I need to see the image to determine if the caption ""The pizza is inside the oven"" matches it. 
+
+Once you provide the image, I will answer with either ""yes"" or ""no"".
+",False,False,907.4611663818359,1.66e-05,0,False,False,2025-11-29T18:12:59.820562,
+plotqa_01426_6dd4493675657c47,plotqa,chart_reasoning,"What is the income from abroad in us$ in 2009?
+Your response must be concise.",5.21e+07.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"US income from abroad in 2009 was approximately **$768.9 billion**.
+
+
+
+",True,False,469.61092948913574,2.61e-06,0,False,False,2025-11-29T18:13:00.291795,
+screen2words_00643_708fb86e84775984,screen2words,ui_captioning,Describe this image in words.,window displaying log in page.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Okay, let's describe the image.
+
+The image shows a close-up of a young child, likely a toddler, with a very expressive and messy face. The child is covered in what appears to be blue paint. 
+
+Here's a breakdown of the details:
+
+*   **Child's Expression:** The child has wide, bright eyes and a big, open-mouthed smile. The expression is one of pure joy and playful abandon.
+*   **Paint Coverage:** Blue paint is smeared all over the child's face, including their cheeks, nose, forehead, and around th",True,False,4718.343019485474,4.822e-05,0,False,False,2025-11-29T18:13:05.010858,
+spot_the_diff_01445_5ae561ca9d2a018a,spot_the_diff,difference_detection,Explain the variances between these photos.,there is a person directly in front of the middle of the building. there is a person on the sidewalk walking to the right. there are two people talking by the parking spaces. there is one person walking toward the two people in front of the parking spaces. there is no one near the grass.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the photos! I need to see the images to be able to explain the variances between them. 
+
+Once you provide the photos, I will analyze them and tell you about the differences I observe, which could include things like:
+
+*   **Content:** What objects, people, or scenes are present?
+*   **Composition:** How are the elements arranged within the frame?
+*   **Lighting:** How bright or dark are the photos? What is the quality of the light?
+*   **Color:** Are the colors vibrant or ",True,False,3714.5071029663086,3.797e-05,0,False,False,2025-11-29T18:13:08.727006,
+finqa_01370_c150c695278c515e,finqa,table_math,"Exchanged installment notes totaling approximately $ 4.8 billion and approximately $ 400 million of inter- national paper promissory notes for interests in enti- ties formed to monetize the notes .
+In","computations: (267 / 2356)
+answer: 0.11333.",google/gemma-3-27b-it,"Here's how to calculate the percentage:
+
+*   **Maturities of long-term debt in 2008:** $267 million
+*   **Total contractual obligations in 2008:** $267 (long-term debt) + $2013 (debt obligations with right of offset) = $2280 million
+
+**Percentage:** ($267 million / $2280 million) * 100% = **11.71%**
+
+Therefore, approximately **11.71%** of the contractual obligations for future payments in 2008 are due to maturities of long-term debt.",False,False,2562.106132507324,0.0002796,0,False,False,2025-11-29T18:13:11.290742,
+robut_wikisql_01909_2ce9021206d64743,robut_wikisql,table_reasoning,Who directed the episode with production code 177605?,nelson mccormick.,google/gemma-3-27b-it,"The episode with production code 177605 is **""The Prisoner of Benda""** (Season 4, Episode 12) of *Futurama*, and it was directed by **Swinton O. Scott III**. 
+
+You can find this information on sites like:
+
+*   **The Infosphere (Futurama wiki):** [https://theinfosphere.org/The_Prisoner_of_Benda](https://theinfosphere.org/The_Prisoner_of_Benda)
+*   **IMDb:** [https://www.imdb.com/title/tt0701193/](https://www.imdb.com/title/tt0701193/)
+
+
+
+",False,False,2776.0958671569824,3.72e-05,0,False,False,2025-11-29T18:13:14.067726,
+mapqa_01314_68d13e5d0ff1b9da,mapqa,map_reasoning,"Is the legend a continuous bar?
+Keep it brief.",yes.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"No, a legend is typically **not** a continuous bar. It's a set of discrete labels and corresponding visual elements (like colors or shapes).
+
+
+
+",True,False,695.4288482666016,5.81e-06,0,False,False,2025-11-29T18:13:14.764757,
+iam_00483_9e059b977026a1fe,iam,handwriting_ocr,Elucidate the handwriting in this image.,"the hand-over, due in september, was delayed because of the berlin crisis.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Okay, I've examined the image. Here's a detailed elucidation of the handwriting, broken down into several aspects:
+
+**Overall Impression:**
+
+The handwriting appears to be **neat, legible, and fairly consistent**. It's not overly stylized or rushed. It suggests a writer who takes some care in forming their letters. It leans towards a more **formal or educated style** rather than a very casual or hurried scrawl.
+
+**Specific Letter Characteristics:**
+
+*   **Slant:** The handwriting has a **slight r",True,False,8861.831188201904,8.353000000000001e-05,0,False,False,2025-11-29T18:13:23.628075,
+multihiertt_01768_245f1b89fa4f04fd,multihiertt,table_reasoning,Does the value of OTC in 2014 greater than that in 2013 for Gross derivative payables?,answer: no.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Okay, let's analyze the data to determine if the value of OTC (Over-the-Counter) derivatives payables was greater in 2014 than in 2013.  I need the data to do this.  Please provide the data, ideally in a table format like this:
+
+| Year | Gross Derivative Payables (OTC) |
+|---|---|
+| 2013 | [Value] |
+| 2014 | [Value] |
+
+Once you provide the values for 2013 and 2014, I can directly compare them and tell you if the 2014 value is greater.
+
+**Example:**
+
+If you provide:
+
+| Year | Gross Derivative Pay",True,False,4355.499982833862,3.2720000000000005e-05,0,False,False,2025-11-29T18:13:27.984222,
+clevr_00886_eb4783d1534ef0ac,clevr,spatial_reasoning,"Is the size of the blue block the same as the metallic cylinder on the right side of the red sphere?
+Provide a succinct answer.",yes.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Yes, the size of the blue block is the same as the metallic cylinder on the right side of the red sphere.",True,True,165.43102264404297,2.8e-07,0,False,False,2025-11-29T18:13:28.150802,
+multihiertt_00218_540c8f3cdb56c3c0,multihiertt,table_reasoning,What is the sum of Attributable to Newmont of Gold Ounces Produced in 2008 and Ahafo of Gold Ounces Sold in 2006? (in thousand),"computations: (525 + 202)
+answer: 727.0.",google/gemma-3-27b-it,"Okay, let's find the answer using the provided text.
+
+**1. Attributable to Newmont of Gold Ounces Produced in 2008:**
+
+The text states: ""In 2008, Newmont produced 537 thousand ounces of gold attributable to Newmont.""
+
+**2. Ahafo of Gold Ounces Sold in 2006:**
+
+The text states: ""In 2006, Ahafo sold 269 thousand ounces of gold.""
+
+**3. Sum:**
+
+537 (Newmont 2008 production) + 269 (Ahafo 2006 sales) = 806
+
+Therefore, the sum is **806** (in thousand).
+",False,False,2865.419864654541,4.38e-05,0,False,False,2025-11-29T18:13:31.017559,
+mapqa_01210_c7cd82425b09cb04,mapqa,map_reasoning,"Does Indiana have a higher value than South Dakota?
+Give a very brief answer.",no.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Yes, Indiana has a higher total state GDP than South Dakota.
+
+
+
+",True,False,326.5998363494873,2.81e-06,0,False,False,2025-11-29T18:13:31.345740,
+dvqa_00230_32f22ac7acdaa135,dvqa,chart_reasoning,"How many stacks of bars contain at least one element with value greater than 10?
+Offer a very short reply.",four.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"3
+",True,False,120.71394920349121,2.1000000000000003e-07,0,False,False,2025-11-29T18:13:31.467977,
+figureqa_01830_e3266e241ec38457,figureqa,chart_reasoning,"Is Coral the minimum?
+Answer yes or no.",yes.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"No. 
+
+Coral is a color, and doesn't have a minimum value. Minimums apply to numbers or quantities.
+",True,False,566.3402080535889,4.41e-06,0,False,False,2025-11-29T18:13:32.035691,
+visual7w_01763_d0625e1c64ccb71e,visual7w,general_vqa,"Question: what are they doing?
+Choices:
+A. Flying kites.
+B. Riding bikes.
+C. Playing marbles.
+D. Shooting dice.
+Answer with the letter.",answer: b,google/gemma-3-27b-it,"Please provide the image or describe what ""they"" are doing! I need more information to answer the question. 
+
+For example, you could say: ""They are holding strings attached to colorful objects in the air.""
+
+Then I can tell you the answer (A, B, C, or D).
+",False,False,1120.9790706634521,2.26e-05,0,False,False,2025-11-29T18:13:33.158871,
+dvqa_01208_63e03839dd68c1ce,dvqa,chart_reasoning,"How many stacks of bars contain at least one element with value greater than 80?
+Make the answer very short.",zero.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"7
+",True,False,120.18203735351562,2.1000000000000003e-07,0,False,False,2025-11-29T18:13:33.280428,
+raven_01870_ee91e7c640a56274,raven,abstract_reasoning,Which figure should complete the logical sequence?,g,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the figures in the sequence! I need to see the images to determine the logical pattern and tell you which figure completes it. 
+
+For example, you can:
+
+* **Describe the figures:** ""The sequence is a square, then a circle, then a triangle...""
+* **Upload an image:** If possible, upload a picture of the sequence.
+* **Link to an image:** Provide a link to the image online.
+
+Once I have the figures, I'll do my best to help you find the missing one.",True,False,2203.899145126343,2.264e-05,0,True,False,2025-11-29T18:13:35.485456,
+visualmrc_01960_8c82b0a7b4ca1167,visualmrc,visual_mrc,When was the press release on EFF releasing Certbot 1.0 published?,"it was published on december 3, 2019.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"The Electronic Frontier Foundation (EFF) published the press release announcing the release of Certbot 1.0 on **November 16, 2017**.
+
+Here's a link to the press release: [https://www.eff.org/press/archives/2017/11/16/eff-announces-certbot-10-making-secure-websites-easier-everyone](https://www.eff.org/press/archives/2017/11/16/eff-announces-certbot-10-making-secure-websites-easier-everyone)
+
+
+
+",True,False,2592.6308631896973,7.330000000000001e-06,0,False,False,2025-11-29T18:13:38.080294,
+geomverse_01136_2502453b17dbdfdd,geomverse,geometry_reasoning,"If the area of the purple rectangle is 72 and the circumference of the gray semi-circle is 17.99, compute the area of the lime triangle. Assume $\pi=3.14$. Round computations to 2 decimal places.","the circumference of the gray semi-circle is 17.99 so the diameter marked with ""$b$"" can be computed as $\frac{17.99}{1 + \frac{3.14}{2}} = \frac{17.99}{2.57} = 7$. the area of the purple rectangle is 72 and the length of one of its sides is 7, so the length of the side marked with letter ""$a$"" is $\frac{72}{7} = 10.29$. we know the lengths of the three sides of the lime triangle are 14 and 10.29 and 19, so the semi-perimeter equals $(14 + 10.29 + 19) / 2 = 21.64$. so the area is $\sqrt{21.64 * (21.64-14) * (21.64-10.29) * (21.64-19)} = \sqrt{21.64 * 7.64 * 11.35 * 2.64} = \sqrt{4953.94} = 70.38$. therefore the final answer is 70.38.",google/gemma-3-27b-it,"Let the width of the purple rectangle be $w$ and the height be $h$.
+The area of the purple rectangle is $w \times h = 72$.
+The circumference of the gray semi-circle is $\frac{1}{2} \times 2 \pi r + 2r = \pi r + 2r = (\pi + 2) r = 17.99$.
+Since $\pi = 3.14$, we have $(3.14 + 2) r = 5.14 r = 17.99$.
+So, $r = \frac{17.99}{5.14} = 3.5$.
+The radius of the semi-circle is $r = 3.5$.
+The width of the purple rectangle is equal to the diameter of the semi-circle, so $w = 2r = 2 \times 3.5 = 7$.
+Since $w \",False,False,6604.345083236694,9.04e-05,0,False,False,2025-11-29T18:13:44.686250,
+tallyqa_01038_9ef2e6a6edaeb92f,tallyqa,counting,"How many racks are in the oven?
+Give a very brief answer.",2.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide more context! I need to know **which** oven you are referring to. 
+
+However, most standard ovens have **3-5** racks.
+
+
+
+",True,False,716.3650989532471,5.41e-06,0,False,False,2025-11-29T18:13:45.404341,
+docvqa_01729_f466dbad5f1fd907,docvqa,document_ocr,"Product development review is organised in which room?
+Offer a very short reply.",611-1/312.,google/gemma-3-27b-it,"Meeting room.
+
+
+
+",False,False,113.8911247253418,6e-06,0,False,False,2025-11-29T18:13:45.519960,
+st_vqa_00131_7bcd78c74d452cb7,st_vqa,scene_text_ocr,"What is the store's name?
+Answer briefly.",charles & keith.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,The store's name is not provided in the question.,True,True,88.06180953979492,1.1e-07,0,False,False,2025-11-29T18:13:45.609685,
+mimic_cgd_00043_711e1ec781461a5b,mimic_cgd,medical_report,How many sheep are there in each image?,"there are multiple sheep in both images, but the first image has more than the second one.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Okay, I need you to **provide me with the images**! I cannot count sheep in images I haven't seen. 
+
+Please either:
+
+*   **Upload the images directly to our chat.**
+*   **Provide links to the images online.**
+
+Once you do that, I will happily count the sheep in each one for you. 🐑🐑🐑",True,False,1513.4479999542236,1.3750000000000002e-05,0,False,False,2025-11-29T18:13:47.123676,
+localized_narratives_01982_cd3eec01d729d4ea,localized_narratives,dense_captioning,Can you describe this image briefly?,"in this image we can see a group of persons, lights and poles. at the top we can see the roof and banners with text. in the middle we can see a scoreboard with text.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the image! I need to see the image to describe it. Once you upload or link to it, I'll do my best to give you a brief description.
+",True,False,934.2401027679443,8.570000000000001e-06,0,False,False,2025-11-29T18:13:48.058801,
+aokvqa_01712_72e8746a3eff0dae,aokvqa,knowledge_vqa,"What is the snowboarder doing in the air?
+Choose the right answer from the provided options to respond to the question.
+Options: Tailwhip, grinding, grab, falling.",grab.,google/gemma-3-27b-it,"The most likely answer is **grab**. 
+
+Here's why:
+
+* **Grab** refers to a snowboarder reaching down and grabbing their board mid-air. It's a very common and visually distinct maneuver.
+* **Tailwhip** is a rotation of the board under the rider's feet, usually done on a flat surface.
+* **Grinding** happens on a rail or box, not in open air.
+* **Falling** isn't a *doing* – it's what happens *when* something goes wrong!
+
+Without an image, ""grab"" is the most standard action a snowboarder would be act",False,False,2463.2110595703125,3.8e-05,0,False,False,2025-11-29T18:13:50.523560,
+tallyqa_01595_7edf5e68b9a7bde8,tallyqa,counting,"How many cats are there?
+Give a very brief answer.",1.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"It's estimated there are around 470 million domestic cats in the world. 
+",True,False,427.4258613586426,3.01e-06,0,False,False,2025-11-29T18:13:50.952305,
+geomverse_00737_3bfd79e377b55700,geomverse,geometry_reasoning,"If the ABCD shape is a combination of a rectangle and a semi-circle, the circumference of the lime semi-circle is 48.83, the CBGH shape is a rectangle where a semi-circle has been removed from one sid","the circumference of the lime semi-circle is 48.83 so the ab diameter can be computed as $\frac{48.83}{1 + \frac{3.14}{2}} = \frac{48.83}{2.57} = 19$. the area of the cbgh shape is 120 and the length of the bg side is 9, so $otherside * 9 - \frac{3.14 * 9^2}{8} = 120$, so $otherside * 9 = 120 + \frac{3.14 * 9^2}{8} = 120 + \frac{3.14 * 81}{8} = 120 + \frac{254.34}{8} = 120 + 31.79 = 151.79$. therefore, the length of the bc side is $151.79 / 9 = 16.87$. to compute the area of the abcd shape, we can compute the area of the rectangle and add the area of the semi-circle to it. the lengths of the ab and the bc sides of the abcd shape are 19 and 16.87, so the area of the rectangle part is $19 * 16.87 = 320.53$. the diameter of the semi-circle is the same as the side of the rectangle with length 16.87 so $area = \frac{3.14 * 16.87^2}{8} = \frac{3.14 * 284.6}{8} = \frac{893.64}{8} = 111.7$. therefore, the total area of the abcd shape is $320.53 + 111.7 = 432.23$. therefore the final answer is 432.23.",google/gemma-3-27b-it,"Let $r$ be the radius of the semi-circle. The circumference of the semi-circle is given by $\pi r + 2r = (\pi + 2)r$. We are given that the circumference of the lime semi-circle is 48.83. So, $(\pi + 2)r = 48.83$.
+$(3.14 + 2)r = 48.83$
+$5.14r = 48.83$
+$r = \frac{48.83}{5.14} = 9.5$
+The radius of the semi-circle is 9.5.
+The diameter of the semi-circle is $2r = 2 \times 9.5 = 19$.
+Since ABCD is a combination of a rectangle and a semi-circle, we have $BC = 19$.
+The CBGH shape is a rectangle with a ",False,False,8676.694631576538,0.0001224,0,False,False,2025-11-29T18:13:59.631042,
+st_vqa_00150_98e92b08102e2412,st_vqa,scene_text_ocr,"What does the store front read?
+Short answer required.",my gym.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the image or description of the storefront! I need to see it to tell you what it reads.
+",True,False,577.9778957366943,5.670000000000001e-06,0,False,False,2025-11-29T18:14:00.210233,
+dvqa_01721_da2a46c0ef96a0df,dvqa,chart_reasoning,"How many groups of bars contain at least one bar with value smaller than 6?
+Offer a very short reply.",five.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"7
+",True,False,122.528076171875,2.1000000000000003e-07,0,False,False,2025-11-29T18:14:00.334378,
+mimic_cgd_01185_8e5f2dcb75a70f85,mimic_cgd,medical_report,What is the difference between the two images?,the first image shows the intersection of baltimore st. and centre st. while the second image shows baltimore ave and the vietnam veteran memorial.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Okay, I need you to **provide me with the two images** you are referring to! I have no way to see images unless you upload them or describe them to me in detail.
+
+Once you provide the images (or very detailed descriptions), I can tell you the differences between them.
+
+For example, you can:
+
+*   **Upload the images directly to our chat.**
+*   **Describe the images in detail.** (e.g., ""Image 1 is a photo of a red car. Image 2 is a photo of a blue car."")
+
+I'm ready when you are!
+",True,False,2418.452024459839,2.421e-05,0,False,False,2025-11-29T18:14:02.753652,
+hitab_01736_f9cb792a9b3c99a6,hitab,table_reasoning,"In the 2016-17 season, which league did king join side stevenage?",league two.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"In the 2016-17 season, **Danny King** joined **Stevenage** from **League Two**. 
+
+He was signed on loan from Scunthorpe United (who were in League One at the time) to gain first-team experience. So, while *he* came *from* League One, he joined Stevenage who were in **League Two**.
+
+
+
+",True,False,1705.9390544891357,1.23e-05,0,False,False,2025-11-29T18:14:04.463108,
+websight_00643_531631d6bfb3fd54,websight,web_understanding,Produce the HTML markup to recreate the visual appearance of this website.,"<html>
+<link href=""https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"" rel=""stylesheet"">
+<body class=""bg-gray-100"">
+  <header class=""bg-white p-6 flex justify-center"">
+    <img src=""https://source.unsplash.com/random/300x100/?construction"" alt=""construction company logo"" class=""h-16"">
+  </header>
+
+  <section class=""py-10"">
+    <div class=""container mx-auto px-6"">
+      <h1 class=""text-4xl font-bold mb-6 text-center"">welcome to our construction company</h1>
+      <p class=""text-lg text-center mb-10"">
+        we are a professional and industrial design company dedicated to creating unique and innovative structures. our team of experienced architects, engineers, and designers work together to bring your vision to life. we specialize in a wide range of construction projects, from residential to commercial, industrial, and more. whether you're looking for a new office building, a renovation of your home, or a custom design for your business, we're here to help.
+      </p>
+      <div class=""flex justify-center"">
+        <button class=""bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"">
+          contact us
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class=""py-10"">
+    <div class=""container mx-auto px-6"">
+      <h2 class=""text-3xl font-bold mb-6 text-center"">our projects</h2>
+      <div class=""flex flex-wrap -mx-2"">
+        <div class=""w-full md:w-1/2 lg:w-1/3 p-2"">
+          <img src=""https://source.unsplash.com/random/300x200/?construction"" alt=""construction project"" class=""w-full"">
+        </div>
+        <!-- repeat the above div for each project -->
+      </div>
+    </div>
+  </section>
+</body>
+</html>",google/gemma-3-27b-it,"Okay, I need the website's visual appearance to provide the HTML markup.  Please **provide me with the following**:
+
+1.  **A link to the website:** This is the *best* way for me to understand the layout, colors, fonts, and elements.
+2.  **A screenshot of the website:** If you can't provide a link, a clear screenshot is the next best thing.
+3.  **A detailed description of the website's layout and elements:** If you can't provide a link or screenshot, you'll need to be very specific.  Tell me abou",False,False,8672.595977783203,0.00010680000000000001,0,False,False,2025-11-29T18:14:13.137077,
+docvqa_00046_49229e8ce83d5fae,docvqa,document_ocr,"What does the phosphoric acid contain ?
+Offer a very short reply.",mineral phosphorous.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Phosphoric acid contains **phosphorus, oxygen, and hydrogen**.
+
+
+
+",True,False,404.41298484802246,1.8499999999999999e-06,0,False,False,2025-11-29T18:14:13.542436,
+localized_narratives_00848_c7b9b5e894a4a314,localized_narratives,dense_captioning,How would you summarize this image in a sentence or two?,in this picture there is a gate in the center of the image and there is a skull at the top side of the image and there are trees in the background area of the image.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the image! I need to see the image to be able to summarize it for you. 
+
+Once you provide the image, I will give you a concise sentence or two describing its content.
+",True,False,1035.9070301055908,1.0050000000000002e-05,0,False,False,2025-11-29T18:14:14.579325,
+infographic_vqa_01808_cb2948410c7d7b77,infographic_vqa,document_ocr,"What percentage of the world's poor are not women?
+Write a very short answer.",30%.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Approximately 40%. 
+
+(While women are disproportionately affected by poverty, around 40% of the world's poor are men and boys.)
+
+
+
+",True,False,683.9942932128906,4.8100000000000005e-06,0,False,False,2025-11-29T18:14:15.265194,
+hateful_memes_01414_0c874e5dd4565815,hateful_memes,meme_classification,"Is the message of this meme aggressive?
+Answer yes or no.",no.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the meme! I need to see the content of the meme to determine if its message is aggressive. 
+
+Once you share it, I will answer with either ""yes"" or ""no"".
+",True,False,852.2200584411621,8.81e-06,0,False,False,2025-11-29T18:14:16.119370,
+textvqa_00873_39b82de67094a259,textvqa,scene_text_ocr,"What does the left ad say?
+Provide a short and direct response.",pdk.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"""Have you ever met a man who loves you as much as your dog does?"" with a picture of a dog. 
+
+It's an ad for dog food (Purina).
+",True,False,763.9622688293457,7.2199999999999995e-06,0,False,False,2025-11-29T18:14:16.884974,
+multihiertt_00708_9f233b19182d3ccf,multihiertt,table_reasoning,what was the ratio of the company contribution in 2011 to the amount in 2013 to the us pension contributions,"computations: (517 / 476)
+answer: 1.08613.",Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Okay, let's break down the US pension contributions from the provided text to determine the ratio of the company contribution in 2011 to the amount in 2013.
+
+Here's the relevant information from the text:
+
+*   **2011:** Company contributions to US pension plans were $110 million.
+*   **2013:** Company contributions to US pension plans were $150 million.
+
+To find the ratio of 2011 to 2013, we divide the 2011 amount by the 2013 amount:
+
+Ratio = 2011 Contribution / 2013 Contribution
+Ratio = $110 mi",True,False,4060.0578784942627,2.9069999999999998e-05,0,False,False,2025-11-29T18:14:20.946330,
+visual7w_00149_a61032fd0bbbdaf3,visual7w,general_vqa,"Question: where are the boys hands?
+Choices:
+A. On racket.
+B. In his pockets.
+C. Behind his back.
+D. Under the table.
+Answer with the letter.",answer: a,google/gemma-3-27b-it,"To answer this question, I need more context! I need to know *what* ""the boys"" are doing. Is there an image or a description of a scene? 
+
+Without that information, I can't tell you where their hands are.
+
+**Please provide more information so I can give you the correct answer (A, B, C, or D).**
+",False,False,1371.0730075836182,2.64e-05,0,False,False,2025-11-29T18:14:22.318868,
+chartqa_01094_5eb6232068c1fa47,chartqa,chart_reasoning,"What's the percentage of US adults who choose no?
+Short answer required.",46.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Around 23%.
+
+
+
+",True,False,240.0960922241211,4.1000000000000004e-07,0,False,False,2025-11-29T18:14:22.560587,
+textvqa_00483_0c6a6f37da1dddc2,textvqa,scene_text_ocr,"What is the road name in front?
+Your answer should be very brief.",jerusalem plank.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with an image or describe the scene so I can tell you the road name. I have no way of knowing what road is in front without that information.
+",True,False,697.3960399627686,8.220000000000001e-06,0,False,False,2025-11-29T18:14:23.259963,
+iam_00748_33633a9f813879ac,iam,handwriting_ocr,Elucidate the handwriting in this image.,the same sort of good neighbour that he proved to be to the jews fleeing from hitler in the thirties.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Okay, I've examined the image. Here's a detailed elucidation of the handwriting, broken down into several aspects:
+
+**Overall Impression:**
+
+The handwriting appears to be **neat, legible, and fairly consistent**. It's not overly stylized or rushed. It suggests a writer who takes some care in forming their letters. It leans towards a more **formal or educated style** rather than a very casual or hurried scrawl.
+
+**Specific Letter Characteristics:**
+
+*   **Slant:** The handwriting has a **slight r",True,False,8856.734991073608,8.353000000000001e-05,0,False,False,2025-11-29T18:14:32.118326,
+hateful_memes_00227_c6feb609abbe054f,hateful_memes,meme_classification,"Does this meme support discrimination?
+Answer yes or no.",no.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the meme! I need to see the content of the meme to determine if it supports discrimination. 
+
+I cannot answer ""yes"" or ""no"" without knowing what the meme depicts.
+
+Once you provide the meme, I will analyze it and give you my assessment.
+
+
+
+",True,False,1153.9568901062012,1.221e-05,0,False,False,2025-11-29T18:14:33.273334,
+iconqa_00937_d6e0a0ee092ec200,iconqa,icon_reasoning,"Question: Is the number of fish even or odd?
+Choices:
+A. odd
+B. even
+Answer with the letter.",answer: a,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"B. even 
+
+(Fish come in pairs - schools of fish!)
+
+
+
+",True,False,358.83116722106934,2.61e-06,0,False,False,2025-11-29T18:14:33.633158,
+vsr_01624_4861ae6d77a3285d,vsr,spatial_reasoning,"Evaluate: Does the caption ""The person is touching the sandwich."" match the image?
+Answer yes or no.",yes.,google/gemma-3-27b-it,"Please provide me with the image! I need to see the image to determine if the caption ""The person is touching the sandwich"" matches it. 
+
+Once you provide the image, I will answer with either ""yes"" or ""no"".
+",False,False,902.8449058532715,1.66e-05,0,False,False,2025-11-29T18:14:34.537428,
+mapqa_00605_5207d5a0494558cc,mapqa,map_reasoning,"Does the first symbol in the legend represent the smallest category?
+Concise answer only.",yes.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Typically, yes.
+
+
+
+",True,False,180.98115921020508,4.1000000000000004e-07,0,True,False,2025-11-29T18:14:34.720088,
+vistext_00723_a439a1bb75671e12,vistext,chart_captioning,What insights can be drawn from this chart?,this is a bar graph labeled office properties vacancy rate in frankfurt from 2006 to 2019. the y-axis plots year while the x-axis measures office vacancy rate. the overall trend of the bar chart suggests that office vacancy rates in frankfurt are decreasing. in 2006 the rate was over 0.15; in 2019 this had reduced to 0.10.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Please provide me with the chart! I need to see the chart to be able to draw any insights from it. 
+
+Once you provide the chart (you can describe it, link to it, or upload an image), I can help you by:
+
+*   **Identifying trends:** Are things generally increasing, decreasing, staying stable, or fluctuating?
+*   **Comparing data points:** How do different categories or time periods compare?
+*   **Spotting outliers:** Are there any data points that are significantly different from the rest?
+*   **S",True,False,3030.802011489868,3.161e-05,0,False,False,2025-11-29T18:14:37.751919,
+robut_wtq_00603_d8886d10638343f7,robut_wtq,table_reasoning,Which jacksonian candidates got at least 76% of the vote in their races?,arthur smith.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Okay, let's break down which Jacksonian-era (roughly 1828-1856) presidential and vice-presidential candidates achieved at least 76% of the electoral vote in their races.  It's surprisingly rare!  Here's what I've found, with details and caveats:
+
+**Important Considerations:**
+
+*   **Electoral College vs. Popular Vote:**  I'm focusing on the *Electoral College* vote percentage, as that's what determines the winner.  Popular vote data is less complete for this era, and the Electoral College was th",True,False,8877.880096435547,7.359e-05,0,False,False,2025-11-29T18:14:46.630849,
+textvqa_01707_e9beb5b720e2ba07,textvqa,scene_text_ocr,"What is the first word of chapter 2?
+Your answer should be very brief.",gather.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Happily.
+
+
+
+",True,False,194.53811645507812,2.1000000000000003e-07,0,False,False,2025-11-29T18:14:46.827034,
+nlvr2_01257_4fc82f5f2c4087fb,nlvr2,spatial_reasoning,"The first image is the image on the left, the second image is the image on the right. Evaluate the accuracy of this statement regarding the images: ""n at least one image there are two red sails on a b",no.,Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it,"Yes.
+
+**Reasoning:**
+
+Looking at the image on the right, there is a boat in the water with two clearly visible red sails. Therefore, the statement is true.",True,False,713.6058807373047,7.010000000000001e-06,0,False,False,2025-11-29T18:14:47.542378,
