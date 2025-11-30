@@ -1,0 +1,42 @@
+{
+  "experiment_info": {
+    "timestamp": "20251129_181447",
+    "total_samples": 100,
+    "successful_samples": 100,
+    "failed_samples": 0,
+    "cascade_models": [
+      "Qwen/Qwen2.5-VL-3B-Instruct",
+      "Qwen/Qwen2.5-VL-7B-Instruct",
+      "google/gemma-3-27b-it",
+      "Qwen/Qwen3-VL-8B-Thinking",
+      "deepseek-ai/DeepSeek-OCR"
+    ]
+  },
+  "cascade_behavior": {
+    "cascaded_queries": 73,
+    "draft_accepted": 5,
+    "direct_routing": 27,
+    "cascade_rate": 73.0,
+    "draft_acceptance_rate": 6.8493150684931505
+  },
+  "performance": {
+    "total_cost": 0.00304194,
+    "avg_cost_per_sample": 3.04194e-05,
+    "avg_latency_ms": 2390.4362416267395,
+    "total_tokens": 0
+  },
+  "cost_savings": {
+    "baseline_cost": 0.0,
+    "cascade_cost": 0.00304194,
+    "absolute_savings": -0.00304194,
+    "percentage_savings": 0.0
+  },
+  "model_usage": {
+    "Qwen/Qwen2.5-VL-3B-Instruct+google/gemma-3-27b-it": 73,
+    "google/gemma-3-27b-it": 27
+  },
+  "accuracy": {
+    "contains_ground_truth": 3.0,
+    "exact_match": 0.0
+  }
+}

@@ -11,9 +11,14 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import hashlib
+import io
+import itertools
 import json
 import logging
+import math
 import mimetypes
+import multiprocessing as mp
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -94,10 +99,78 @@ if WHICH_VLM_SRC.exists():
     if which_vlm_str not in sys.path:
         sys.path.append(which_vlm_str)
 
+CAULDRON_REPO = "HuggingFaceM4/the_cauldron"
+DEFAULT_IMAGE_ROOT = Path("dataset/which_vlm_data/images/cauldron")
+
 try:
     from dataset_builder.check_data_utils import fetch_cauldron_image
 except ImportError:  # pragma: no cover - optional dependency
     fetch_cauldron_image = None
+
+try:  # pragma: no cover - optional dependency
+    from PIL import Image
+except Exception:  # pragma: no cover
+    Image = None  # type: ignore
+
+if fetch_cauldron_image is None:
+    try:  # pragma: no cover - optional dependency
+        from datasets import load_dataset
+    except Exception:  # pragma: no cover - datasets optional
+        load_dataset = None  # type: ignore
+
+    def _find_local_image_path(image_hash: str, source_config: str, image_root: Path) -> Optional[Path]:
+        candidate = image_root / source_config / f"{image_hash}.png"
+        return candidate if candidate.exists() else None
+
+    def _load_cauldron_sample(source_config: str, source_index: int) -> dict[str, Any]:
+        if load_dataset is None:
+            raise RuntimeError(
+                "datasets is required to stream Cauldron samples. Install `datasets` or "
+                "make sure dataset_builder.check_data_utils is importable."
+            )
+        target_idx = int(source_index)
+        dataset = load_dataset(CAULDRON_REPO, source_config, streaming=True)
+        iterator = dataset["train"]
+        sample = next(itertools.islice(iterator, target_idx, None), None)
+        if sample is None:
+            raise IndexError(f"Index {source_index} out of range for config '{source_config}'")
+        return sample
+
+    def _compute_image_hash(image: "Image.Image") -> str:
+        buf = io.BytesIO()
+        image.save(buf, format="PNG")
+        return hashlib.sha256(buf.getvalue()).hexdigest()[:16]
+
+    def _fallback_fetch_cauldron_image(
+        source_config: str,
+        source_index: int,
+        *,
+        image_hash: Optional[str] = None,
+        prefer_local_cache: bool = True,
+        image_root: Path = DEFAULT_IMAGE_ROOT,
+    ):
+        from PIL import Image  # type: ignore
+
+        image_root = Path(image_root)
+        if prefer_local_cache and image_hash:
+            cached = _find_local_image_path(image_hash, source_config, image_root=image_root)
+            if cached:
+                img = Image.open(cached)
+                img.load()
+                return img, {"images": [img]}
+
+        sample = _load_cauldron_sample(source_config, source_index)
+        image = sample["images"][0]
+
+        if image_hash:
+            computed = _compute_image_hash(image)
+            if computed != image_hash:
+                raise RuntimeError(
+                    f"Hash mismatch for {source_config}/{source_index}: {computed} != {image_hash}"
+                )
+        return image, sample
+
+    fetch_cauldron_image = _fallback_fetch_cauldron_image
 
 logger = logging.getLogger(__name__)
 
@@ -347,8 +420,17 @@ def encode_image_to_data_url(image_path: Path) -> str:
     return f"data:{mime_type};base64,{encoded}"
 
 
+def encode_pil_image_to_data_url(image: "Image.Image") -> str:
+    """Convert a PIL Image into a base64 data URL."""
+
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    encoded = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    return f"data:image/png;base64,{encoded}"
+
+
 def build_vlm_messages(
-    prompt: str, image_path: Path, system_prompt: Optional[str] = None
+    prompt: str, image_source: Any, system_prompt: Optional[str] = None
 ) -> list[dict[str, Any]]:
     """Build OpenAI/Qwen-compatible multimodal chat payloads."""
 
@@ -356,12 +438,17 @@ def build_vlm_messages(
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
 
+    if Image is not None and isinstance(image_source, Image.Image):
+        image_url = encode_pil_image_to_data_url(image_source)
+    else:
+        image_url = encode_image_to_data_url(Path(image_source))
+
     messages.append(
         {
             "role": "user",
             "content": [
                 {"type": "text", "text": prompt},
-                {"type": "image_url", "image_url": {"url": encode_image_to_data_url(image_path)}},
+                {"type": "image_url", "image_url": {"url": image_url}},
             ],
         }
     )
@@ -378,7 +465,7 @@ def prepare_samples(config: ExperimentConfig) -> pd.DataFrame:
     samples_df = raw_df.drop_duplicates(subset=["sample_id"]).copy()
     print(f"Loaded {len(samples_df)} unique samples from dataset.")
     samples_df["resolved_image_path"] = samples_df.apply(lambda row: resolve_row_image_path(row, lookup, config), axis=1)
-    samples_df = samples_df.dropna(subset=["prompt_formatted", "resolved_image_path"]).reset_index(drop=True)
+    samples_df = samples_df.dropna(subset=["prompt_raw", "resolved_image_path"]).reset_index(drop=True)
 
     if config.max_samples is not None:
         n = min(config.max_samples, len(samples_df))
@@ -397,16 +484,28 @@ async def evaluate_samples(
 
     for row in iterator:
         prompt = getattr(row, "prompt_formatted", None) or getattr(row, "prompt_raw", "")
-        image_path = Path(row.resolved_image_path)
         system_prompt = getattr(row, "system_prompt", None)
-        messages = build_vlm_messages(prompt, image_path, system_prompt)
+        fetched_image, sample_dict = _fetch_row_image(row, config)
+        resolved_image_path = getattr(row, "resolved_image_path", None)
+        image_reference: Any = None
+        if fetched_image is not None:
+            image_reference = fetched_image
+        elif resolved_image_path:
+            image_reference = Path(resolved_image_path)
+
+        if image_reference is None:
+            logger.warning("Skipping sample %s due to missing image", getattr(row, "sample_id", None))
+            continue
+
+        messages = build_vlm_messages(prompt, image_reference, system_prompt)
 
         row_record: dict[str, Any] = {
             "sample_id": row.sample_id,
             "router_task": getattr(row, "router_task", None),
             "prompt_text": prompt,
             "system_prompt": system_prompt,
-            "image_path": str(image_path),
+            "image_path": resolved_image_path if resolved_image_path else None,
+            "cauldron_sample_metadata": json.dumps(sample_dict or {}),
         }
 
         try:
@@ -463,6 +562,57 @@ async def evaluate_samples(
     return records
 
 
+def _chunk_dataframe(df: pd.DataFrame, chunk_size: int) -> list[pd.DataFrame]:
+    """Split dataframe into roughly equal chunks."""
+
+    if chunk_size <= 0:
+        raise ValueError("chunk_size must be positive")
+    chunks: list[pd.DataFrame] = []
+    for start in range(0, len(df), chunk_size):
+        chunk = df.iloc[start : start + chunk_size].copy().reset_index(drop=True)
+        if not chunk.empty:
+            chunks.append(chunk)
+    return chunks
+
+
+def _evaluate_chunk_worker(args: tuple[pd.DataFrame, ExperimentConfig]) -> list[dict[str, Any]]:
+    """Worker entrypoint for multiprocessing evaluation."""
+
+    chunk_df, config = args
+    if chunk_df.empty:
+        return []
+    agent = build_cascade_agent(config)
+    return asyncio.run(evaluate_samples(agent, chunk_df, config))
+
+
+def _fetch_row_image(row: pd.Series, config: ExperimentConfig) -> tuple[Any, Optional[dict[str, Any]]]:
+    """Fetch Cauldron image for a row if metadata is available."""
+
+    if fetch_cauldron_image is None:
+        return None, None
+
+    source_config = getattr(row, "source_config", None)
+    source_index = getattr(row, "source_index", None)
+    image_hash = getattr(row, "image_bytes_hash", None)
+    if not source_config or source_index is None:
+        return None, None
+
+    try:
+        image, sample = fetch_cauldron_image(
+            source_config=source_config,
+            source_index=int(source_index),
+            image_hash=image_hash,
+            image_root=config.image_root,
+            prefer_local_cache=True,
+        )
+        return image, sample
+    except Exception as exc:  # pragma: no cover - runtime fetch failures
+        logger.debug(
+            "Failed to fetch Cauldron image %s/%s: %s", source_config, source_index, exc
+        )
+        return None, None
+
+
 def _compute_savings_pct(total_cost: Optional[float], cost_saved: Optional[float]) -> Optional[float]:
     """Helper for cost-derived percentages."""
 
@@ -474,16 +624,26 @@ def _compute_savings_pct(total_cost: Optional[float], cost_saved: Optional[float
     return cost_saved / denom
 
 
-async def run_experiment_async(config: ExperimentConfig) -> pd.DataFrame:
+async def run_experiment_async(
+    config: ExperimentConfig,
+    *,
+    samples_df: Optional[pd.DataFrame] = None,
+    agent: Optional[CascadeAgent] = None,
+) -> pd.DataFrame:
     """Convenience coroutine that prepares data, runs the agent, and returns a DataFrame."""
 
-    samples_df = prepare_samples(config)
-    agent = build_cascade_agent(config)
+    samples_df = samples_df if samples_df is not None else prepare_samples(config)
+    agent = agent if agent is not None else build_cascade_agent(config)
     records = await evaluate_samples(agent, samples_df, config)
     return pd.DataFrame(records)
 
 
-def run_experiment(config: ExperimentConfig) -> pd.DataFrame:
+def run_experiment(
+    config: ExperimentConfig,
+    *,
+    samples_df: Optional[pd.DataFrame] = None,
+    agent: Optional[CascadeAgent] = None,
+) -> pd.DataFrame:
     """
     Synchronous wrapper around `run_experiment_async`.
 
@@ -492,7 +652,7 @@ def run_experiment(config: ExperimentConfig) -> pd.DataFrame:
     """
 
     async def _runner() -> pd.DataFrame:
-        return await run_experiment_async(config)
+        return await run_experiment_async(config, samples_df=samples_df, agent=agent)
 
     try:
         loop = asyncio.get_running_loop()
@@ -509,6 +669,80 @@ def run_experiment(config: ExperimentConfig) -> pd.DataFrame:
 
     nest_asyncio.apply()
     return loop.run_until_complete(_runner())
+
+
+def run_experiment_with_logging(
+    config: ExperimentConfig,
+    *,
+    logger: Optional[logging.Logger] = None,
+    suppress_hf_logs: bool = True,
+    num_workers: int = 1,
+    chunk_size: Optional[int] = None,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Run the CascadeFlow experiment with progress logging kept inside this module.
+
+    Args:
+        config: Experiment configuration bundle.
+        logger: Optional logger override.
+        suppress_hf_logs: Whether to silence HuggingFace download chatter.
+        num_workers: Number of multiprocessing workers (1 == single process).
+        chunk_size: Optional override for samples each worker should process.
+
+    Returns:
+        Tuple of (results_df, samples_df)
+    """
+
+    log = logger or logging.getLogger(__name__)
+    if suppress_hf_logs:
+        logging.getLogger("huggingface_hub").setLevel(logging.WARNING)
+
+    log.info("Preparing samples for CascadeFlow...")
+    samples_df = prepare_samples(config)
+    total_samples = len(samples_df)
+    log.info("Prepared %s samples (max_samples=%s)", total_samples, config.max_samples)
+
+    if total_samples == 0:
+        return pd.DataFrame(), samples_df
+
+    if num_workers <= 1:
+        log.info("Building CascadeAgent with %s models", len(config.cascade_models))
+        model_names = [spec.name for spec in config.cascade_models]
+        log.info("Cascading across %s", model_names)
+        agent = build_cascade_agent(config)
+        results_df = run_experiment(config, samples_df=samples_df, agent=agent)
+    else:
+        effective_workers = max(1, min(num_workers, total_samples))
+        chunk_size = chunk_size or math.ceil(total_samples / effective_workers)
+        chunks = _chunk_dataframe(samples_df, chunk_size)
+        payloads = [(chunk, config) for chunk in chunks]
+        log.info(
+            "Processing %s samples with %s workers (chunk_size=%s, total_chunks=%s)",
+            total_samples,
+            effective_workers,
+            chunk_size,
+            len(payloads),
+        )
+        ctx = mp.get_context("spawn")
+        records: list[dict[str, Any]] = []
+        with ctx.Pool(processes=effective_workers) as pool:
+            for chunk_records in tqdm(
+                pool.imap_unordered(_evaluate_chunk_worker, payloads),
+                total=len(payloads),
+                desc="Multiprocess routing",
+            ):
+                records.extend(chunk_records)
+        results_df = pd.DataFrame(records)
+
+    if not results_df.empty and "sample_id" in results_df.columns:
+        results_df = results_df.sort_values("sample_id").reset_index(drop=True)
+
+    log.info(
+        "CascadeFlow finished. Successful routes: %s/%s",
+        results_df["error"].isna().sum() if not results_df.empty else 0,
+        len(results_df),
+    )
+    return results_df, samples_df
 
 
 def summarize_results(results_df: pd.DataFrame) -> dict[str, Any]:
@@ -576,6 +810,7 @@ __all__ = [
     "evaluate_samples",
     "run_experiment_async",
     "run_experiment",
+    "run_experiment_with_logging",
     "run_and_save",
     "summarize_results",
     "persist_results",
