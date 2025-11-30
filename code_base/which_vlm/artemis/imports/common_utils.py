@@ -41,6 +41,14 @@ def return_model_pricing():
         "completion_per_1k": 0.00016,
     },
     }
+    # MODEL_PRICING = {
+    # "deepseek_ocr": {"prompt_per_1k": 15, "completion_per_1k": 150},
+    # "qwen2_5_vl_3b": {"prompt_per_1k": 10, "completion_per_1k": 100},
+    # "qwen2_5_vl_7b": {"prompt_per_1k": 20, "completion_per_1k": 200},
+    # "qwen3_vl_8b_thinking": {"prompt_per_1k": 50, "completion_per_1k": 500},
+    # "gemma_3_27b":{"prompt_per_1k": 30, "completion_per_1k": 300},
+    # }
+
     print("Configured model pricing (USD per 1K tokens):")
     for model_name, pricing in MODEL_PRICING.items():
         print(f"  {model_name}: prompt=${pricing['prompt_per_1k']}, "
