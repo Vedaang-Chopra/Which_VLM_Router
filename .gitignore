@@ -238,4 +238,13 @@ vlm_router_env/
 code_base/cascadeflow/cascadeflow_env/
 code_base/cascadeflow/cascadeflow/
 
+
+code_base/which_vlm/artemis/router_checkpoints_1/
+code_base/which_vlm/artemis/router_checkpoints/
+
+
+*.wandb
+code_base/which_vlm/artemis/wandb/
+
+
 *.jsonl
