@@ -146,6 +146,8 @@ class OpenAIStyleRunner:
             temperature=temp,
             top_p=kwargs.pop("top_p", 1.0),
             max_tokens=kwargs.pop("max_tokens", 512),
+            logprobs=kwargs.pop("logprobs", True),  # Enable logprobs by default
+            top_logprobs=kwargs.pop("top_logprobs", 1),  # Get top 1 logprobs
             **endpoint.extra_params,
             **kwargs,
         )
@@ -156,6 +158,17 @@ class OpenAIStyleRunner:
 
         choice = resp.choices[0]
         response_text = getattr(choice.message, "content", "") or ""
+        
+        # Extract logprobs from choice
+        choice_logprobs = getattr(choice, "logprobs", None)
+        logprobs_data = None
+        if choice_logprobs is not None:
+            if hasattr(choice_logprobs, "model_dump"):
+                logprobs_data = choice_logprobs.model_dump()
+            elif hasattr(choice_logprobs, "content"):
+                logprobs_data = {"content": choice_logprobs.content}
+            else:
+                logprobs_data = choice_logprobs
 
         usage = getattr(resp, "usage", None)
         usage_dict = usage.model_dump() if hasattr(usage, "model_dump") else (usage or {})
@@ -167,8 +180,11 @@ class OpenAIStyleRunner:
             "model_id": endpoint.model_id,
             "response_text": response_text,
             "raw": resp.model_dump() if hasattr(resp, "model_dump") else resp,
+            "logprobs": logprobs_data,  # NEW: Return logprobs
             "latency_ms": latency_ms,
             "usage": usage_dict,
+            "input_tokens": usage_dict.get("prompt_tokens", 0),  # NEW: Extract input tokens
+            "output_tokens": usage_dict.get("completion_tokens", 0),  # NEW: Extract output tokens
             "est_cost": est_cost,
             "conf_proxy": None,
             "request": payload,

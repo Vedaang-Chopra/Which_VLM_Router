@@ -2,7 +2,7 @@ models:
   - name: deepseek_ocr
     base_url: http://localhost:8804/v1
     api_key: EMPTY
-    model_id: deepseek-ai/deepseek-vl2-small
+    model_id: deepseek-ai/DeepSeek-OCR
     model_type: vlm
     pricing:
       prompt_per_1k: 0.00003
@@ -32,7 +32,7 @@ models:
   - name: qwen3_vl_8b_thinking
     base_url: http://localhost:8801/v1
     api_key: EMPTY
-    model_id: Qwen/Qwen3-VL-8B
+    model_id: Qwen/Qwen3-VL-8B-Thinking
     model_type: vlm
     pricing:
       prompt_per_1k: 0.00018

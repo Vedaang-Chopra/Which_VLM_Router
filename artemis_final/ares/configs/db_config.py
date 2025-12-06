@@ -8,7 +8,17 @@ DB_NAME = "vlmrouter"
 
 DB_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-TABLE_NAME = "vlm_router_evaluations"
+# Table names (normalized schema)
+TABLES = {
+    'samples': 'vlm_samples',
+    'images': 'vlm_images', 
+    'responses': 'vlm_responses',
+    'evaluations': 'vlm_evaluations',
+}
+
+# Legacy - for backward compatibility
+TABLE_NAME = "vlm_responses"  # Old monolithic table name (alias)
+TABLE_NAME_SAMPLE = "vlm_responses"
 
 # Model configuration
 MODEL_PREFIXES = ['m1', 'm2', 'm3', 'm4', 'm5']

@@ -1,0 +1,46 @@
+# Model capacity configuration for Artemis load balancer
+#
+# This file defines per-model capacity and SLA parameters:
+# - base_latency_ms: Average service time without queuing
+# - min_replicas: Minimum number of replicas to maintain
+# - max_replicas: Maximum number of replicas for autoscaling
+# - sla_ms: Per-model SLA target (can be overridden by global SLA)
+# - max_qps_per_replica: Maximum queries per second per replica
+# - autoscale: Optional autoscaling configuration
+
+models:
+  small_vlm:
+    base_latency_ms: 250      # Fast, lightweight model
+    min_replicas: 1
+    max_replicas: 10
+    sla_ms: 1500
+    max_qps_per_replica: 5.0
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8    # Scale up if predicted > 0.8 * sla_ms
+      scale_down_util_threshold: 0.3   # Scale down if utilization < 30%
+      cooldown_ms: 60000               # 60 seconds between scaling operations
+
+  medium_vlm:
+    base_latency_ms: 500      # Medium performance model
+    min_replicas: 1
+    max_replicas: 5
+    sla_ms: 2000
+    max_qps_per_replica: 2.0
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8
+      scale_down_util_threshold: 0.3
+      cooldown_ms: 60000
+
+  large_vlm:
+    base_latency_ms: 1200     # Slower, high-quality model
+    min_replicas: 1
+    max_replicas: 3
+    sla_ms: 3000
+    max_qps_per_replica: 1.0
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8
+      scale_down_util_threshold: 0.3
+      cooldown_ms: 60000

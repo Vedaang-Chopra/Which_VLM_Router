@@ -1,4 +1,5 @@
-from artemis_final.ares.configs.config import CONFIG_TO_TASK, TASK_GT_TYPE
+# from artemis_final.ares.configs.config import CONFIG_TO_TASK, TASK_GT_TYPE
+from ares.configs.config import CONFIG_TO_TASK, TASK_GT_TYPE
 import re
 from datasets import load_dataset, get_dataset_config_names
 from typing import List, Dict, Any, Optional
@@ -15,21 +16,46 @@ def return_dataset_configs(repo: str) -> List[str]:
     """
     return get_dataset_config_names(repo)
 
-def load_cauldron_samples(config_name: str, n_samples: int = 32) -> List[Dict]:
+def load_cauldron_samples(config_name: str, n_samples: int = 32, random_sample: bool = False) -> List[Dict]:
     """
     Load samples from a Cauldron subset using streaming mode.
     
+    Parameters
+    ----------
+    config_name : str
+        The Cauldron subset name (e.g., 'ai2d', 'chartqa').
+    n_samples : int
+        Number of samples to load.
+    random_sample : bool
+        If True, load more samples and randomly select n_samples from them.
+        If False (default), take the first n_samples in order.
+    
     Returns a list of dicts with keys: 'images', 'texts'
     """
+    import random
+    
     ds = load_dataset(
         CAULDRON_REPO,
         config_name,
         streaming=True,
         # trust_remote_code=True
     )
-    print(f"Number of configs available: {get_dataset_config_names(CAULDRON_REPO)}")
-    samples = list(ds['train'].take(n_samples))
-    print(f"Loaded {len(samples)} samples from '{config_name}'")
+    
+    if random_sample:
+        # Load more samples than needed for random selection
+        # Use a buffer multiplier to ensure we have enough variety
+        buffer_size = min(n_samples * 5, 1000)
+        all_samples = list(ds['train'].take(buffer_size))
+        
+        if len(all_samples) <= n_samples:
+            samples = all_samples
+        else:
+            samples = random.sample(all_samples, n_samples)
+        print(f"Randomly sampled {len(samples)} from {len(all_samples)} samples from '{config_name}'")
+    else:
+        samples = list(ds['train'].take(n_samples))
+        print(f"Loaded {len(samples)} samples from '{config_name}' (sequential)")
+    
     return samples
 
 
@@ -97,15 +123,37 @@ class CauldronLoader:
         return get_dataset_config_names(cls.REPO)
     
     @classmethod
-    def load_samples(cls, config_name: str, n_samples: int = 100) -> List[Dict]:
-        """Load samples from a Cauldron config using streaming."""
+    def load_samples(cls, config_name: str, n_samples: int = 100, random_sample: bool = False) -> List[Dict]:
+        """
+        Load samples from a Cauldron config using streaming.
+        
+        Parameters
+        ----------
+        config_name : str
+            The Cauldron config name.
+        n_samples : int
+            Number of samples to load.
+        random_sample : bool
+            If True, randomly sample from a larger buffer.
+        """
+        import random as rnd
+        
         ds = load_dataset(
             cls.REPO,
             config_name,
             streaming=True,
-            # trust_remote_code=True
         )
-        samples = list(ds['train'].take(n_samples))
+        
+        if random_sample:
+            buffer_size = min(n_samples * 5, 1000)
+            all_samples = list(ds['train'].take(buffer_size))
+            if len(all_samples) <= n_samples:
+                samples = all_samples
+            else:
+                samples = rnd.sample(all_samples, n_samples)
+        else:
+            samples = list(ds['train'].take(n_samples))
+        
         return samples
     
     @classmethod

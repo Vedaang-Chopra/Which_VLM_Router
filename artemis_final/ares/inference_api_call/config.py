@@ -86,8 +86,8 @@ class ModelEndpoint:
     model_id: str
     pricing: Dict[str, float]
     extra_params: Dict[str, Any]
-    model_type: str = "llm"  # "llm", "vlm", or "both"
-    default_temperature: float = 0.2
+    model_type: str = "vlm"  # "llm", "vlm", or "both"
+    default_temperature: float = 0.0
 
 
 # ---------------------------------------------------------------------------
