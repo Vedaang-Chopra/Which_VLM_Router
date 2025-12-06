@@ -1,9 +1,10 @@
 """
-Database utilities for loading profiling data from PostgreSQL.
+Database utilities for loading profiling data from PostgreSQL and local SQLite.
 """
 
 import logging
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union
 
 import pandas as pd
 from sqlalchemy import create_engine, text
@@ -106,6 +107,7 @@ def load_profiles_real_schema(
     db_config: DBConfig,
     limit: Optional[int] = None,
     data_split: Optional[str] = None,
+    limit_per_split: bool = False,
 ) -> pd.DataFrame:
     """
     Load profiling data using the REAL SQL schema.
@@ -117,6 +119,8 @@ def load_profiles_real_schema(
         db_config: Database configuration
         limit: Optional limit on number of rows to load (for testing)
         data_split: Optional filter by data_split (e.g., "train", "val", "test")
+        limit_per_split: If True and no data_split is provided, apply `limit`
+            per data_split partition rather than overall.
 
     Returns:
         DataFrame with columns:
@@ -140,8 +144,21 @@ def load_profiles_real_schema(
     """
     engine = get_engine(db_config)
 
-    # Build query with real schema
-    query = """
+    where_clauses = []
+    if data_split is not None:
+        where_clauses.append(f"s.data_split = '{data_split}'")
+
+    where_clause = ""
+    if where_clauses:
+        where_clause = " WHERE " + " AND ".join(where_clauses)
+
+    extra_select = ""
+    if limit_per_split and limit and data_split is None:
+        extra_select = """
+        , ROW_NUMBER() OVER (PARTITION BY s.data_split, s.router_task ORDER BY s.sample_id) AS split_row_num
+        """
+
+    base_query = f"""
     SELECT
         -- sample-level
         s.sample_id,
@@ -167,6 +184,7 @@ def load_profiles_real_schema(
 
         -- evaluation-level (per model)
         ev.glider_score
+        {extra_select}
 
     FROM vlm_samples s
     JOIN vlm_responses r
@@ -176,29 +194,34 @@ def load_profiles_real_schema(
      AND r.model_name = ev.model_name
     LEFT JOIN vlm_images i
       ON s.image_id = i.image_id
+    {where_clause}
     """
 
-    # Add WHERE clause if data_split specified
-    where_clauses = []
-    if data_split is not None:
-        where_clauses.append(f"s.data_split = '{data_split}'")
-
-    if where_clauses:
-        query += " WHERE " + " AND ".join(where_clauses)
-
-    # Add LIMIT if specified
-    if limit is not None and limit > 0:
-        query += f" LIMIT {limit}"
+    if limit_per_split and limit and data_split is None:
+        query = f"""
+    SELECT *
+    FROM (
+    {base_query}
+    ) _split_limited
+    WHERE split_row_num <= {limit}
+    """
+    else:
+        query = base_query
+        if limit is not None and limit > 0:
+            query += f"\n    LIMIT {limit}"
 
     logger.info(f"Loading profiling data from database (real schema)...")
     if data_split:
         logger.info(f"  Filtering by data_split: {data_split}")
     if limit:
         logger.info(f"  Limit: {limit}")
+    if limit_per_split and limit and data_split is None:
+        logger.info("  Applying the limit per data_split/router_task partition")
 
     try:
         # Execute query
         df = pd.read_sql(text(query), engine)
+        df = df.loc[:, df.columns != "split_row_num"]
 
         logger.info(f"Loaded {len(df)} profile records")
         logger.info(f"  Unique samples: {df['sample_id'].nunique()}")
@@ -273,3 +296,102 @@ def _validate_profiles_real_schema(df: pd.DataFrame) -> None:
     if "confidence_score" in df.columns:
         null_count = df["confidence_score"].isnull().sum()
         logger.info(f"  confidence_score: {null_count}/{total_rows} ({100*null_count/total_rows:.1f}%) missing")
+
+
+def get_sqlite_engine(db_path: Union[str, Path]) -> Engine:
+    """
+    Create SQLAlchemy engine for local SQLite database.
+
+    Args:
+        db_path: Path to SQLite database file
+
+    Returns:
+        SQLAlchemy engine instance
+    """
+    db_path = Path(db_path)
+    connection_string = f"sqlite:///{db_path}"
+    engine = create_engine(connection_string)
+    logger.info(f"Created SQLite engine for {db_path}")
+    return engine
+
+
+def save_to_sqlite(
+    df: pd.DataFrame,
+    db_path: Union[str, Path],
+    table_name: str = "vlm_profiles",
+    if_exists: str = "replace",
+) -> None:
+    """
+    Save dataframe to SQLite database.
+
+    Args:
+        df: Dataframe to save
+        db_path: Path to SQLite database file
+        table_name: Name of table to create
+        if_exists: What to do if table exists ('replace', 'append', 'fail')
+    """
+    db_path = Path(db_path)
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+
+    engine = get_sqlite_engine(db_path)
+
+    logger.info(f"Saving {len(df)} rows to {db_path}:{table_name}")
+    df.to_sql(table_name, engine, if_exists=if_exists, index=False)
+    logger.info(f"✓ Saved to {db_path}")
+
+
+def load_from_sqlite(
+    db_path: Union[str, Path],
+    table_name: str = "vlm_profiles",
+    data_split: Optional[str] = None,
+    limit: Optional[int] = None,
+) -> pd.DataFrame:
+    """
+    Load dataframe from local SQLite database.
+
+    Args:
+        db_path: Path to SQLite database file
+        table_name: Name of table to load
+        data_split: Optional filter by data_split (e.g., "train", "val", "test")
+        limit: Optional limit on number of rows to load
+
+    Returns:
+        DataFrame with profiling data
+    """
+    db_path = Path(db_path)
+
+    if not db_path.exists():
+        raise FileNotFoundError(f"SQLite database not found: {db_path}")
+
+    engine = get_sqlite_engine(db_path)
+
+    # Build query
+    query = f"SELECT * FROM {table_name}"
+
+    where_clauses = []
+    if data_split is not None:
+        where_clauses.append(f"data_split = '{data_split}'")
+
+    if where_clauses:
+        query += " WHERE " + " AND ".join(where_clauses)
+
+    if limit is not None and limit > 0:
+        query += f" LIMIT {limit}"
+
+    logger.info(f"Loading from {db_path}:{table_name}")
+    if data_split:
+        logger.info(f"  Filtering by data_split: {data_split}")
+    if limit:
+        logger.info(f"  Limit: {limit}")
+
+    df = pd.read_sql(query, engine)
+
+    logger.info(f"Loaded {len(df)} rows")
+    if 'sample_id' in df.columns:
+        logger.info(f"  Unique samples: {df['sample_id'].nunique()}")
+    if 'model_name' in df.columns:
+        logger.info(f"  Unique models: {df['model_name'].nunique()}")
+    if 'data_split' in df.columns:
+        logger.info(f"  Data splits: {df['data_split'].value_counts().to_dict()}")
+
+    return df

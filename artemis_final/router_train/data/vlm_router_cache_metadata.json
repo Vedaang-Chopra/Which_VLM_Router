@@ -1,0 +1,48 @@
+{
+  "created_at": "2025-12-06T16:41:27.706650",
+  "source_host": "localhost",
+  "source_database": "vlmrouter",
+  "total_rows": 2218,
+  "unique_samples": 570,
+  "unique_models": 5,
+  "models": [
+    "deepseek_ocr",
+    "gemma_3_27b",
+    "qwen2_5_vl_3b",
+    "qwen2_5_vl_7b",
+    "qwen3_vl_8b_thinking"
+  ],
+  "columns": [
+    "sample_id",
+    "source_config",
+    "source_dataset",
+    "router_task",
+    "data_split",
+    "prompt_raw",
+    "txt_prompt_length_chars",
+    "txt_prompt_length_words",
+    "img_width",
+    "img_height",
+    "img_aspect_ratio",
+    "model_name",
+    "model_prefix",
+    "latency_ms",
+    "cost_usd",
+    "confidence_score",
+    "glider_score"
+  ],
+  "table_name": "vlm_profiles",
+  "cleaning_stats": {
+    "initial_rows": 2218,
+    "dropped_rows": 0,
+    "filled_cost": 0,
+    "filled_latency": 0,
+    "filled_confidence": 0,
+    "final_rows": 2218
+  },
+  "split_counts": {
+    "train": 750,
+    "test": 740,
+    "val": 728
+  }
+}

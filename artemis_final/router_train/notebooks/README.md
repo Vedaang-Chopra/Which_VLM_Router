@@ -2,9 +2,54 @@
 
 Interactive Jupyter notebooks for VLM router training and analysis.
 
+## Quick Start
+
+1. **First time setup:** Run `00_prepare_local_database.ipynb` to download data from PostgreSQL
+2. **Training:** Run any of the training notebooks (02, 03, 04) - they'll use the local database
+
 ## Notebooks
 
-This directory contains three different approaches to training VLM routers:
+### 00_prepare_local_database.ipynb
+
+**Prepare Local SQLite Database**
+
+This notebook fetches all data from PostgreSQL once and caches it locally for faster training.
+
+**What it does:**
+1. Connects to PostgreSQL and fetches all profiling data
+2. Validates data quality (checks for missing values, duplicates, etc.)
+3. Cleans data (fills missing values, drops invalid rows)
+4. Validates train/val/test splits (checks for data leakage)
+5. Saves to local SQLite database (`../data/vlm_router_cache.db`)
+6. Creates metadata file with statistics
+
+**When to use:**
+- **Run ONCE** before training to create local cache
+- **Re-run** whenever you need to refresh data from PostgreSQL
+- **Skip** if you already have the local database file
+
+**Benefits:**
+- ✅ 10-100x faster data loading (no network latency)
+- ✅ Work offline without database connection
+- ✅ Consistent data snapshot across all notebooks
+- ✅ No load on production PostgreSQL
+
+**Usage:**
+```bash
+cd router_train/notebooks
+jupyter notebook 00_prepare_local_database.ipynb
+# Run all cells
+```
+
+**Output:**
+- `../data/vlm_router_cache.db` - SQLite database (100-500 MB typically)
+- `../data/vlm_router_cache_metadata.json` - Database metadata
+
+---
+
+## Training Notebooks
+
+Three different approaches to training VLM routers:
 
 ### 02_reward_router_sql_to_training.ipynb
 
