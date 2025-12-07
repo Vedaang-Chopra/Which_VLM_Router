@@ -25,7 +25,7 @@ jupyter notebook
 
 | Notebook | Purpose |
 |----------|---------|
-| `00_pushing_*.ipynb` | Push datasets to PostgreSQL |
+| `00_pushing_*.ipynb` | Push old datasets to PostgreSQL |
 | `01_parallel_inference_to_db.ipynb` | Run VLM inference at scale |
 | `02_eval_scoring.ipynb` | Score responses with judges |
 | `03_cost_utility_computation.ipynb` | Compute rewards & costs |

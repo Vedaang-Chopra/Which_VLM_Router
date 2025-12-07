@@ -256,7 +256,9 @@ dataset/final_dataset/router_lexico/router_val_trainer.parquet
 
 
 artemis_final/router_train/models/checkpoints/
-artemis_final/router_train/data/
-
+artemis_final/router_train/data/router_reward_dataset.parquet
+artemis_final/checkpoints/*
 
 *.jsonl
+
+dataset_old_copy/
