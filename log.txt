@@ -1,0 +1,2 @@
+nohup: ignoring input
+/storage/ice1/1/0/vchopra37/projects/vlm_router/vlm_router_env/bin/python: Error while finding module specification for 'llava.serve.openai_api' (ModuleNotFoundError: No module named 'llava')
