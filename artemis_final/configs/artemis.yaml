@@ -1,0 +1,36 @@
+# Artemis VLM Router - Unified Configuration
+# This is the single source of truth for the system.
+
+db:
+  # Connection string for Postgres. Use "postgres" hostname inside Docker.
+  url: "postgresql+psycopg2://artemis:artemis@postgres:5432/artemis"
+
+router:
+  # Path to trained reward router checkpoint
+  checkpoint_path: "checkpoints/best_reward_router.pt"
+  # Path to router-specific config (model architecture, modes, etc.)
+  config_file: "router/router_config_reward.yaml"
+  # Device for inference
+  device: "cpu" # Use "cuda" or "mps" if available
+
+load_balancer:
+  # Path to load balancer config (SLAs, model capacities)
+  config_file: "load_balancer/load_balancer_config.yaml"
+
+inference_engine:
+  # Path to models.yaml defining VLM endpoints
+  models_file: "ares/configs/models.yaml"
+
+data_collection:
+  # Table names for collected data (live traffic)
+  samples_table: "vlm_samples_collected"
+  responses_table: "vlm_responses_collected"
+  feedback_table: "vlm_feedback"
+
+retraining:
+  # Number of epochs for retraining
+  epochs: 1
+  # Batch size
+  batch_size: 8
+  # Output checkpoint path
+  output_checkpoint: "checkpoints/best_reward_router_updated.pt"

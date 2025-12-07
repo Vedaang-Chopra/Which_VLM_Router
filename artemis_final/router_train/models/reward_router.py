@@ -15,7 +15,15 @@ import torch
 import torch.nn as nn
 from transformers import AutoModel
 
-from config import RouterModelConfig
+import sys
+from pathlib import Path
+
+# Add artemis_final's parent to path for package imports
+_artemis_parent = Path(__file__).parent.parent.parent.parent
+if str(_artemis_parent) not in sys.path:
+    sys.path.insert(0, str(_artemis_parent))
+
+from artemis_final.router_train.config import RouterModelConfig
 
 logger = logging.getLogger(__name__)
 

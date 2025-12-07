@@ -1,474 +1,554 @@
-# Artemis Router – VLM Router Inference & Traffic Simulation
+# Artemis Router - Reward Router Inference Module
 
-**Fast, modular router inference service for production VLM routing.**
+**Text-Only Router for VLM Model Selection**
 
----
-
-## Overview
-
-The Artemis Router module provides a complete inference system for the trained VLM router. It supports:
-
-- **Low-latency inference**: Optimized single and batch routing
-- **Multiple input sources**: Database samples, HTTP requests, synthetic traffic
-- **Comprehensive logging**: SQL and Weights & Biases integration
-- **Load balancer integration**: Real-time routing decision dispatch
-- **Traffic simulation**: Test router under various load patterns
-
-This phase focuses on router inference and traffic simulation. Dynamic scaling and full HTTP API integration are planned for future phases.
+This module provides inference capabilities for the trained **Reward Router**, which predicts the best VLM model for each query based on text prompts and routing modes.
 
 ---
 
-## Directory Structure
+## 📖 Table of Contents
 
-```
-router/
-├── artemis_router/              # Main Python package
-│   ├── __init__.py             # Package initialization
-│   ├── config.py               # Configuration system (YAML → typed objects)
-│   ├── schemas.py              # Core data structures (Sample, RouterDecision, etc.)
-│   ├── router_model.py         # Router architecture and checkpoint loading
-│   ├── feature_extractor.py    # Sample → tensor conversion
-│   ├── router_engine.py        # High-level routing API
-│   ├── db_io.py                # Database read/write operations
-│   ├── logging_wandb.py        # Weights & Biases logging
-│   ├── lb_interface.py         # Load balancer communication
-│   ├── api_io.py               # HTTP request/response types
-│   └── traffic_simulator.py    # Traffic generation and simulation
-│
-├── notebooks/                   # Jupyter notebooks
-│   ├── 01_router_unit_test.ipynb      # Router functionality tests
-│   └── 02_traffic_simulation.ipynb    # Traffic pattern simulation
-│
-├── sql/                         # SQL schemas
-│   └── router_logs_schema.sql  # Router logs table definition
-│
-├── router_config_example.yaml   # Example configuration file
-└── README.md                    # This file
-```
+1. [Quick Start (30 seconds)](#quick-start)
+2. [Architecture Overview](#architecture)
+3. [Notebooks](#notebooks)
+4. [Python API Usage](#python-api)
+5. [Routing Modes](#routing-modes)
+6. [Configuration](#configuration)
+7. [Load Balancer Integration](#load-balancer-integration)
+8. [Performance](#performance)
+9. [Troubleshooting](#troubleshooting)
+10. [File Structure](#file-structure)
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
-### 1. Prerequisites
-
-- **Trained router checkpoint**: From training phase (see `../ares/`)
-- **PostgreSQL database**: With sample data loaded
-- **Python environment**: PyTorch, transformers, sqlalchemy, etc.
+### 1. Install Dependencies
 
 ```bash
-# Install dependencies (if not already installed)
-pip install torch transformers sqlalchemy pandas pillow pyyaml wandb
+cd artemis_final/router
+pip install -r requirements.txt
 ```
 
-### 2. Configuration
+### 2. Test the Router
 
-Copy and customize the example configuration:
+Open and run the setup notebook:
 
 ```bash
-cp router_config_example.yaml router_config.yaml
+jupyter notebook notebooks/00_reward_router_setup_and_test.ipynb
 ```
 
-Update the following in `router_config.yaml`:
-
-- `router.checkpoint_path`: Path to your trained router `.pt` file
-- `router.device`: `"cuda:0"`, `"cpu"`, or `"mps"`
-- `data.db_url`: Your PostgreSQL connection string
-- `data.image_root_dir`: Root directory for images
-- `logging.wandb_enabled`: Set to `false` if not using W&B
-
-### 3. Setup Database
-
-Create the router logs table:
-
-```bash
-psql -U vlmrouter -d vlmrouter -f sql/router_logs_schema.sql
-```
-
-### 4. Run Unit Tests
-
-Open and run the unit test notebook:
-
-```bash
-jupyter notebook notebooks/01_router_unit_test.ipynb
-```
-
-This will:
-- Load the router and configuration
-- Test with synthetic samples
-- Test with database samples
-- Verify logging and model selection
-
-### 5. Run Traffic Simulation
-
-Open the traffic simulation notebook:
-
-```bash
-jupyter notebook notebooks/02_traffic_simulation.ipynb
-```
-
-Configure simulation parameters and run various traffic patterns.
-
----
-
-## Core Components
-
-### RouterEngine
-
-The main inference service class. Provides high-level APIs for routing.
-
-**Example usage:**
+Or test via Python:
 
 ```python
-from artemis_router import load_config, RouterEngine
+from artemis_router.inference_reward_router import RewardRouterInference
 
-# Load configuration
-cfg = load_config("router_config.yaml")
-
-# Initialize engine
-engine = RouterEngine(cfg)
-
-# Route a single sample
-result = engine.route_by_id("sample_123", split="test")
-
-# Route a batch
-results = engine.route_split("test", limit=100)
-
-# Get statistics
-stats = engine.get_stats()
-```
-
-### Sample
-
-Unified data structure for all input sources:
-
-```python
-from artemis_router import Sample
-from PIL import Image
-
-sample = Sample(
-    sample_id="example_001",
-    source="http",
-    text="What is shown in this image?",
-    image=Image.open("image.jpg"),
-    image_uri="http://example.com/image.jpg",
-    metadata={"split": "test"},
-    label=None,
+router = RewardRouterInference(
+    checkpoint_path='../checkpoints/best_reward_router.pt',
+    device='cpu'  # or 'cuda:0' or 'mps'
 )
 
-result = engine.route_sample(sample)
-```
-
-### RouterDecision
-
-Output of routing with probabilities and chosen model:
-
-```python
-print(result.router_decision.chosen_model)
-# => "qwen2_5_vl_7b"
-
-print(result.router_decision.probs)
-# => {"deepseek_ocr": 0.05, "qwen2_5_vl_3b": 0.15, ...}
-
-print(result.router_decision.inference_ms)
-# => 12.3
-```
-
-### Traffic Simulation
-
-Simulate various load patterns:
-
-```python
-from artemis_router.traffic_simulator import run_traffic
-
-results, stats = run_traffic(
-    route_fn=engine.route_sample,
-    source="synthetic",
-    traffic_cfg=cfg.traffic,
-    rps=10.0,           # 10 requests/second
-    duration_sec=60,    # 60 seconds
-    verbose=True,
+result = router.route(
+    prompt="What is shown in this diagram?",
+    mode="balanced",
+    metadata={'router_task': 'diagram_reasoning', 'source_dataset': 'ai2d'}
 )
 
-print(stats.actual_rps)        # Achieved RPS
-print(stats.avg_latency_ms)    # Average latency
-print(stats.p95_latency_ms)    # P95 latency
-print(stats.model_distribution) # Model selection counts
+print(f"Route to: {result['chosen_model']}")
+print(f"Rewards: {result['rewards']}")
 ```
 
-**Traffic patterns:**
-
-- `"constant"`: Steady rate
-- `"ramp"`: Gradual increase (1x → 4x)
-- `"spike"`: Sudden burst (1x → 10x → 1x)
-- `"wave"`: Oscillating (1x → 1.5x → 2x → ...)
+**✓ If this works, you're ready to go!**
 
 ---
 
-## Configuration Reference
+## 🏗️ Architecture
 
-### Router Section
+### What is the Reward Router?
 
-```yaml
-router:
-  checkpoint_path: "/path/to/router.pt"
-  device: "cuda:0"
-  model_name_order: ["model1", "model2", ...]
-  dtype: "float16"
-  num_threads: 4
-  warmup: true
+The Reward Router is a **text-only** neural network that predicts which VLM model to use for a given query.
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  Text Prompt + Metadata                                  │
+│  "What is shown in this diagram?"                        │
+│  Task: diagram_reasoning, Mode: accuracy                 │
+└─────────────────┬────────────────────────────────────────┘
+                  ↓
+         ┌────────────────┐
+         │  DistilBERT    │  Text Encoder (768-dim)
+         │   Encoder      │
+         └────────┬───────┘
+                  ↓
+         ┌────────────────┐
+         │ Model + Mode   │  Add learned embeddings
+         │  Embeddings    │  (5 models × 32-dim + 4 modes × 16-dim)
+         └────────┬───────┘
+                  ↓
+         ┌────────────────┐
+         │  MLP Head      │  2 hidden layers (512-dim)
+         │  (Reward Net)  │
+         └────────┬───────┘
+                  ↓
+┌──────────────────────────────────────────────────────────┐
+│  Predicted Rewards for Each Model                        │
+│  deepseek_ocr:         0.23                              │
+│  qwen2_5_vl_3b:        0.68                              │
+│  qwen2_5_vl_7b:        0.85                              │
+│  qwen3_vl_8b_thinking: 0.76                              │
+│  gemma_3_27b:          0.92  ← CHOSEN (highest reward)  │
+└──────────────────────────────────────────────────────────┘
 ```
 
-**Key settings:**
+### Key Points
 
-- `checkpoint_path`: Trained router weights
-- `device`: Inference device
-- `model_name_order`: **MUST** match training order exactly
-- `dtype`: `"float32"` or `"float16"` (FP16 recommended for GPU)
-- `warmup`: Run warmup inference on startup
-
-### Data Section
-
-```yaml
-data:
-  db_url: "postgresql://user:pass@localhost/db"
-  samples_table: "cauldron_samples"
-  logs_table: "router_live_logs"
-  id_column: "sample_id"
-  text_column: "prompt_raw"
-  image_path_column: "image_path"
-  label_column: "router_best_model_name"
-  split_column: "split"
-  image_root_dir: "/path/to/images"
-```
-
-### Logging Section
-
-```yaml
-logging:
-  sql_enabled: true
-  wandb_enabled: true
-  wandb_project: "artemis-router"
-  wandb_run_name: "production-v1"
-  wandb_entity: null
-  log_router_probs: true
-```
+- **No vision encoder** - Text-only for speed
+- **Predicts rewards** - Not probabilities, but quality scores
+- **5 VLM models** - Routes between 5 different VLMs
+- **4 routing modes** - accuracy, cheap, fast, balanced
+- **Trained on real data** - Profiling data from actual VLM responses
 
 ---
 
-## Database Schema
+## 📓 Notebooks
 
-The router logs are stored in the `router_live_logs` table:
+Three notebooks are provided for testing and understanding the router:
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | SERIAL | Primary key |
-| `timestamp` | FLOAT | Unix timestamp |
-| `sample_id` | VARCHAR | Sample identifier |
-| `source` | VARCHAR | `"db"`, `"http"`, or `"synthetic"` |
-| `split` | VARCHAR | Dataset split (if from DB) |
-| `text` | TEXT | Question/prompt |
-| `image_uri` | TEXT | Image path or URL |
-| `label` | TEXT | Ground truth (if available) |
-| `router_chosen_model` | VARCHAR | Selected model |
-| `router_probs` | JSONB | Probability distribution |
-| `router_inference_ms` | FLOAT | Latency in milliseconds |
-| `extra_metadata` | JSONB | Additional metadata |
+### 1. [00_reward_router_setup_and_test.ipynb](notebooks/00_reward_router_setup_and_test.ipynb)
 
-**Example queries:**
+**Purpose:** Complete walkthrough of router usage
 
-```sql
--- Model usage distribution
-SELECT router_chosen_model, COUNT(*) as count
-FROM router_live_logs
-GROUP BY router_chosen_model;
+**Contents:**
+- Load trained router checkpoint
+- Test basic routing with sample prompts
+- Compare all 4 routing modes
+- Test multiple task types
+- Performance analysis (latency, throughput)
+- Visualizations
 
--- Latency statistics
-SELECT
-    AVG(router_inference_ms) as avg_ms,
-    PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY router_inference_ms) as p95_ms
-FROM router_live_logs;
+**Use when:** First-time setup, learning how router works
 
--- Accuracy (for samples with labels)
-SELECT
-    COUNT(*) FILTER (WHERE router_chosen_model = label) * 100.0 / COUNT(*) as accuracy_pct
-FROM router_live_logs
-WHERE label IS NOT NULL;
-```
+### 2. [01_router_unit_test.ipynb](notebooks/01_router_unit_test.ipynb)
 
----
+**Purpose:** Unit tests for router functionality
 
-## Integration with ARES
+**Contents:**
+- Router initialization tests
+- Basic routing tests
+- Mode switching tests
+- Batch processing tests
+- Edge case handling
+- Performance validation
+- Determinism checks
 
-The router module reuses components from the `ares` data and training module:
+**Use when:** Validating router works correctly, debugging issues
 
-- **Dataset schema**: Sample structure matches ARES Cauldron format
-- **Feature extraction**: Same text/image preprocessing as training
-- **Model architecture**: Exact same `MultimodalRouter` as in training
-- **Database**: Connects to same PostgreSQL instance
+### 3. [02_traffic_simulation.ipynb](notebooks/02_traffic_simulation.ipynb)
 
-**Data flow:**
+**Purpose:** Traffic pattern simulation and performance testing
 
-```
-ares/              → Training data, evaluation, metrics
-  ├── data/        → Dataset building, loading
-  ├── inference/   → VLM inference runners
-  └── notebooks/   → Training experiments
+**Contents:**
+- Constant rate traffic simulation
+- Burst traffic patterns
+- Mixed mode analysis
+- Latency distribution analysis
+- Model selection distribution
 
-router/            → Router inference service
-  ├── artemis_router/  → Production routing engine
-  └── notebooks/       → Testing and simulation
-```
+**Use when:** Performance testing, capacity planning
 
 ---
 
-## Performance Optimization
+## 💻 Python API Usage
 
-### Warmup
-
-The router runs warmup inference on startup to allocate GPU kernels:
+### Basic Usage
 
 ```python
-engine = RouterEngine(cfg)  # Warmup happens automatically if enabled
+from artemis_router.inference_reward_router import RewardRouterInference
+
+# Initialize router
+router = RewardRouterInference(
+    checkpoint_path='../checkpoints/best_reward_router.pt',
+    device='cpu',  # 'cuda:0' for GPU, 'mps' for Apple Silicon
+    verbose=True
+)
+
+# Route a single request
+result = router.route(
+    prompt="What is the capital of France?",
+    mode="balanced",
+    metadata={'router_task': 'qa', 'source_dataset': 'test'}
+)
+
+# Access results
+print(result['chosen_model'])  # e.g., 'qwen2_5_vl_3b'
+print(result['rewards'])       # {model: reward} for all 5 models
+print(result['mode'])          # 'balanced'
+print(result['inference_ms'])  # e.g., 12.4
 ```
 
-### Batching
-
-For higher throughput, use batch routing:
+### Multiple Prompts
 
 ```python
-# Load samples
-samples = load_samples_from_db(engine.db_engine, cfg.data, "test", limit=1000)
+prompts = [
+    {
+        "prompt": "Extract text from this document.",
+        "mode": "fast",
+        "metadata": {'router_task': 'ocr', 'source_dataset': 'docvqa'}
+    },
+    {
+        "prompt": "Analyze this complex chart.",
+        "mode": "accuracy",
+        "metadata": {'router_task': 'chartqa', 'source_dataset': 'chart2text'}
+    },
+]
 
-# Route in batch (single forward pass)
-results = engine.route_batch(samples)
+for p in prompts:
+    result = router.route(**p)
+    print(f"{p['prompt'][:30]}... → {result['chosen_model']}")
 ```
 
-**Benefits:**
-- Single model forward pass for all samples
-- Better GPU utilization
-- Lower per-sample latency
+### Get Router Stats
 
-### FP16 Inference
-
-Use `dtype: "float16"` for ~2x speedup on GPU:
-
-```yaml
-router:
-  dtype: "float16"
-  device: "cuda:0"
-```
-
-### Thread Tuning
-
-For CPU inference, adjust thread count:
-
-```yaml
-router:
-  num_threads: 8  # Adjust based on CPU cores
-  device: "cpu"
+```python
+stats = router.get_stats()
+print(f"Device: {stats['device']}")
+print(f"Models: {stats['model_names']}")
+print(f"Modes: {stats['mode_names']}")
 ```
 
 ---
 
-## Troubleshooting
+## 🎯 Routing Modes
 
-### Checkpoint Loading Fails
+The router supports 4 different routing modes, each optimized for different objectives:
 
-**Error:** `FileNotFoundError` or `RuntimeError: state dict mismatch`
+| Mode | Objective | Typical Choice | Best For |
+|------|-----------|----------------|----------|
+| **accuracy** | Maximize quality | `gemma_3_27b` (largest) | Research, critical tasks, when quality matters most |
+| **cheap** | Balance quality/cost | `qwen2_5_vl_3b` (smallest) | High-volume processing, budget constraints |
+| **fast** | Balance quality/latency | `qwen2_5_vl_3b` (smallest) | Real-time applications, low-latency requirements |
+| **balanced** | Multi-objective | `qwen2_5_vl_7b` (medium) | General-purpose, default choice |
 
-**Solutions:**
-- Verify `checkpoint_path` is correct
-- Ensure `model_name_order` matches training
-- Check that encoder names match training config
+### Mode Selection Guide
 
-### Database Connection Fails
+```python
+# Critical research task - want best quality
+result = router.route(prompt, mode="accuracy", metadata=...)
 
-**Error:** `OperationalError: could not connect to server`
+# Processing millions of samples - need to save costs
+result = router.route(prompt, mode="cheap", metadata=...)
 
-**Solutions:**
-- Verify PostgreSQL is running
-- Check `db_url` connection string
-- Ensure database and tables exist
+# Real-time chatbot - need instant responses
+result = router.route(prompt, mode="fast", metadata=...)
 
-### Image Loading Fails
+# Not sure - want good balance
+result = router.route(prompt, mode="balanced", metadata=...)
+```
 
-**Error:** `FileNotFoundError` or `Image.open` errors
+### Example: Same Prompt, Different Modes
 
-**Solutions:**
-- Verify `image_root_dir` path
-- Check that `image_path` column values are relative to root
-- Ensure images exist on disk
+```python
+prompt = "Analyze this complex scientific diagram."
+metadata = {'router_task': 'diagram_reasoning', 'source_dataset': 'ai2d'}
 
-### Slow Inference
+for mode in ["accuracy", "cheap", "fast", "balanced"]:
+    result = router.route(prompt, mode=mode, metadata=metadata)
+    print(f"{mode:12s} → {result['chosen_model']}")
 
-**Symptoms:** High latency, low throughput
-
-**Solutions:**
-- Enable FP16: `dtype: "float16"`
-- Use GPU: `device: "cuda:0"`
-- Enable warmup: `warmup: true`
-- Use batching for multiple samples
-- Check CPU/GPU utilization
-
----
-
-## Future Enhancements
-
-Planned for upcoming phases:
-
-1. **FastAPI HTTP Server**
-   - REST API for router inference
-   - Async request handling
-   - Multipart image uploads
-
-2. **Dynamic Load Balancing**
-   - Automatic VLM backend scaling
-   - Request queue management
-   - Health checks and failover
-
-3. **Advanced Monitoring**
-   - Prometheus metrics
-   - Grafana dashboards
-   - Alert rules
-
-4. **Caching Layer**
-   - Redis-based result caching
-   - Deduplication
-   - Cache warming
+# Output:
+# accuracy     → gemma_3_27b
+# cheap        → qwen2_5_vl_3b
+# fast         → qwen2_5_vl_3b
+# balanced     → qwen2_5_vl_7b
+```
 
 ---
 
-## Citation
+## ⚙️ Configuration
 
-If you use this router system in your research, please cite:
+### Checkpoint Path
 
-```bibtex
-@software{artemis_router_2025,
-  title = {Artemis Router: Production VLM Routing System},
-  author = {Your Name},
-  year = {2025},
-  url = {https://github.com/yourusername/artemis-router}
+The router loads from trained checkpoint files. Available checkpoints:
+
+```
+artemis_final/checkpoints/
+├── best_reward_router.pt        ← RECOMMENDED (180MB, text-only)
+├── best_pairwise_router.pt      (254MB)
+└── best_classical_router.pt     (254MB)
+```
+
+### Device Selection
+
+```python
+# CPU (slowest, most compatible)
+router = RewardRouterInference(checkpoint_path=..., device='cpu')
+
+# NVIDIA GPU (fastest)
+router = RewardRouterInference(checkpoint_path=..., device='cuda:0')
+
+# Apple Silicon (M1/M2/M3)
+router = RewardRouterInference(checkpoint_path=..., device='mps')
+```
+
+### Metadata Format
+
+Metadata provides context to the router. Fields:
+
+- `router_task` (str): Task type (e.g., 'vqa', 'ocr', 'chartqa', 'diagram_reasoning')
+- `source_dataset` (str): Dataset name (e.g., 'ai2d', 'docvqa', 'test')
+
+Example:
+
+```python
+metadata = {
+    'router_task': 'ocr',
+    'source_dataset': 'docvqa'
 }
 ```
 
----
-
-## License
-
-[Specify your license here]
+**Note:** Metadata is optional but recommended for better routing decisions.
 
 ---
 
-## Contact
+## 🔗 Load Balancer Integration
 
-For questions or issues:
-- Open an issue on GitHub
-- Email: [your-email@example.com]
+The router is designed to work with a load balancer that dispatches requests to VLM backends.
+
+### Integration Flow
+
+```
+User Request
+     ↓
+[Router Inference]
+     ├─ Predict rewards for all models
+     └─ Choose model with highest reward
+     ↓
+[Routing Decision]
+     ├─ chosen_model: "qwen2_5_vl_7b"
+     ├─ rewards: {...}
+     └─ mode: "balanced"
+     ↓
+[Load Balancer]
+     ├─ Receive routing decision
+     ├─ Dispatch to VLM backend
+     └─ Get VLM response
+     ↓
+[Return to User]
+```
+
+### Example Integration Code
+
+```python
+import requests
+import time
+
+# Route the request
+result = router.route(
+    prompt="What is shown?",
+    mode="balanced",
+    metadata={'router_task': 'vqa', 'source_dataset': 'test'}
+)
+
+# Send to load balancer
+lb_message = {
+    "sample_id": "req_001",
+    "chosen_model": result['chosen_model'],
+    "rewards": result['rewards'],
+    "mode": "balanced",
+    "timestamp": time.time(),
+    "prompt": "What is shown?",
+}
+
+# POST to load balancer endpoint
+response = requests.post(
+    "http://localhost:8000/route",
+    json=lb_message
+)
+
+vlm_response = response.json()
+```
+
+### Load Balancer Interface (Future)
+
+The `lb_interface.py` module provides helper functions for LB integration:
+
+```python
+from artemis_router.lb_interface import send_to_lb, format_lb_message
+
+# Format message
+lb_msg = format_lb_message(
+    sample_id="req_001",
+    router_result=result,
+    prompt="What is shown?",
+)
+
+# Send to LB
+vlm_response = send_to_lb(lb_msg, lb_url="http://localhost:8000/route")
+```
 
 ---
 
-**Related Documentation:**
-- [ARES Module](../ares/README.md) - Data and training
-- [Router Training](../ares/notebooks/08_training_router_with_images.ipynb)
-- [Router Analysis](../ares/notebooks/09_inference_router_analysis.ipynb)
+## ⚡ Performance
+
+### Router Inference Latency
+
+| Configuration | Latency (P50) | Latency (P95) | Throughput |
+|---------------|---------------|---------------|------------|
+| CPU | 20-50ms | 50-100ms | 20-50 RPS |
+| GPU (CUDA) | 5-15ms | 15-30ms | 100-200 RPS |
+| Apple Silicon (MPS) | 10-25ms | 25-50ms | 50-100 RPS |
+
+### End-to-End Latency (Router + VLM)
+
+| Component | Latency | Notes |
+|-----------|---------|-------|
+| Router inference | 5-50ms | Depends on device |
+| Load balancer | 1-5ms | Network + dispatch |
+| VLM inference | 100-5000ms | Depends on model size |
+| **Total** | **106-5055ms** | VLM dominates |
+
+**Key Insight:** Router adds <5% overhead on GPU
+
+### Performance Tips
+
+1. **Use GPU** - 5-10x faster than CPU
+2. **Batch requests** - Process multiple at once (future feature)
+3. **Cache results** - Same prompt → same routing decision
+4. **Monitor latency** - Use P95/P99 for capacity planning
+
+---
+
+## 🔧 Troubleshooting
+
+### Router returns random/incorrect results
+
+**Cause:** Text formatting mismatch with training
+
+**Solution:** Ensure metadata is provided. The router formats text as:
+```
+[ROUTER] Task: {task}. Dataset: {dataset}. Question: {prompt}
+```
+
+This is handled automatically by `inference_reward_router.py`.
+
+### "Checkpoint not found" error
+
+**Cause:** Incorrect path to checkpoint file
+
+**Solution:** Update checkpoint path:
+```python
+checkpoint_path = '../checkpoints/best_reward_router.pt'  # Relative
+# OR
+checkpoint_path = '/absolute/path/to/best_reward_router.pt'  # Absolute
+```
+
+### Slow inference (>100ms on GPU)
+
+**Possible causes:**
+1. Using CPU instead of GPU
+2. GPU not properly configured
+3. First inference (model loading overhead)
+
+**Solutions:**
+```python
+# Check device
+print(router.device)  # Should be 'cuda:0' or 'mps'
+
+# Warm up the model
+for _ in range(5):
+    router.route("test", mode="balanced", metadata={})
+```
+
+### ImportError: cannot import 'RewardRouterInference'
+
+**Cause:** Module path not set correctly
+
+**Solution:**
+```python
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path.cwd().parent))  # If in notebooks/
+# OR
+sys.path.insert(0, '/path/to/artemis_final/router')  # Absolute path
+```
+
+---
+
+## 📂 File Structure
+
+```
+artemis_final/router/
+├── README.md                              ← This file
+├── requirements.txt                        ← Python dependencies
+│
+├── artemis_router/                         ← Main module
+│   ├── __init__.py
+│   ├── inference_reward_router.py          ⭐ Main inference API
+│   ├── api_io.py                           Helper for API I/O
+│   ├── lb_interface.py                     Load balancer interface
+│   ├── logging_wandb.py                    W&B logging (optional)
+│   ├── schemas.py                          Data schemas
+│   └── traffic_simulator.py                Traffic simulation utils
+│
+├── notebooks/                              ← Jupyter notebooks
+│   ├── 00_reward_router_setup_and_test.ipynb  ⭐ Main walkthrough
+│   ├── 01_router_unit_test.ipynb            Unit tests
+│   └── 02_traffic_simulation.ipynb          Traffic simulations
+│
+└── router_config_reward.yaml               Configuration file (optional)
+```
+
+### Key Files
+
+- **`inference_reward_router.py`** - Main inference wrapper, use this!
+- **`00_reward_router_setup_and_test.ipynb`** - Start here to learn
+- **`01_router_unit_test.ipynb`** - Validate functionality
+- **`README.md`** - This documentation
+
+### Deleted Files (Cleaned Up)
+
+The following old multimodal router files have been removed:
+- `router_engine.py` (old multimodal inference)
+- `router_model.py` (old CLIP-based model)
+- `feature_extractor.py` (old vision features)
+- `db_io.py` (old database utils)
+- `config.py` (old config loader)
+- `router_config_example.yaml` (incompatible config)
+
+---
+
+## 📚 Additional Documentation
+
+For more detailed information, see:
+
+- **[COMPLETE_SYSTEM_OVERVIEW.md](../COMPLETE_SYSTEM_OVERVIEW.md)** - End-to-end architecture (training → inference → load balancing)
+- **[router_train/README.md](../router_train/README.md)** - Training pipeline documentation
+- **[router_train/ENHANCED_TRAINING_GUIDE.md](../router_train/ENHANCED_TRAINING_GUIDE.md)** - Training best practices
+
+---
+
+## ✅ Validation Checklist
+
+Before using in production:
+
+- [ ] Router loads checkpoint successfully
+- [ ] Test routing on sample prompts works
+- [ ] All 4 routing modes functional
+- [ ] Performance meets requirements (latency, throughput)
+- [ ] Load balancer endpoint configured
+- [ ] Monitoring/logging set up
+
+---
+
+## 🎓 Key Takeaways
+
+1. **Use `best_reward_router.pt`** - Most flexible, recommended checkpoint
+2. **Use `inference_reward_router.py`** - Correct API for text-only router
+3. **Start with notebooks** - Best way to learn and test
+4. **Choose the right mode** - accuracy/cheap/fast/balanced based on needs
+5. **Use GPU for production** - Much faster than CPU (~10x)
+6. **Monitor in production** - Track latency and routing decisions
+
+**You're ready to use the trained router! 🚀**
+
+For questions or issues, refer to the notebooks and this documentation.

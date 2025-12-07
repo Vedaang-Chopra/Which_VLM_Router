@@ -12,7 +12,7 @@ import sys
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from ares.inference_api_call.client import WhichVLMClient
+from inference_engine.client import WhichVLMClient
 from ares.evaluation.sample_processor import process_sample_normalized
 from ares.utils.common_utils import return_model_specs
 from ares.data.dataset_loader import CauldronLoader

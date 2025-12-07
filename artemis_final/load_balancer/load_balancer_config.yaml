@@ -1,0 +1,166 @@
+# ============================================================================
+# Artemis Load Balancer Configuration
+# ============================================================================
+#
+# This file defines per-model capacity and SLA parameters for the load balancer.
+#
+# WHAT THIS FILE DOES:
+# - Configures how the load balancer simulates/manages each VLM model
+# - Sets SLA targets and autoscaling behavior
+# - Used by: ArtemisLoadBalancer, ModelStateManager
+#
+# WHAT NEEDS TO BE PRECOMPUTED (from Ares module):
+# - base_latency_ms: Average inference latency per model (from ares/aggregates/)
+# - Pricing: Cost per token (from models.yaml or actual API pricing)
+# - per_task_model_stats.json: Accuracy/latency per (task, model) combination
+#
+# ============================================================================
+
+# Global SLA settings
+global:
+  latency_sla_ms: 2000 # Default SLA target (2 seconds)
+  max_accuracy_drop: 0.05 # Allow max 5% accuracy drop vs best model
+  default_scheduling_mode: capacity_aware # router_only | capacity_aware | cost_minimizing
+
+# ============================================================================
+# MODEL CAPACITY CONFIGURATION
+# ============================================================================
+# Each model needs these parameters:
+#
+# base_latency_ms:
+#   Average service time WITHOUT queuing delay.
+#   Source: Compute from ares inference logs (avg latency_ms per model)
+#
+# min_replicas / max_replicas:
+#   Number of parallel instances. More replicas = more throughput but higher cost.
+#   For simulation: start with 1 replica each.
+#
+# sla_ms:
+#   Per-model SLA target. Can differ from global SLA.
+#   Smaller models typically have tighter SLAs.
+#
+# max_qps_per_replica:
+#   Maximum queries per second each replica can handle.
+#   Formula: 1000 / base_latency_ms (approximate)
+#
+# cost_per_request_usd:
+#   Estimated cost per request (for cost_minimizing mode).
+#   Can be computed from: pricing.prompt_per_1k * avg_input_tokens / 1000 +
+#                         pricing.completion_per_1k * avg_output_tokens / 1000
+#
+# autoscale:
+#   scale_up_latency_factor: Scale up when latency > this * sla_ms
+#   scale_down_util_threshold: Scale down when utilization < this value
+#   cooldown_ms: Wait time between scaling operations
+#
+# ============================================================================
+
+models:
+  # --------------------------------------------------------------------------
+  # DeepSeek OCR - Specialized for document/text extraction
+  # --------------------------------------------------------------------------
+  deepseek_ocr:
+    base_latency_ms: 300 # Fast for OCR tasks
+    min_replicas: 1
+    max_replicas: 5
+    sla_ms: 1500 # Tight SLA - fast model
+    max_qps_per_replica: 3.0
+    cost_per_request_usd: 0.0001 # Cheap
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8
+      scale_down_util_threshold: 0.3
+      cooldown_ms: 60000
+
+  # --------------------------------------------------------------------------
+  # Qwen 2.5 VL 3B - Smallest, fastest general model
+  # --------------------------------------------------------------------------
+  qwen2_5_vl_3b:
+    base_latency_ms: 400 # Small model, fast inference
+    min_replicas: 1
+    max_replicas: 5
+    sla_ms: 1500
+    max_qps_per_replica: 2.5
+    cost_per_request_usd: 0.0002
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8
+      scale_down_util_threshold: 0.3
+      cooldown_ms: 60000
+
+  # --------------------------------------------------------------------------
+  # Qwen 2.5 VL 7B - Medium model, good accuracy/latency tradeoff
+  # --------------------------------------------------------------------------
+  qwen2_5_vl_7b:
+    base_latency_ms: 800 # Larger model, moderate latency
+    min_replicas: 1
+    max_replicas: 4
+    sla_ms: 2500
+    max_qps_per_replica: 1.2
+    cost_per_request_usd: 0.0004
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8
+      scale_down_util_threshold: 0.3
+      cooldown_ms: 60000
+
+  # --------------------------------------------------------------------------
+  # Qwen 3 VL 8B Thinking - Reasoning-focused model
+  # --------------------------------------------------------------------------
+  qwen3_vl_8b_thinking:
+    base_latency_ms: 1200 # Thinking takes time
+    min_replicas: 1
+    max_replicas: 3
+    sla_ms: 3000
+    max_qps_per_replica: 0.8
+    cost_per_request_usd: 0.003 # Higher cost (thinking tokens)
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8
+      scale_down_util_threshold: 0.3
+      cooldown_ms: 60000
+
+  # --------------------------------------------------------------------------
+  # Gemma 3 27B - Largest model, highest quality
+  # --------------------------------------------------------------------------
+  gemma_3_27b:
+    base_latency_ms: 2000 # Large model, slower
+    min_replicas: 1
+    max_replicas: 2
+    sla_ms: 4000 # Relaxed SLA for quality model
+    max_qps_per_replica: 0.5
+    cost_per_request_usd: 0.0005
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8
+      scale_down_util_threshold: 0.3
+      cooldown_ms: 60000
+# ============================================================================
+# PRECOMPUTED DATA REQUIREMENTS
+# ============================================================================
+#
+# The load balancer needs statistics to estimate latency/accuracy per task.
+# This data should be in: ares/aggregates/per_task_model_stats.json
+#
+# Format:
+# {
+#   "ocr": {
+#     "deepseek_ocr": {
+#       "avg_latency_ms": 280,
+#       "avg_accuracy": 0.95,
+#       "cost_per_token_usd": 0.00001,
+#       "avg_tokens": 200
+#     },
+#     ...
+#   },
+#   "vqa": {...},
+#   "chartqa": {...},
+#   ...
+# }
+#
+# To generate this file:
+# 1. Run inference on test samples using ares/inference_api_call
+# 2. Store results in database (vlm_responses table)
+# 3. Run ares/notebooks/02_cost_utility_computation.ipynb
+#
+# ============================================================================

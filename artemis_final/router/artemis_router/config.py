@@ -1,185 +1,94 @@
 """
-Configuration system for Artemis Router.
+Router Artemis Configuration Classes
 
-Loads YAML configuration files and provides typed configuration objects.
+Defines configuration dataclasses used across router modules:
+- TrafficConfig: Traffic simulation parameters
+- LoggingConfig: SQL and W&B logging settings
+- LBConfig: Load balancer interface configuration
+
+These are used by:
+- traffic_simulator.py
+- logging_wandb.py
+- lb_interface.py
 """
 
-from dataclasses import dataclass
-from typing import List, Optional
-import yaml
-from pathlib import Path
-
-
-@dataclass
-class RouterConfig:
-    """Router model configuration."""
-    checkpoint_path: str
-    device: str
-    model_name_order: List[str]
-    dtype: str
-    num_threads: int
-    warmup: bool
-
-
-@dataclass
-class DataConfig:
-    """Database and data loading configuration."""
-    db_url: str
-    samples_table: str
-    logs_table: str
-    id_column: str
-    text_column: str
-    image_path_column: str
-    label_column: str
-    split_column: str
-    image_root_dir: str
-    ares_config_path: Optional[str] = None
-
-
-@dataclass
-class FeatureConfig:
-    """Feature extraction configuration."""
-    max_text_length: int
-    image_size: int
-    use_metadata: bool
-    allow_text_only: bool
-    allow_image_only: bool
-
-
-@dataclass
-class LoggingConfig:
-    """Logging configuration for SQL and W&B."""
-    sql_enabled: bool
-    wandb_enabled: bool
-    wandb_project: str
-    wandb_run_name: str
-    wandb_entity: Optional[str]
-    log_router_probs: bool
-
-
-@dataclass
-class LBConfig:
-    """Load balancer interface configuration."""
-    enabled: bool
-    protocol: str  # "http", "kafka", etc.
-    endpoint: str
+from dataclasses import dataclass, field
+from typing import Dict, Any, Optional
 
 
 @dataclass
 class TrafficConfig:
-    """Traffic simulation configuration."""
-    default_rps: float
-    default_duration_seconds: int
-    synthetic_image_shape: List[int]
-    synthetic_text_length: int
+    """Configuration for traffic simulation and load testing"""
+
+    # Requests per second
+    default_rps: float = 10.0
+
+    # Simulation duration in seconds
+    default_duration_seconds: int = 60
+
+    # Synthetic image generation
+    synthetic_image_shape: tuple = (224, 224, 3)
+
+    # Synthetic text generation
+    synthetic_text_length: int = 32  # words
+
+    # Request distribution
+    arrival_pattern: str = "poisson"  # poisson | uniform | bursty
+
+    # Sample selection
+    sample_selection_strategy: str = "random"  # random | sequential | stratified
 
 
 @dataclass
-class AppConfig:
-    """Complete application configuration."""
-    router: RouterConfig
-    data: DataConfig
-    features: FeatureConfig
-    logging: LoggingConfig
-    lb: LBConfig
-    traffic: TrafficConfig
+class LoggingConfig:
+    """Configuration for logging router decisions"""
+
+    # SQL Database Logging
+    sql_enabled: bool = True
+    db_url: Optional[str] = None  # Defaults to router config db_url
+    logs_table: str = "router_live_logs"
+
+    # Weights & Biases Logging
+    wandb_enabled: bool = False
+    wandb_project: str = "artemis-router-inference"
+    wandb_run_name: Optional[str] = None
+    wandb_entity: Optional[str] = None
+    wandb_tags: list = field(default_factory=list)
+
+    # What to log
+    log_router_probs: bool = True  # Log full reward distribution
+    log_metadata: bool = True  # Log task, dataset, etc.
+    log_latency: bool = True  # Log router inference time
+
+    # Batch logging (for performance)
+    batch_size: int = 100  # Flush to DB every N requests
+    flush_interval_seconds: int = 30  # Or flush every N seconds
 
 
-def load_config(path: str) -> AppConfig:
-    """
-    Load configuration from YAML file.
+@dataclass
+class LBConfig:
+    """Configuration for load balancer interface"""
 
-    Args:
-        path: Path to YAML configuration file
+    # Enable/disable load balancer integration
+    enabled: bool = False
 
-    Returns:
-        AppConfig object with all settings
+    # Communication protocol
+    protocol: str = "http"  # http | grpc | kafka
 
-    Raises:
-        FileNotFoundError: If config file doesn't exist
-        ValueError: If config is malformed
-    """
-    config_path = Path(path)
-    if not config_path.exists():
-        raise FileNotFoundError(f"Configuration file not found: {path}")
+    # Load balancer endpoint
+    endpoint: str = "http://localhost:8000/route"
 
-    with open(config_path, 'r') as f:
-        raw_config = yaml.safe_load(f)
+    # Timeout settings
+    timeout_seconds: float = 5.0
+    retry_attempts: int = 3
 
-    try:
-        # Parse router config
-        router_cfg = RouterConfig(**raw_config['router'])
+    # Fallback behavior on LB failure
+    fallback_to_router_choice: bool = True
 
-        # Parse data config
-        data_cfg = DataConfig(**raw_config['data'])
+    # Headers / authentication
+    headers: Dict[str, str] = field(default_factory=dict)
+    api_key: Optional[str] = None
 
-        # Parse feature config
-        feature_cfg = FeatureConfig(**raw_config['features'])
-
-        # Parse logging config
-        logging_cfg = LoggingConfig(**raw_config['logging'])
-
-        # Parse load balancer config
-        lb_cfg = LBConfig(**raw_config['lb'])
-
-        # Parse traffic config
-        traffic_cfg = TrafficConfig(**raw_config['traffic'])
-
-        return AppConfig(
-            router=router_cfg,
-            data=data_cfg,
-            features=feature_cfg,
-            logging=logging_cfg,
-            lb=lb_cfg,
-            traffic=traffic_cfg,
-        )
-
-    except KeyError as e:
-        raise ValueError(f"Missing required configuration key: {e}")
-    except TypeError as e:
-        raise ValueError(f"Configuration type error: {e}")
-
-
-def validate_config(config: AppConfig) -> List[str]:
-    """
-    Validate configuration and return list of warnings/errors.
-
-    Args:
-        config: AppConfig to validate
-
-    Returns:
-        List of warning/error messages (empty if valid)
-    """
-    issues = []
-
-    # Validate router checkpoint exists
-    checkpoint_path = Path(config.router.checkpoint_path)
-    if not checkpoint_path.exists():
-        issues.append(f"Router checkpoint not found: {config.router.checkpoint_path}")
-
-    # Validate device
-    if config.router.device not in ["cpu", "cuda:0", "cuda", "mps"]:
-        if not config.router.device.startswith("cuda:"):
-            issues.append(f"Invalid device: {config.router.device}")
-
-    # Validate dtype
-    if config.router.dtype not in ["float32", "float16"]:
-        issues.append(f"Invalid dtype: {config.router.dtype}")
-
-    # Validate image root directory
-    image_root = Path(config.data.image_root_dir)
-    if not image_root.exists():
-        issues.append(f"Image root directory not found: {config.data.image_root_dir}")
-
-    # Validate model name order
-    if len(config.router.model_name_order) == 0:
-        issues.append("model_name_order cannot be empty")
-
-    # Validate traffic config
-    if config.traffic.default_rps <= 0:
-        issues.append("default_rps must be positive")
-
-    if len(config.traffic.synthetic_image_shape) != 3:
-        issues.append("synthetic_image_shape must have 3 dimensions [H, W, C]")
-
-    return issues
+    # Health check
+    health_check_interval_seconds: int = 60
+    health_check_endpoint: str = "/health"

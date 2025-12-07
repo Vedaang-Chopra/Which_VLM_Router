@@ -1,0 +1,60 @@
+{
+  "experiment_config": {
+    "global_sla_ms": 2000.0,
+    "max_accuracy_drop": 0.05,
+    "load_profiles": [
+      {
+        "name": "low",
+        "qps": 5.0,
+        "duration_sec": 10.0
+      },
+      {
+        "name": "medium",
+        "qps": 15.0,
+        "duration_sec": 10.0
+      },
+      {
+        "name": "high",
+        "qps": 30.0,
+        "duration_sec": 10.0
+      },
+      {
+        "name": "burst",
+        "qps": 50.0,
+        "duration_sec": 5.0
+      }
+    ]
+  },
+  "results": {
+    "Latency P50 (ms)": {
+      "router_only": 28904.78486688142,
+      "capacity_aware": 25340.849581108698,
+      "cost_minimizing": 26252.267096669202
+    },
+    "Latency P95 (ms)": {
+      "router_only": 220031.98070585297,
+      "capacity_aware": 200735.08425387624,
+      "cost_minimizing": 203561.100035953
+    },
+    "SLA Violation %": {
+      "router_only": 87.46666666666667,
+      "capacity_aware": 89.73333333333333,
+      "cost_minimizing": 91.2
+    },
+    "Total Cost ($)": {
+      "router_only": 0.0,
+      "capacity_aware": 0.0,
+      "cost_minimizing": 0.0
+    },
+    "Avg Accuracy": {
+      "router_only": 0.0,
+      "capacity_aware": 0.0,
+      "cost_minimizing": 0.0
+    },
+    "Switch Rate %": {
+      "router_only": 0.0,
+      "capacity_aware": 3.8666666666666667,
+      "cost_minimizing": 6.666666666666667
+    }
+  }
+}

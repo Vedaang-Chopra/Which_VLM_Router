@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: artemis
+      POSTGRES_PASSWORD: artemis
+      POSTGRES_DB: artemis
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      # Run migrations on startup
+      - ./ares/db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./ares/db/migration_collected.sql:/docker-entrypoint-initdb.d/02_collected.sql
+      - ./ares/db/migration_errors.sql:/docker-entrypoint-initdb.d/03_errors.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U artemis -d artemis"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Artemis VLM Router API
+  artemis-router:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://artemis:artemis@postgres:5432/artemis
+      - CONFIG_PATH=configs/artemis.yaml
+      - PYTHONPATH=/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # Mount checkpoints for persistence
+      - ./checkpoints:/app/checkpoints
+      # Mount configs for easy updates
+      - ./configs:/app/configs:ro
+    restart: unless-stopped
+
+volumes:
+  db_data:

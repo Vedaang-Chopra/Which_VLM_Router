@@ -1,9 +1,9 @@
 {
-  "created_at": "2025-12-06T16:41:27.706650",
+  "created_at": "2025-12-07T00:40:33.444609",
   "source_host": "localhost",
   "source_database": "vlmrouter",
-  "total_rows": 2218,
-  "unique_samples": 570,
+  "total_rows": 4368,
+  "unique_samples": 1090,
   "unique_models": 5,
   "models": [
     "deepseek_ocr",
@@ -33,16 +33,16 @@
   ],
   "table_name": "vlm_profiles",
   "cleaning_stats": {
-    "initial_rows": 2218,
+    "initial_rows": 4368,
     "dropped_rows": 0,
     "filled_cost": 0,
     "filled_latency": 0,
     "filled_confidence": 0,
-    "final_rows": 2218
+    "final_rows": 4368
   },
   "split_counts": {
-    "train": 750,
-    "test": 740,
-    "val": 728
+    "train": 1500,
+    "test": 1440,
+    "val": 1428
   }
 }

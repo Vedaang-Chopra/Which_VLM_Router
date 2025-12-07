@@ -21,7 +21,7 @@ LOAD_BALANCER_DIR = BASE_DIR / "load_balancer"
 
 # Data paths
 STATS_PATH = ARES_DIR / "aggregates" / "per_task_model_stats.json"
-CAPACITY_CONFIG_PATH = LOAD_BALANCER_DIR / "capacity_config.yaml"
+CAPACITY_CONFIG_PATH = LOAD_BALANCER_DIR / "load_balancer_config.yaml"
 
 # W&B configuration
 WANDB_PROJECT = "artemis_load_balancer"
@@ -54,6 +54,7 @@ class ModelCapacityConfig:
     max_replicas: int = 1
     sla_ms: float = 2000.0
     max_qps_per_replica: float = 1.0
+    cost_per_request_usd: float = 0.0001  # cost estimate for cost_minimizing mode
     autoscale: Optional[AutoscaleConfig] = None
 
 
@@ -146,6 +147,7 @@ def load_capacity_config(config_path: Optional[Path] = None) -> Dict[str, ModelC
             max_replicas=model_data.get('max_replicas', 1),
             sla_ms=model_data.get('sla_ms', 2000.0),
             max_qps_per_replica=model_data.get('max_qps_per_replica', 1.0),
+            cost_per_request_usd=model_data.get('cost_per_request_usd', 0.0001),
             autoscale=autoscale,
         )
 

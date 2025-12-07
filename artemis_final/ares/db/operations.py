@@ -269,24 +269,39 @@ def insert_evaluations(
             glider_score, glider_reasoning, glider_highlight, glider_raw_output,
             semantic_f1_precision, semantic_f1_recall, semantic_f1_f1,
             semantic_f1_gen_statements, semantic_f1_gt_statements,
-            semantic_f1_matches, semantic_f1_labels
+            semantic_f1_matches, semantic_f1_labels,
+            judge_molmo_score, judge_molmo_rank_group, judge_molmo_raw
         ) VALUES (
             :sample_id, :model_name,
             :glider_score, :glider_reasoning, :glider_highlight, :glider_raw_output,
             :semantic_f1_precision, :semantic_f1_recall, :semantic_f1_f1,
             :semantic_f1_gen_statements, :semantic_f1_gt_statements,
-            :semantic_f1_matches, :semantic_f1_labels
+            :semantic_f1_matches, :semantic_f1_labels,
+            :judge_molmo_score, :judge_molmo_rank_group, :judge_molmo_raw
         )
         ON CONFLICT (sample_id, model_name) DO UPDATE SET
-            glider_score = EXCLUDED.glider_score,
-            glider_reasoning = EXCLUDED.glider_reasoning,
-            semantic_f1_f1 = EXCLUDED.semantic_f1_f1,
+            glider_score = COALESCE(EXCLUDED.glider_score, vlm_evaluations.glider_score),
+            glider_reasoning = COALESCE(EXCLUDED.glider_reasoning, vlm_evaluations.glider_reasoning),
+            glider_highlight = COALESCE(EXCLUDED.glider_highlight, vlm_evaluations.glider_highlight),
+            judge_molmo_score = COALESCE(EXCLUDED.judge_molmo_score, vlm_evaluations.judge_molmo_score),
+            judge_molmo_rank_group = COALESCE(EXCLUDED.judge_molmo_rank_group, vlm_evaluations.judge_molmo_rank_group),
+            judge_molmo_raw = COALESCE(EXCLUDED.judge_molmo_raw, vlm_evaluations.judge_molmo_raw),
             updated_at = NOW()
     """)
     
+    required_keys = [
+        'sample_id', 'model_name',
+        'glider_score', 'glider_reasoning', 'glider_highlight', 'glider_raw_output',
+        'semantic_f1_precision', 'semantic_f1_recall', 'semantic_f1_f1',
+        'semantic_f1_gen_statements', 'semantic_f1_gt_statements',
+        'semantic_f1_matches', 'semantic_f1_labels',
+        'judge_molmo_score', 'judge_molmo_rank_group', 'judge_molmo_raw'
+    ]
+    
     with engine.begin() as conn:
         for record in records:
-            conn.execute(insert_sql, record)
+            filled_record = {k: record.get(k) for k in required_keys}
+            conn.execute(insert_sql, filled_record)
     return len(records)
 
 

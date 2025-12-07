@@ -266,8 +266,14 @@ class JsonlMetricsLogger:
             }
         }
 
+        # Helper for numpy types
+        def json_default(obj):
+            if hasattr(obj, 'item'):
+                return obj.item()
+            raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
+
         # Write line
-        self.file.write(json.dumps(record) + '\n')
+        self.file.write(json.dumps(record, default=json_default) + '\n')
         self.row_count += 1
 
         # Flush periodically

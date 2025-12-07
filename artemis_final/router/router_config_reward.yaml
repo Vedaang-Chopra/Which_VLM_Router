@@ -1,0 +1,137 @@
+# Artemis Router Configuration - Reward Router
+#
+# This configuration is for the TEXT-ONLY reward router trained in router_train.
+# This router does NOT use vision (no CLIP), only text (DistilBERT).
+
+router:
+  # Router type: "reward" (text-only, predicts rewards)
+  router_type: "reward"
+
+  # Path to trained checkpoint (.pt file)
+  # Update this to your actual checkpoint location
+  checkpoint_path: "/Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/artemis_final/checkpoints/best_reward_router.pt"
+
+  # Device: "cuda:0", "cuda", "cpu", or "mps" (for Apple Silicon)
+  device: "mps"
+
+  # Data type: "float32" or "float16"
+  # Note: reward router works best with float32
+  dtype: "float32"
+
+  # Number of CPU threads for inference
+  num_threads: 4
+
+  # Run warmup inference on startup
+  warmup: true
+
+  # Text encoder configuration (MUST match training)
+  text_encoder_name: "distilbert-base-uncased"
+  freeze_text_encoder: true
+  max_seq_length: 256
+
+  # Embedding dimensions (MUST match training)
+  model_emb_dim: 32
+  mode_emb_dim: 16
+
+  # MLP architecture (MUST match training)
+  hidden_dim: 512
+  num_hidden_layers: 2
+  dropout: 0.1
+
+  # Model order (MUST match training EXACTLY)
+  # These are the 5 VLM models the router can choose from
+  model_name_order:
+    - "deepseek_ocr"
+    - "qwen2_5_vl_3b"
+    - "qwen2_5_vl_7b"
+    - "qwen3_vl_8b_thinking"
+    - "gemma_3_27b"
+
+  # Mode order (MUST match training EXACTLY)
+  # These are the 4 reward modes
+  mode_name_order:
+    - "accuracy" # Maximize prediction quality
+    - "cheap" # Balance quality with low cost
+    - "fast" # Balance quality with low latency
+    - "balanced" # Multi-objective optimization
+
+data:
+  # PostgreSQL connection string
+  db_url: "postgresql+psycopg2://vlmrouter:vlmrouter@localhost:5432/vlmrouter"
+
+  # Table containing samples for inference
+  # Note: For reward router, use vlm_sample (not cauldron_samples)
+  samples_table: "vlm_sample"
+
+  # Table for logging router decisions
+  logs_table: "router_live_logs"
+
+  # Column names in samples table
+  id_column: "sample_id"
+  text_column: "prompt_raw"
+  task_column: "router_task"
+  dataset_column: "source_dataset"
+
+  # Image-related columns (not used for text-only router, but kept for compatibility)
+  image_path_column: null
+  image_root_dir: null
+
+  # Optional: path to existing router_train config
+  router_train_config_path: "../router_train/config.py"
+
+features:
+  # Maximum text sequence length (must match training)
+  max_text_length: 256
+
+  # Whether to include metadata in text encoding
+  # Format: [ROUTER] Task: {task}. Dataset: {dataset}. Question: {prompt}
+  use_metadata: true
+
+  # For compatibility (not used in reward router)
+  allow_text_only: true
+  allow_image_only: false
+
+logging:
+  # Enable SQL logging
+  sql_enabled: true
+
+  # Enable Weights & Biases logging
+  wandb_enabled: false
+
+  # W&B project name
+  wandb_project: "artemis-router-inference"
+
+  # W&B run name
+  wandb_run_name: "reward_router_inference"
+
+  # W&B entity (team/username)
+  wandb_entity: null
+
+  # Log full reward distribution (not just chosen model)
+  log_router_probs: true
+
+lb:
+  # Enable load balancer integration
+  enabled: false
+
+  # Protocol: "http" or "kafka"
+  protocol: "http"
+
+  # Load balancer endpoint
+  endpoint: "http://localhost:8000/route"
+
+traffic:
+  # Default requests per second for traffic simulation
+  default_rps: 10.0
+
+  # Default simulation duration (seconds)
+  default_duration_seconds: 60
+
+  # Synthetic image shape (not used for text-only router)
+  synthetic_image_shape: [224, 224, 3]
+
+  # Synthetic text length (words)
+  synthetic_text_length: 32
+
+# Default mode for routing
+default_mode: "balanced"

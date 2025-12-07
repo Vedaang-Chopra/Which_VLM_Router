@@ -2,25 +2,30 @@
 Main experiment orchestration script for load balancer evaluation.
 
 This script:
-1. Loads configuration and statistics
-2. Initializes router, load balancer, and loggers
+1. Loads REAL profiling data from SQL database
+2. Initializes router (using real probabilities), load balancer, and loggers
 3. Runs traffic simulation across load profiles
 4. Logs metrics to W&B and CSV
 5. Computes and reports SLA metrics
 
 Can be run from command line:
-    python -m load_balancer.evaluation.run_experiment --config my_config.yaml
+    python -m load_balancer.evaluation.run_experiment --mode capacity_aware
 """
 
 import argparse
 import logging
 import sys
 import time
+import sqlite3
+import random
+import pandas as pd
+import numpy as np
 from pathlib import Path
-from typing import Optional, Iterator
+from typing import Optional, Iterator, Tuple, Dict, List
 from datetime import datetime
 
 # Add parent directory to path for imports
+# artemis_final/load_balancer/evaluation/run_experiment.py -> artemis_final/
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
 from load_balancer.config import (
@@ -45,63 +50,116 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# NOTE: This is a placeholder for the actual router integration
-# In the real implementation, this would import from artemis_final/router
-def artemis_route(sample: dict) -> RouterOutput:
+# === DATA LOADING FUNCTIONS ===
+
+def load_dataset_from_sql(db_path: Path, limit: Optional[int] = None) -> pd.DataFrame:
+    """Load profiling data from SQLite cache."""
+    if not db_path.exists():
+        logger.error(f"SQLite database not found at {db_path}")
+        raise FileNotFoundError(f"Database not found: {db_path}")
+    
+    logger.info(f"Loading data from {db_path}...")
+    conn = sqlite3.connect(db_path)
+    
+    query = """
+    SELECT 
+        sample_id, source_dataset, router_task, data_split,
+        model_name, latency_ms, cost_usd, confidence_score, glider_score
+    FROM vlm_profiles
+    WHERE router_task IS NOT NULL
     """
-    Placeholder for Artemis router integration.
+    if limit:
+        query += f" LIMIT {limit}"
+    
+    df = pd.read_sql(query, conn)
+    conn.close()
+    
+    logger.info(f"Loaded {len(df)} records. Unique samples: {df['sample_id'].nunique()}")
+    return df
 
-    In the real implementation, this should import from:
-        from artemis_final.router import artemis_route
 
-    Args:
-        sample: Sample data with task information
+def build_stats_from_df(df: pd.DataFrame) -> Dict:
+    """Convert SQL profiling data to StatsRegistry format."""
+    stats_dict = {}
+    
+    # Group by task and model
+    for (task, model), group in df.groupby(['router_task', 'model_name']):
+        if task not in stats_dict:
+            stats_dict[task] = {}
+        
+        # Calculate average stats
+        stats_dict[task][model] = {
+            'accuracy': group['glider_score'].mean() if group['glider_score'].notna().any() else 0.8,
+            'avg_latency_ms': group['latency_ms'].mean() if group['latency_ms'].notna().any() else 500,
+            'avg_cost_usd': group['cost_usd'].mean() if group['cost_usd'].notna().any() else 0.0001,
+        }
+    
+    logger.info(f"Built stats dict for {len(stats_dict)} tasks")
+    return stats_dict
 
-    Returns:
-        RouterOutput with routing predictions
+
+def get_model_scores_for_sample(df: pd.DataFrame, sample_id: str, model_names: List[str]) -> Dict[str, float]:
+    """Get performance scores for a specific sample across all models."""
+    sample_group = df[df['sample_id'] == sample_id]
+    
+    model_scores = {}
+    for _, row in sample_group.iterrows():
+        model_name = row['model_name']
+        score = row['glider_score'] if pd.notna(row['glider_score']) else 0.5
+        model_scores[model_name] = score
+    
+    # Ensure all models have scores (use 0.5 for missing)
+    for model in model_names:
+        if model not in model_scores:
+            model_scores[model] = 0.5
+            
+    return model_scores
+
+
+# === ROUTER AND TRAFFIC GENERATION ===
+
+def artemis_route(sample_id: str, task_type: str, model_scores: Dict[str, float]) -> RouterOutput:
     """
-    # This is a mock implementation
-    # Real implementation should call the actual router
+    Simulate router probability generation based on actual model scores.
+    Uses softmax to convert scores to probabilities.
+    """
+    model_names = list(model_scores.keys())
+    scores = np.array([model_scores[m] for m in model_names])
+    
+    # Softmax
+    exp_scores = np.exp(scores - scores.max())  # Numerical stability
+    probs = exp_scores / exp_scores.sum()
+    
+    router_probs = {m: float(p) for m, p in zip(model_names, probs)}
+    preferred_model = max(router_probs, key=router_probs.get)
+    
     return RouterOutput(
-        sample_id=sample.get('sample_id', 'unknown'),
-        task_type=sample.get('task_type', 'unknown'),
-        router_probs={
-            'small_vlm': 0.2,
-            'medium_vlm': 0.5,
-            'large_vlm': 0.3,
-        },
-        preferred_model='medium_vlm'
+        sample_id=str(sample_id),
+        task_type=str(task_type),
+        router_probs=router_probs,
+        preferred_model=preferred_model
     )
 
 
-# NOTE: This is a placeholder for the actual traffic generator
-# In the real implementation, this would import from the traffic simulator module
 def generate_traffic(
     load_profile_config,
-    dataset: list,
+    df: pd.DataFrame,
+    model_names: List[str],
     random_seed: Optional[int] = None
-) -> Iterator[dict]:
+) -> Iterator[Tuple[RouterOutput, float]]:
     """
-    Placeholder for traffic generator integration.
-
-    In the real implementation, this should import from the traffic simulator:
-        from artemis_final.traffic_simulator import generate_traffic
-
-    Args:
-        load_profile_config: Load profile configuration
-        dataset: Dataset of samples
-        random_seed: Random seed for reproducibility
-
+    Generate traffic by sampling from real SQL data.
+    
     Yields:
-        Request dictionaries with arrival timestamps
+        (RouterOutput, arrival_ts_ms)
     """
-    import random
-    import numpy as np
-
     if random_seed is not None:
         random.seed(random_seed)
         np.random.seed(random_seed)
 
+    # Pre-compute unique sample IDs to sample from
+    unique_sample_ids = df['sample_id'].unique()
+    
     # Simple Poisson process simulation
     qps = load_profile_config.qps
     duration_sec = load_profile_config.duration_sec
@@ -111,39 +169,24 @@ def generate_traffic(
     num_requests = int(qps * duration_sec)
 
     for i in range(num_requests):
-        # Sample from dataset
-        sample = random.choice(dataset)
+        # 1. Pick a random sample ID from real data
+        sample_id = random.choice(unique_sample_ids)
+        
+        # 2. Get its task type
+        task_type = df[df['sample_id'] == sample_id]['router_task'].iloc[0]
+        
+        # 3. Get model scores for this sample
+        model_scores = get_model_scores_for_sample(df, sample_id, model_names)
+        
+        # 4. Generate router output
+        # Create a unique request ID based on the sample ID
+        request_id = f"{sample_id}_{i}"
+        router_output = artemis_route(request_id, task_type, model_scores)
+        
+        yield router_output, current_time_ms
 
-        # Add arrival timestamp
-        request = sample.copy()
-        request['arrival_ts_ms'] = current_time_ms
-        request['request_id'] = i
-
-        yield request
-
-        # Sample next inter-arrival time (exponential distribution for Poisson process)
+        # Sample next inter-arrival time
         current_time_ms += np.random.exponential(inter_arrival_time_ms)
-
-
-def load_dataset_samples() -> list:
-    """
-    Load dataset samples for routing.
-
-    This should load samples from the Ares dataset.
-    For now, returns a mock dataset.
-
-    Returns:
-        List of sample dictionaries
-    """
-    # Mock dataset
-    # In real implementation, load from artemis_final/ares/data/
-    return [
-        {'sample_id': f'sample_{i}', 'task_type': 'ocr'}
-        for i in range(100)
-    ] + [
-        {'sample_id': f'sample_{i}', 'task_type': 'chart_vqa'}
-        for i in range(100, 200)
-    ]
 
 
 def run_experiment(
@@ -152,23 +195,10 @@ def run_experiment(
     capacity_config_path: Optional[Path] = None,
     output_dir: Optional[Path] = None
 ) -> dict:
-    """
-    Run a complete load balancer experiment.
-
-    Args:
-        experiment_config: Experiment configuration (uses default if None)
-        stats_path: Path to stats JSON (uses default if None)
-        capacity_config_path: Path to capacity config (uses default if None)
-        output_dir: Output directory for logs (auto-generated if None)
-
-    Returns:
-        Dictionary with experiment results and metrics
-    """
-    # Use defaults if not provided
+    """Run a complete load balancer experiment."""
     if experiment_config is None:
         experiment_config = default_experiment_config()
 
-    # Setup output directory
     if output_dir is None:
         output_dir = get_output_dir(experiment_config.name)
 
@@ -178,12 +208,15 @@ def run_experiment(
     # Load configurations
     logger.info("Loading configurations...")
     model_configs = load_capacity_config(capacity_config_path)
-    stats_dict = load_per_task_model_stats(stats_path)
+    model_names = list(model_configs.keys())
+    
+    # Load Real Data
+    db_path = Path(__file__).parents[2] / "router_train" / "data" / "vlm_router_cache.db"
+    df_sql = load_dataset_from_sql(db_path)
+    
+    # Build Stats Registry from Data
+    stats_dict = build_stats_from_df(df_sql)
     stats_registry = StatsRegistry(stats_dict)
-
-    # Load dataset
-    logger.info("Loading dataset...")
-    dataset = load_dataset_samples()
 
     # Initialize load balancer
     logger.info("Initializing load balancer...")
@@ -206,10 +239,9 @@ def run_experiment(
         csv_logger = CsvMetricsLogger(csv_path)
         logger.info(f"Logging to CSV: {csv_path}")
 
-    if experiment_config.log_to_csv:  # Also log JSONL
+    if experiment_config.log_to_csv:
         jsonl_path = output_dir / "decisions.jsonl"
         jsonl_logger = JsonlMetricsLogger(jsonl_path)
-        logger.info(f"Logging to JSONL: {jsonl_path}")
 
     if experiment_config.log_to_wandb:
         wandb_config = {
@@ -222,15 +254,6 @@ def run_experiment(
                 name: {"qps": p.qps, "duration_sec": p.duration_sec}
                 for name, p in experiment_config.load_profiles.items()
             },
-            "model_configs": {
-                name: {
-                    "base_latency_ms": c.base_latency_ms,
-                    "min_replicas": c.min_replicas,
-                    "max_replicas": c.max_replicas,
-                    "sla_ms": c.sla_ms,
-                }
-                for name, c in model_configs.items()
-            }
         }
 
         run_name = f"{experiment_config.name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -265,19 +288,17 @@ def run_experiment(
             # Generate and process traffic
             traffic_gen = generate_traffic(
                 profile_config,
-                dataset,
+                df_sql,
+                model_names,
                 random_seed=experiment_config.random_seed
             )
 
-            for request in traffic_gen:
-                # Route with Artemis
-                router_output = artemis_route(request)
-
+            for router_output, arrival_ts_ms in traffic_gen:
                 # Create scheduling context
                 context = SchedulingContext(
-                    arrival_ts_ms=request['arrival_ts_ms'],
+                    arrival_ts_ms=arrival_ts_ms,
                     load_profile=profile_name,
-                    metadata={'request_id': request.get('request_id')}
+                    metadata={'request_id': router_output.sample_id}
                 )
 
                 # Schedule with load balancer
@@ -285,21 +306,9 @@ def run_experiment(
 
                 # Log decision
                 if csv_logger:
-                    csv_logger.log(
-                        experiment_config.name,
-                        profile_name,
-                        decision,
-                        global_step=global_step
-                    )
-
+                    csv_logger.log(experiment_config.name, profile_name, decision, global_step=global_step)
                 if jsonl_logger:
-                    jsonl_logger.log(
-                        experiment_config.name,
-                        profile_name,
-                        decision,
-                        global_step=global_step
-                    )
-
+                    jsonl_logger.log(experiment_config.name, profile_name, decision, global_step=global_step)
                 if wandb_logger:
                     wandb_logger.log_decision(decision, profile_name, step=global_step)
 
@@ -309,8 +318,6 @@ def run_experiment(
                 all_decisions.append(decision)
 
                 global_step += 1
-
-                # Log progress periodically
                 if global_step % 100 == 0:
                     logger.info(f"  Processed {global_step} requests...")
 
@@ -326,18 +333,11 @@ def run_experiment(
             logger.info(f"  Avg cost: ${profile_metrics.avg_cost_usd:.6f}")
 
             if wandb_logger:
-                wandb_logger.log_sla_metrics(
-                    profile_metrics,
-                    profile_name,
-                    stage="final"
-                )
+                wandb_logger.log_sla_metrics(profile_metrics, profile_name, stage="final")
 
     finally:
-        # Cleanup
-        if csv_logger:
-            csv_logger.close()
-        if jsonl_logger:
-            jsonl_logger.close()
+        if csv_logger: csv_logger.close()
+        if jsonl_logger: jsonl_logger.close()
 
     # Final metrics
     logger.info(f"\n{'='*60}")
@@ -347,11 +347,9 @@ def run_experiment(
     detailed_metrics = sla_monitor.detailed_snapshot()
     print_detailed_summary(detailed_metrics)
 
-    # Log to W&B
     if wandb_logger:
         wandb_logger.log_detailed_metrics(detailed_metrics, stage="final")
-
-        # Log summary
+        
         summary = {
             "total_requests": len(all_decisions),
             "overall_violation_rate": detailed_metrics.overall.violation_rate,
@@ -360,18 +358,12 @@ def run_experiment(
             "total_cost_usd": detailed_metrics.overall.total_cost_usd,
         }
         wandb_logger.log_summary(summary)
-
-        # Log artifacts
+        
         if csv_logger:
-            wandb_logger.log_artifact(
-                output_dir / "decisions.csv",
-                artifact_type="result",
-                name=f"{experiment_config.name}_decisions"
-            )
-
+            wandb_logger.log_artifact(output_dir / "decisions.csv", artifact_type="result", name=f"{experiment_config.name}_decisions")
+        
         wandb_logger.finish()
 
-    # Return results
     return {
         "experiment_config": experiment_config,
         "detailed_metrics": detailed_metrics,
@@ -383,60 +375,18 @@ def run_experiment(
 
 def main():
     """Command-line entry point."""
-    parser = argparse.ArgumentParser(
-        description="Run Artemis load balancer experiment"
-    )
-    parser.add_argument(
-        "--name",
-        type=str,
-        default="load_balancer_test",
-        help="Experiment name"
-    )
-    parser.add_argument(
-        "--mode",
-        type=str,
-        choices=["router_only", "capacity_aware", "cost_minimizing"],
-        default="capacity_aware",
-        help="Scheduling mode"
-    )
-    parser.add_argument(
-        "--sla-ms",
-        type=float,
-        default=2000.0,
-        help="Global latency SLA in milliseconds"
-    )
-    parser.add_argument(
-        "--max-accuracy-drop",
-        type=float,
-        default=0.05,
-        help="Maximum allowed accuracy drop"
-    )
-    parser.add_argument(
-        "--simulation-only",
-        action="store_true",
-        help="Run in simulation-only mode (don't commit assignments)"
-    )
-    parser.add_argument(
-        "--no-wandb",
-        action="store_true",
-        help="Disable W&B logging"
-    )
-    parser.add_argument(
-        "--seed",
-        type=int,
-        default=None,
-        help="Random seed for reproducibility"
-    )
-    parser.add_argument(
-        "--output-dir",
-        type=Path,
-        default=None,
-        help="Output directory for logs"
-    )
+    parser = argparse.ArgumentParser(description="Run Artemis load balancer experiment")
+    parser.add_argument("--name", type=str, default="load_balancer_test", help="Experiment name")
+    parser.add_argument("--mode", type=str, choices=["router_only", "capacity_aware", "cost_minimizing"], default="capacity_aware", help="Scheduling mode")
+    parser.add_argument("--sla-ms", type=float, default=2000.0, help="Global latency SLA in milliseconds")
+    parser.add_argument("--max-accuracy-drop", type=float, default=0.05, help="Maximum allowed accuracy drop")
+    parser.add_argument("--simulation-only", action="store_true", help="Run in simulation-only mode")
+    parser.add_argument("--no-wandb", action="store_true", help="Disable W&B logging")
+    parser.add_argument("--seed", type=int, default=None, help="Random seed for reproducibility")
+    parser.add_argument("--output-dir", type=Path, default=None, help="Output directory for logs")
 
     args = parser.parse_args()
 
-    # Build experiment config
     config = default_experiment_config()
     config.name = args.name
     config.scheduling_mode = args.mode
@@ -446,12 +396,8 @@ def main():
     config.log_to_wandb = not args.no_wandb
     config.random_seed = args.seed
 
-    # Run experiment
     try:
-        results = run_experiment(
-            experiment_config=config,
-            output_dir=args.output_dir
-        )
+        results = run_experiment(experiment_config=config, output_dir=args.output_dir)
         logger.info("\nExperiment completed successfully!")
         logger.info(f"Results saved to: {results['output_dir']}")
         return 0
