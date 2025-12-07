@@ -1,0 +1,373 @@
+[94m[01:47:48] [INFO] === CascadeFlow Experiment Script ===[0m
+[94m[01:47:48] [INFO] Project root: /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router[0m
+[94m[01:47:48] [INFO] Dataset path: /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/dataset/final_dataset/router_lexico/router_test_trainer.parquet[0m
+[94m[01:47:48] [INFO] Output dir:   /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/cascadeflow/outputs/cascadeflow_script[0m
+[94m[01:47:48] [INFO] MAX_SAMPLES: running on 1000 samples[0m
+[94m[01:47:48] [INFO] ------------------------------[0m
+[94m[01:47:50] [INFO] Loaded test split: (1000, 33)[0m
+[94m[01:47:50] [INFO]                                    sample_id  ... ground_truth_type
+8889        robut_wtq_01038_fc90a68db1a72ace  ...             exact
+4974  infographic_vqa_00595_426273dc3cbe8f6a  ...             exact
+4013            hitab_00165_8c400217d8665af2  ...             exact
+
+[3 rows x 4 columns][0m
+[94m[01:47:50] [INFO] Checking model endpoints...[0m
+[94m[01:47:50] [INFO] Checking model health: Qwen/Qwen2.5-VL-3B-Instruct @ http://localhost:8803/v1[0m
+[94m[01:47:50] [INFO] Qwen/Qwen2.5-VL-3B-Instruct ONLINE → models=['Qwen/Qwen2.5-VL-3B-Instruct'][0m
+[94m[01:47:50] [INFO] Checking model health: Qwen/Qwen2.5-VL-7B-Instruct @ http://localhost:8802/v1[0m
+[94m[01:47:50] [INFO] Qwen/Qwen2.5-VL-7B-Instruct ONLINE → models=['Qwen/Qwen2.5-VL-7B-Instruct'][0m
+[94m[01:47:50] [INFO] Checking model health: google/gemma-3-27b-it @ http://localhost:8800/v1[0m
+[94m[01:47:50] [INFO] google/gemma-3-27b-it ONLINE → models=['google/gemma-3-27b-it'][0m
+[94m[01:47:50] [INFO] Checking model health: Qwen/Qwen3-VL-8B-Thinking @ http://localhost:8801/v1[0m
+[94m[01:47:51] [INFO] Qwen/Qwen3-VL-8B-Thinking ONLINE → models=['Qwen/Qwen3-VL-8B-Thinking'][0m
+[94m[01:47:51] [INFO] Checking model health: deepseek-ai/DeepSeek-OCR @ http://localhost:8804/v1[0m
+[94m[01:47:51] [INFO] deepseek-ai/DeepSeek-OCR ONLINE → models=['deepseek-ai/DeepSeek-OCR'][0m
+[94m[01:47:51] [INFO] Building CascadeAgent from healthy endpoints...[0m
+[94m[01:47:51] [INFO] CascadeAgent built with 5 tiers.[0m
+[94m[01:47:51] [INFO] Cascade tiers:[0m
+[94m[01:47:51] [INFO]   Tier 1: logical=deepseek-ai/DeepSeek-OCR, id=deepseek-ai/DeepSeek-OCR, url=http://localhost:8804/v1[0m
+[94m[01:47:51] [INFO]   Tier 2: logical=google/gemma-3-27b-it, id=google/gemma-3-27b-it, url=http://localhost:8800/v1[0m
+[94m[01:47:51] [INFO]   Tier 3: logical=Qwen/Qwen2.5-VL-3B-Instruct, id=Qwen/Qwen2.5-VL-3B-Instruct, url=http://localhost:8803/v1[0m
+[94m[01:47:51] [INFO]   Tier 4: logical=Qwen/Qwen3-VL-8B-Thinking, id=Qwen/Qwen3-VL-8B-Thinking, url=http://localhost:8801/v1[0m
+[94m[01:47:51] [INFO]   Tier 5: logical=Qwen/Qwen2.5-VL-7B-Instruct, id=Qwen/Qwen2.5-VL-7B-Instruct, url=http://localhost:8802/v1[0m
+[94m[01:47:51] [INFO] Starting evaluation over 1000 samples...[0m
+[94m[01:48:10] [INFO] Progress: 20/1000 samples processed[0m
+[94m[01:48:22] [INFO] Progress: 40/1000 samples processed[0m
+[94m[01:48:34] [INFO] Progress: 60/1000 samples processed[0m
+[94m[01:48:47] [INFO] Progress: 80/1000 samples processed[0m
+[94m[01:48:55] [INFO] Progress: 100/1000 samples processed[0m
+[94m[01:49:10] [INFO] Progress: 120/1000 samples processed[0m
+[94m[01:49:16] [INFO] Progress: 140/1000 samples processed[0m
+[94m[01:49:28] [INFO] Progress: 160/1000 samples processed[0m
+[94m[01:49:34] [INFO] Progress: 180/1000 samples processed[0m
+[94m[01:49:45] [INFO] Progress: 200/1000 samples processed[0m
+[94m[01:49:56] [INFO] Progress: 220/1000 samples processed[0m
+[94m[01:50:06] [INFO] Progress: 240/1000 samples processed[0m
+[94m[01:50:16] [INFO] Progress: 260/1000 samples processed[0m
+[94m[01:50:31] [INFO] Progress: 280/1000 samples processed[0m
+[94m[01:50:45] [INFO] Progress: 300/1000 samples processed[0m
+[94m[01:50:51] [INFO] Progress: 320/1000 samples processed[0m
+[94m[01:51:05] [INFO] Progress: 340/1000 samples processed[0m
+[94m[01:51:15] [INFO] Progress: 360/1000 samples processed[0m
+[94m[01:51:26] [INFO] Progress: 380/1000 samples processed[0m
+[94m[01:51:41] [INFO] Progress: 400/1000 samples processed[0m
+[94m[01:51:50] [INFO] Progress: 420/1000 samples processed[0m
+[94m[01:52:09] [INFO] Progress: 440/1000 samples processed[0m
+[94m[01:52:22] [INFO] Progress: 460/1000 samples processed[0m
+[94m[01:52:32] [INFO] Progress: 480/1000 samples processed[0m
+[94m[01:52:42] [INFO] Progress: 500/1000 samples processed[0m
+[94m[01:52:57] [INFO] Progress: 520/1000 samples processed[0m
+[94m[01:53:11] [INFO] Progress: 540/1000 samples processed[0m
+[94m[01:53:26] [INFO] Progress: 560/1000 samples processed[0m
+[94m[01:53:37] [INFO] Progress: 580/1000 samples processed[0m
+[94m[01:53:49] [INFO] Progress: 600/1000 samples processed[0m
+[94m[01:54:04] [INFO] Progress: 620/1000 samples processed[0m
+[94m[01:54:11] [INFO] Progress: 640/1000 samples processed[0m
+[94m[01:54:23] [INFO] Progress: 660/1000 samples processed[0m
+[94m[01:54:34] [INFO] Progress: 680/1000 samples processed[0m
+[94m[01:54:42] [INFO] Progress: 700/1000 samples processed[0m
+[94m[01:54:49] [INFO] Progress: 720/1000 samples processed[0m
+[94m[01:54:59] [INFO] Progress: 740/1000 samples processed[0m
+[94m[01:55:13] [INFO] Progress: 760/1000 samples processed[0m
+[94m[01:55:23] [INFO] Progress: 780/1000 samples processed[0m
+[94m[01:55:36] [INFO] Progress: 800/1000 samples processed[0m
+[94m[01:55:50] [INFO] Progress: 820/1000 samples processed[0m
+[94m[01:56:00] [INFO] Progress: 840/1000 samples processed[0m
+[94m[01:56:09] [INFO] Progress: 860/1000 samples processed[0m
+[94m[01:56:27] [INFO] Progress: 880/1000 samples processed[0m
+[94m[01:56:39] [INFO] Progress: 900/1000 samples processed[0m
+[94m[01:56:45] [INFO] Progress: 920/1000 samples processed[0m
+[94m[01:56:59] [INFO] Progress: 940/1000 samples processed[0m
+[94m[01:57:09] [INFO] Progress: 960/1000 samples processed[0m
+[94m[01:57:20] [INFO] Progress: 980/1000 samples processed[0m
+[94m[01:57:32] [INFO] Evaluation complete in 581.11 seconds[0m
+[94m[01:57:32] [INFO] Average time per sample: 0.58 seconds[0m
+[94m[01:57:32] [INFO] No failed samples.[0m
+[94m[01:57:32] [INFO] Saved results CSV:     /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/cascadeflow/outputs/cascadeflow_script/cascade_results_20251201_015732.csv[0m
+[94m[01:57:32] [INFO] Saved results JSON:    /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/cascadeflow/outputs/cascadeflow_script/cascade_results_20251201_015732.json[0m
+[94m[01:57:32] [INFO] Saved results Parquet: /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/cascadeflow/outputs/cascadeflow_script/cascade_results_20251201_015732.parquet[0m
+[94m[01:57:32] [INFO] Summary JSON saved: /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/cascadeflow/outputs/cascadeflow_script/cascadeflow_summary_20251201_015732.json[0m
+[94m[01:57:32] [INFO] High-level summary:[0m
+[94m[01:57:32] [INFO] {
+  "n_total": 1000,
+  "n_success": 1000,
+  "overall_accuracy": 0.176,
+  "total_cost": 0.0,
+  "avg_cost": 0.0,
+  "avg_latency_ms": 580.4335305690765,
+  "per_model": [
+    {
+      "model_used": "Qwen/Qwen2.5-VL-7B-Instruct",
+      "n_samples": 286,
+      "accuracy": 0.24475524475524477,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 933.5862848308536
+    },
+    {
+      "model_used": "deepseek-ai/DeepSeek-OCR+Qwen/Qwen2.5-VL-7B-Instruct",
+      "n_samples": 714,
+      "accuracy": 0.1484593837535014,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 438.974584184107
+    }
+  ],
+  "per_task": [
+    {
+      "router_task": "abstract_reasoning",
+      "n_samples": 18,
+      "accuracy": 0.6666666666666666,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 614.4908534155952
+    },
+    {
+      "router_task": "chart_captioning",
+      "n_samples": 33,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 462.6044143329967
+    },
+    {
+      "router_task": "chart_reasoning",
+      "n_samples": 99,
+      "accuracy": 0.1717171717171717,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 208.20260288739445
+    },
+    {
+      "router_task": "code_generation",
+      "n_samples": 17,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 1468.2573851417092
+    },
+    {
+      "router_task": "counting",
+      "n_samples": 27,
+      "accuracy": 0.037037037037037035,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 185.0979416458695
+    },
+    {
+      "router_task": "dense_captioning",
+      "n_samples": 22,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 591.1518877202815
+    },
+    {
+      "router_task": "diagram_captioning",
+      "n_samples": 4,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 828.3452391624451
+    },
+    {
+      "router_task": "diagram_reasoning",
+      "n_samples": 21,
+      "accuracy": 0.7142857142857143,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 63.141425450642906
+    },
+    {
+      "router_task": "difference_detection",
+      "n_samples": 19,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 525.6292694493344
+    },
+    {
+      "router_task": "document_ocr",
+      "n_samples": 78,
+      "accuracy": 0.038461538461538464,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 269.1478973779923
+    },
+    {
+      "router_task": "general_vqa",
+      "n_samples": 68,
+      "accuracy": 0.19117647058823528,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 165.9403688767377
+    },
+    {
+      "router_task": "geometry_reasoning",
+      "n_samples": 38,
+      "accuracy": 0.10526315789473684,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 1925.3234110380474
+    },
+    {
+      "router_task": "handwriting_ocr",
+      "n_samples": 15,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 225.65793991088867
+    },
+    {
+      "router_task": "icon_reasoning",
+      "n_samples": 23,
+      "accuracy": 0.34782608695652173,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 55.028448934140414
+    },
+    {
+      "router_task": "image_captioning",
+      "n_samples": 16,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 284.80175137519836
+    },
+    {
+      "router_task": "knowledge_vqa",
+      "n_samples": 24,
+      "accuracy": 0.375,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 904.1073222955068
+    },
+    {
+      "router_task": "map_reasoning",
+      "n_samples": 23,
+      "accuracy": 0.21739130434782608,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 292.0869744342306
+    },
+    {
+      "router_task": "medical_report",
+      "n_samples": 23,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 204.50381610704505
+    },
+    {
+      "router_task": "medical_vqa",
+      "n_samples": 3,
+      "accuracy": 1.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 358.91000429789227
+    },
+    {
+      "router_task": "meme_classification",
+      "n_samples": 20,
+      "accuracy": 0.8,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 157.21728801727295
+    },
+    {
+      "router_task": "rendered_text_ocr",
+      "n_samples": 15,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 671.7867374420166
+    },
+    {
+      "router_task": "scene_text_ocr",
+      "n_samples": 44,
+      "accuracy": 0.09090909090909091,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 190.61203436418012
+    },
+    {
+      "router_task": "science_reasoning",
+      "n_samples": 18,
+      "accuracy": 0.5555555555555556,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 141.40366183386908
+    },
+    {
+      "router_task": "spatial_reasoning",
+      "n_samples": 68,
+      "accuracy": 0.4117647058823529,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 123.515644494225
+    },
+    {
+      "router_task": "table_math",
+      "n_samples": 43,
+      "accuracy": 0.16279069767441862,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 1750.786919926488
+    },
+    {
+      "router_task": "table_reasoning",
+      "n_samples": 148,
+      "accuracy": 0.12837837837837837,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 1161.0755533785434
+    },
+    {
+      "router_task": "textbook_qa",
+      "n_samples": 15,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 70.20606994628906
+    },
+    {
+      "router_task": "ui_captioning",
+      "n_samples": 20,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 815.9384250640869
+    },
+    {
+      "router_task": "visual_mrc",
+      "n_samples": 19,
+      "accuracy": 0.10526315789473684,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 782.7400533776535
+    },
+    {
+      "router_task": "web_understanding",
+      "n_samples": 19,
+      "accuracy": 0.0,
+      "avg_cost": 0.0,
+      "total_cost": 0.0,
+      "avg_latency_ms": 796.929535112883
+    }
+  ]
+}[0m
+[94m[01:57:32] [INFO] Generating diagnostic plots...[0m
+[94m[01:57:32] [INFO] Generating plot: accuracy vs cost per model[0m
+[94m[01:57:32] [INFO] Saved: /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/cascadeflow/outputs/cascadeflow_script/cost_vs_accuracy_per_model.png[0m
+[94m[01:57:32] [INFO] Generating plot: per-model accuracy and total cost[0m
+[94m[01:57:32] [INFO] Saved: /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/cascadeflow/outputs/cascadeflow_script/per_model_accuracy_and_cost.png[0m
+[94m[01:57:32] [INFO] Generating plot: accuracy per task[0m
+[94m[01:57:32] [INFO] Saved: /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/cascadeflow/outputs/cascadeflow_script/accuracy_per_task.png[0m
+[94m[01:57:32] [INFO] Generating plot: latency histogram[0m
+[94m[01:57:32] [INFO] Saved: /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/cascadeflow/outputs/cascadeflow_script/latency_histogram.png[0m
+[94m[01:57:32] [INFO] Generating plot: cumulative cost over evaluation[0m
+[94m[01:57:32] [INFO] Saved: /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/cascadeflow/outputs/cascadeflow_script/cumulative_cost.png[0m
+[94m[01:57:32] [INFO] Generating plot: task–model routing heatmap[0m
+[94m[01:57:32] [INFO] Saved: /Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router/code_base/cascadeflow/outputs/cascadeflow_script/task_model_heatmap.png[0m
+[94m[01:57:32] [INFO] All plots generated.[0m
+[94m[01:57:32] [INFO] === Done. ===[0m
