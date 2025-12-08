@@ -828,3 +828,46 @@ class GliderEvaluator:
             "highlight": highlight,
             "raw_output": raw_out,
         }
+
+
+class Evaluator:
+    """
+    Main evaluator facade for Ares.
+    Wraps Scorer to provide simple evaluation interface for sample records.
+    """
+    
+    def evaluate_single(self, sample: Any) -> Dict[str, Any]:
+        """
+        Run basic scoring on a sample record.
+        
+        Args:
+            sample: SampleRecord object or dictionary containing:
+                   - response_parsed (or response_raw)
+                   - ground_truth
+                   - ground_truth_type (optional, default='exact')
+                   
+        Returns:
+            Dictionary of scores (e.g. {'score_exact_match': 1.0, ...})
+        """
+        # Determine prediction text
+        pred = ""
+        if hasattr(sample, 'response_parsed') and sample.response_parsed:
+            pred = sample.response_parsed
+        elif hasattr(sample, 'response_raw') and sample.response_raw:
+            pred = sample.response_raw
+        elif isinstance(sample, dict):
+            pred = sample.get('response_parsed') or sample.get('response_raw') or ""
+            
+        # Determine ground truth and type
+        gt = ""
+        gt_type = "exact"
+        
+        if hasattr(sample, 'ground_truth'):
+            gt = sample.ground_truth
+            if hasattr(sample, 'ground_truth_type') and sample.ground_truth_type:
+                gt_type = sample.ground_truth_type
+        elif isinstance(sample, dict):
+            gt = sample.get('ground_truth', "")
+            gt_type = sample.get('ground_truth_type', "exact")
+            
+        return Scorer.compute_all_scores(pred, gt, gt_type)

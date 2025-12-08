@@ -1,20 +1,6 @@
 {
-  "name_to_id": {
-    "accuracy": 0,
-    "cheap": 1,
-    "fast": 2,
-    "balanced": 3
-  },
-  "id_to_name": {
-    "0": "accuracy",
-    "1": "cheap",
-    "2": "fast",
-    "3": "balanced"
-  },
-  "names": [
-    "accuracy",
-    "cheap",
-    "fast",
-    "balanced"
-  ]
+  "accuracy": 0,
+  "cheap": 1,
+  "fast": 2,
+  "balanced": 3
 }

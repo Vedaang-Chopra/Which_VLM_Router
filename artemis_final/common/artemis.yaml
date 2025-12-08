@@ -1,0 +1,242 @@
+# Artemis VLM Router - Unified Configuration
+# This is the single source of truth for the system.
+
+db:
+  # Connection string for Postgres. Use "postgres" hostname inside Docker.
+  url: "postgresql+psycopg2://artemis:artemis@postgres:5432/artemis"
+
+router:
+  # Path to trained reward router checkpoint
+  checkpoint_path: "checkpoints/best_reward_router.pt"
+  # Path to router-specific config (model architecture, modes, etc.)
+  config_file: "router/router_config_reward.yaml"
+  # Device for inference
+  device: "cpu" # Use "cuda" or "mps" if available
+
+load_balancer:
+  global_sla:
+    total_cost_budget_usd: 10.0
+    min_global_accuracy: 0.85
+    default_latency_ms: 2000
+
+  task_slas:
+    captioning:
+      max_latency_ms: 2500
+      min_accuracy: 0.85
+    chart_qa:
+      max_latency_ms: 3500
+      min_accuracy: 0.87
+    doc_vqa:
+      max_latency_ms: 3000
+      min_accuracy: 0.90
+    ocr:
+      max_latency_ms: 1000
+      min_accuracy: 0.92
+    vqa:
+      max_latency_ms: 3000
+      min_accuracy: 0.85
+
+  max_accuracy_drop: 0.05
+  default_scheduling_mode: "capacity_aware" # router_only | capacity_aware | cost_minimizing
+
+models:
+  # === Gemma 3 27B (2 instances) ===
+  - name: gemma_3_27b
+    base_url: http://localhost:8800/v1
+    api_key: EMPTY
+    model_id: google/gemma-3-27b-it
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00009
+      completion_per_1k: 0.00016
+    extra_params: {}
+    # Load Balancer / Simulation Params
+    base_latency_ms: 2000
+    min_replicas: 1
+    max_replicas: 2
+    sla_ms: 4000
+    max_qps_per_replica: 0.5
+    cost_per_request_usd: 0.0005
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8
+      scale_down_util_threshold: 0.3
+      cooldown_ms: 60000
+
+  - name: gemma_3_27b
+    base_url: http://localhost:8801/v1
+    api_key: EMPTY
+    model_id: google/gemma-3-27b-it
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00009
+      completion_per_1k: 0.00016
+    extra_params: {}
+    # Load Balancer / Simulation Params (Duplicated for instance 2, or managed by LB as pool)
+    # The LB typically groups by name, so these might be treated as a pool.
+    # For now, I will keep instance-specifics here but generally LB config targets the *logical* model name.
+    # However, to be consistent with the unified goal, we merge the definitions.
+    # Note: The original generic LB config keyed by name, but here we have instances.
+    # I will assume the LB aggregates these or we just need the metadata on at least one.
+    base_latency_ms: 2000
+    sla_ms: 4000
+    max_qps_per_replica: 0.5
+    cost_per_request_usd: 0.0005
+
+  # === Qwen3 VL 8B Thinking (2 instances) ===
+  - name: qwen3_vl_8b_thinking
+    base_url: http://localhost:8802/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen3-VL-8B-Thinking
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00018
+      completion_per_1k: 0.0021
+    extra_params: {}
+    base_latency_ms: 1200
+    min_replicas: 1
+    max_replicas: 3
+    sla_ms: 3000
+    max_qps_per_replica: 0.8
+    cost_per_request_usd: 0.003
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8
+      scale_down_util_threshold: 0.3
+      cooldown_ms: 60000
+
+  - name: qwen3_vl_8b_thinking
+    base_url: http://localhost:8803/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen3-VL-8B-Thinking
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00018
+      completion_per_1k: 0.0021
+    extra_params: {}
+    base_latency_ms: 1200
+    sla_ms: 3000
+    max_qps_per_replica: 0.8
+    cost_per_request_usd: 0.003
+
+  # === Qwen2.5 VL 7B (2 instances) ===
+  - name: qwen2_5_vl_7b
+    base_url: http://localhost:8804/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen2.5-VL-7B-Instruct
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.0002
+      completion_per_1k: 0.0002
+    extra_params: {}
+    base_latency_ms: 800
+    min_replicas: 1
+    max_replicas: 4
+    sla_ms: 2500
+    max_qps_per_replica: 1.2
+    cost_per_request_usd: 0.0004
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8
+      scale_down_util_threshold: 0.3
+      cooldown_ms: 60000
+
+  - name: qwen2_5_vl_7b
+    base_url: http://localhost:8805/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen2.5-VL-7B-Instruct
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.0002
+      completion_per_1k: 0.0002
+    extra_params: {}
+    base_latency_ms: 800
+    sla_ms: 2500
+    max_qps_per_replica: 1.2
+    cost_per_request_usd: 0.0004
+
+  # === Qwen2.5 VL 3B (2 instances) ===
+  - name: qwen2_5_vl_3b
+    base_url: http://localhost:8806/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen2.5-VL-3B-Instruct
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.0001
+      completion_per_1k: 0.0001
+    extra_params: {}
+    base_latency_ms: 400
+    min_replicas: 1
+    max_replicas: 5
+    sla_ms: 1500
+    max_qps_per_replica: 2.5
+    cost_per_request_usd: 0.0002
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8
+      scale_down_util_threshold: 0.3
+      cooldown_ms: 60000
+
+  - name: qwen2_5_vl_3b
+    base_url: http://localhost:8807/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen2.5-VL-3B-Instruct
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.0001
+      completion_per_1k: 0.0001
+    extra_params: {}
+    base_latency_ms: 400
+    sla_ms: 1500
+    max_qps_per_replica: 2.5
+    cost_per_request_usd: 0.0002
+
+  # === DeepSeek OCR (2 instances) ===
+  - name: deepseek_ocr
+    base_url: http://localhost:8808/v1
+    api_key: EMPTY
+    model_id: deepseek-ai/DeepSeek-OCR
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00003
+      completion_per_1k: 0.0001
+    extra_params: {}
+    base_latency_ms: 300
+    min_replicas: 1
+    max_replicas: 5
+    sla_ms: 1500
+    max_qps_per_replica: 3.0
+    cost_per_request_usd: 0.0001
+    autoscale:
+      enable: true
+      scale_up_latency_factor: 0.8
+      scale_down_util_threshold: 0.3
+      cooldown_ms: 60000
+
+  - name: deepseek_ocr
+    base_url: http://localhost:8809/v1
+    api_key: EMPTY
+    model_id: deepseek-ai/DeepSeek-OCR
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00003
+      completion_per_1k: 0.0001
+    extra_params: {}
+    base_latency_ms: 300
+    sla_ms: 1500
+    max_qps_per_replica: 3.0
+    cost_per_request_usd: 0.0001
+
+data_collection:
+  # Table names for collected data (live traffic)
+  samples_table: "vlm_samples_collected"
+  responses_table: "vlm_responses_collected"
+  feedback_table: "vlm_feedback"
+
+retraining:
+  # Number of epochs for retraining
+  epochs: 1
+  # Batch size
+  batch_size: 8
+  # Output checkpoint path
+  output_checkpoint: "checkpoints/best_reward_router_updated.pt"

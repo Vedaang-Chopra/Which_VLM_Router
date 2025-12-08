@@ -30,7 +30,7 @@ from typing import Dict, Optional, Any, List
 from pathlib import Path
 from dataclasses import asdict
 
-from .config import (
+from .core.config import (
     load_capacity_config,
     default_experiment_config,
     CAPACITY_CONFIG_PATH,
@@ -38,11 +38,11 @@ from .config import (
     ModelCapacityConfig,
     GlobalSLAConfig
 )
-from .stats_registry import StatsRegistry, load_per_task_model_stats
-from .scheduler import ArtemisLoadBalancer
-from .sla_monitor import SlaMonitor
-from .types import RouterOutput, SchedulingContext, SchedulingDecision, BudgetExhaustedError
-from .model_state import ModelStateManager
+from .core.stats_registry import StatsRegistry, load_per_task_model_stats
+from .core.scheduler import ArtemisLoadBalancer
+from .core.sla_monitor import SlaMonitor
+from .core.types import RouterOutput, SchedulingContext, SchedulingDecision, BudgetExhaustedError
+from .core.model_state import ModelStateManager
 
 logger = logging.getLogger(__name__)
 
@@ -83,10 +83,14 @@ class ArtemisLoadBalancerModule:
         """
         # 1. Load Configuration
         self.config_path = Path(config_path) if config_path else CAPACITY_CONFIG_PATH
+        
+        # Load model capacity configs
+        # If config_path doesn't exist and no internal defaults, we warn.
+        # But we also want to support passing config objects directly maybe?
+        # For this simplified API, we stick to path or defaults.
         if not self.config_path.exists():
              logger.warning(f"Config path {self.config_path} not found. using defaults.")
-
-        # Load model capacity configs
+        
         self.model_configs = load_capacity_config(self.config_path)
         
         # Load Experiment/Global Config (for SLAs)

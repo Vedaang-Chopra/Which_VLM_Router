@@ -1,16 +1,5 @@
 {
-  "name_to_id": {
-    "deepseek_ocr": 0,
-    "gemma_3_27b": 1,
-    "qwen2_5_vl_3b": 2,
-    "qwen2_5_vl_7b": 3,
-    "qwen3_vl_8b_thinking": 4
-  },
-  "id_to_name": {
-    "0": "deepseek_ocr",
-    "1": "gemma_3_27b",
-    "2": "qwen2_5_vl_3b",
-    "3": "qwen2_5_vl_7b",
-    "4": "qwen3_vl_8b_thinking"
-  }
+  "model_a": 0,
+  "model_b": 1,
+  "model_c": 2
 }

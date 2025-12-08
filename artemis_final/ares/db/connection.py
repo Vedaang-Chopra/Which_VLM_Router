@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 
-from ares.configs.db_config import DB_URL
+from ..configs.db_config import DB_URL
 
 
 _engine = None

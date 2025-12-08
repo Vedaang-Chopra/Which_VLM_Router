@@ -48,7 +48,7 @@ def validate_profiles_dataframe(
     if required_columns is None:
         required_columns = [
             'sample_id',
-            'prompt_raw',
+            'prompt_text',
             'model_name',
             'source_dataset',
             'router_task',
@@ -83,7 +83,7 @@ def validate_profiles_dataframe(
 
     # Check critical metrics
     critical_checks = [
-        ('cost_usd', max_missing_cost_pct, False),
+        ('estimated_cost_usd', max_missing_cost_pct, False),
         ('latency_ms', max_missing_latency_pct, False),
         ('glider_score', max_missing_glider_pct, False),
     ]
@@ -157,8 +157,8 @@ def validate_profiles_dataframe(
                 )
                 logger.warning(f"glider_score range: [{min_glider:.2f}, {max_glider:.2f}] (expected [0, 5])")
 
-    if 'cost_usd' in df.columns:
-        zero_cost = (df['cost_usd'] == 0).sum()
+    if 'estimated_cost_usd' in df.columns:
+        zero_cost = (df['estimated_cost_usd'] == 0).sum()
         if zero_cost > 0:
             validation_report['warnings'].append(f"Found {zero_cost} rows with zero cost")
             logger.warning(f"Found {zero_cost} rows with zero cost")
@@ -249,18 +249,18 @@ def clean_profiles_dataframe(
             cleaning_stats['dropped_missing_glider'] = dropped
             logger.info(f"Dropped {dropped} rows with missing glider_score")
 
-    # Fill missing cost_usd with median per model
-    if fill_missing_cost and 'cost_usd' in df_clean.columns:
-        missing_cost = df_clean['cost_usd'].isnull().sum()
+    # Fill missing estimated_cost_usd with median per model
+    if fill_missing_cost and 'estimated_cost_usd' in df_clean.columns:
+        missing_cost = df_clean['estimated_cost_usd'].isnull().sum()
         if missing_cost > 0:
             # Fill with median per model, or global median if model has no data
-            model_median_cost = df_clean.groupby('model_name')['cost_usd'].transform(
+            model_median_cost = df_clean.groupby('model_name')['estimated_cost_usd'].transform(
                 lambda x: x.fillna(x.median())
             )
-            global_median = df_clean['cost_usd'].median()
-            df_clean['cost_usd'] = model_median_cost.fillna(global_median)
+            global_median = df_clean['estimated_cost_usd'].median()
+            df_clean['estimated_cost_usd'] = model_median_cost.fillna(global_median)
             cleaning_stats['filled_cost'] = missing_cost
-            logger.info(f"Filled {missing_cost} missing cost_usd values with model medians")
+            logger.info(f"Filled {missing_cost} missing estimated_cost_usd values with model medians")
 
     # Fill missing latency_ms with median per model
     if fill_missing_latency and 'latency_ms' in df_clean.columns:

@@ -183,14 +183,22 @@ def load_profiles_real_schema(
         r.confidence_score,
 
         -- evaluation-level (per model)
-        ev.glider_score
+        ev.glider_score,
+
+        -- utility (NEW)
+        r.utility_accuracy,
+        r.utility_cheap,
+        r.utility_fast,
+        r.utility_balanced,
+        r.cost_norm_new,
+        r.lat_norm
         {extra_select}
 
     FROM vlm_samples s
     JOIN vlm_responses r
       ON s.sample_id = r.sample_id
     JOIN vlm_evaluations ev
-      ON s.sample_id = ev.sample_id
+      ON r.sample_id = ev.sample_id
      AND r.model_name = ev.model_name
     LEFT JOIN vlm_images i
       ON s.image_id = i.image_id

@@ -1,0 +1,6 @@
+sample_id,router_task,ground_truth_type,c_model,c_latency,c_cost,c_correct,c_cascaded,a_model,a_latency,a_cost,a_correct,prompt_tokens,completion_tokens
+ai2d_00023_bd686a44c25987c8,diagram_reasoning,mc,mock_model,101.10592842102051,4.000000000000001e-06,False,False,mock_artemis_model,100.0,6e-06,False,15,15
+ai2d_00007_e6f58451a22503d1,diagram_reasoning,mc,mock_model,101.4862060546875,4.000000000000001e-06,True,False,mock_artemis_model,100.0,6e-06,True,15,15
+ai2d_00019_e5f934cfc0951972,diagram_reasoning,mc,mock_model,101.50289535522461,4.000000000000001e-06,False,False,mock_artemis_model,100.0,6e-06,False,15,15
+ai2d_00021_59cfa73bc8485386,diagram_reasoning,mc,mock_model,101.5169620513916,4.000000000000001e-06,False,False,mock_artemis_model,100.0,6e-06,False,15,15
+ai2d_00004_bf3d9c5fd30bf304,diagram_reasoning,mc,mock_model,101.52792930603027,4.000000000000001e-06,True,False,mock_artemis_model,100.0,6e-06,True,15,15

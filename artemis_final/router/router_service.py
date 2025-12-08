@@ -8,9 +8,9 @@ from typing import Dict, Optional, Any
 
 # Import existing router logic
 try:
-    from .artemis_router.inference_reward_router import RewardRouterInference
+    from .core.inference_reward_router import RewardRouterInference
 except ImportError:
-    from artemis_router.inference_reward_router import RewardRouterInference
+    from core.inference_reward_router import RewardRouterInference
 
 from common.config_loader import GlobalConfig, get_base_dir
 

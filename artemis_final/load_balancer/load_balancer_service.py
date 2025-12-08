@@ -1,25 +1,15 @@
 """
 LoadBalancerService: Wrapper around the Artemis load balancer.
-Uses common.config_loader for configuration.
+Uses common.config_loader for configuration, but delegates core logic to the public API module.
 """
 import logging
-import time
 from typing import Dict, Any, Optional
 from dataclasses import asdict
 
-# Import existing load balancer logic
-try:
-    from .scheduler import ArtemisLoadBalancer
-    from .stats_registry import StatsRegistry
-    from .config import ModelCapacityConfig, AutoscaleConfig
-    from .types import RouterOutput, SchedulingContext
-except ImportError:
-    from load_balancer.scheduler import ArtemisLoadBalancer
-    from load_balancer.stats_registry import StatsRegistry
-    from load_balancer.config import ModelCapacityConfig, AutoscaleConfig
-    from load_balancer.types import RouterOutput, SchedulingContext
-
 from common.config_loader import GlobalConfig
+
+# Import from public API for standardized access
+from .public_api import ArtemisLoadBalancerModule, init_load_balancer, schedule_request, get_metrics
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +17,8 @@ class LoadBalancerService:
     """
     Service wrapper for the Artemis load balancer.
     Combines router decisions with SLA and load considerations.
+    
+    This class adapts the global public API to the application's service structure.
     """
     
     def __init__(self, cfg: GlobalConfig):
@@ -38,8 +30,21 @@ class LoadBalancerService:
         """
         self.cfg = cfg
         self.lb_cfg = cfg.load_balancer
-        self.stats_registry = StatsRegistry()
-        self.balancer = self._initialize_balancer()
+        
+        # Initialize the underlying module
+        # Note: In a real production setup, we might map 'cfg' to the specific config structure
+        # the module expects, or allow the module to load its own config. 
+        # For now, we rely on the module's default loading mechanism or pass explicit paths if needed.
+        # If the cfg object has specific overrides, we should pass them. 
+        
+        # Initialize the global instance primarily
+        # We can also instantiate a local module if we want isolation, but `init_load_balancer` sets a global.
+        # Let's use a local instance to be safe and encapsulated within this service class.
+        
+        self.module = ArtemisLoadBalancerModule() 
+        # TODO: If we want to fully respect 'cfg' overrides (like specific model configs passed in memory),
+        # we would need to update ArtemisLoadBalancerModule to accept them.
+        # Current implementation of ArtemisLoadBalancerModule loads from disk or defaults.
         
         # Stats for record_outcome
         self._outcome_stats = {
@@ -48,44 +53,7 @@ class LoadBalancerService:
             "success_count": 0,
             "failure_count": 0
         }
-        
-    def _initialize_balancer(self) -> ArtemisLoadBalancer:
-        """Initialize the Artemis scheduler."""
-        logger.info("Initializing LoadBalancerService...")
-        
-        # Convert config dicts to ModelCapacityConfig objects
-        model_configs = {}
-        for model_name, model_data in self.lb_cfg.models.items():
-            autoscale = None
-            if 'autoscale' in model_data:
-                ad = model_data['autoscale']
-                autoscale = AutoscaleConfig(
-                    enable=ad.get('enable', True),
-                    scale_up_latency_factor=ad.get('scale_up_latency_factor', 0.8),
-                    scale_down_util_threshold=ad.get('scale_down_util_threshold', 0.3),
-                    cooldown_ms=ad.get('cooldown_ms', 60000)
-                )
-                
-            model_configs[model_name] = ModelCapacityConfig(
-                model_name=model_name,
-                base_latency_ms=model_data.get('base_latency_ms', 1000.0),
-                min_replicas=model_data.get('min_replicas', 1),
-                max_replicas=model_data.get('max_replicas', 1),
-                sla_ms=model_data.get('sla_ms', 2000.0),
-                max_qps_per_replica=model_data.get('max_qps_per_replica', 1.0),
-                cost_per_request_usd=model_data.get('cost_per_request_usd', 0.0001),
-                autoscale=autoscale
-            )
-            
-        return ArtemisLoadBalancer(
-            model_configs=model_configs,
-            stats_registry=self.stats_registry,
-            latency_sla_ms=self.lb_cfg.latency_sla_ms,
-            max_accuracy_drop=self.lb_cfg.global_config.get('max_accuracy_drop', 0.05), # Access global section safely
-            scheduling_mode=self.lb_cfg.get('default_scheduling_mode', 'capacity_aware'),
-            router_confidence_threshold=self.lb_cfg.get('router_confidence_threshold', 0.6),
-            top_k=self.lb_cfg.get('top_k', 3)
-        )
+        logger.info("LoadBalancerService initialized via Public API Module.")
 
     def schedule(self, 
                  sample_id: str,
@@ -95,36 +63,15 @@ class LoadBalancerService:
                  metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Schedule a request based on router decision and system state.
-        
-        Args:
-            sample_id: Unique request ID
-            task_type: Type of task (e.g., "vlm")
-            router_probs: Model probability scores from router
-            preferred_model: Router's preferred model
-            metadata: Additional metadata
-            
-        Returns:
-            Dict containing scheduling decision
+        Delegates to the internal logic module.
         """
-        # Calculate max probability for router output
-        max_prob = max(router_probs.values()) if router_probs else 0.0
-
-        router_output = RouterOutput(
+        return self.module.schedule(
             sample_id=sample_id,
             task_type=task_type,
             router_probs=router_probs,
             preferred_model=preferred_model,
-            max_prob=max_prob
+            metadata=metadata
         )
-        
-        context = SchedulingContext(
-            arrival_ts_ms=time.time() * 1000,
-            load_profile="production",
-            metadata=metadata or {}
-        )
-        
-        decision = self.balancer.schedule(router_output, context)
-        return asdict(decision)
 
     def record_outcome(self, lb_decision: Any, outcome: Dict[str, Any]):
         """
@@ -153,4 +100,7 @@ class LoadBalancerService:
 
     def get_stats(self) -> Dict[str, Any]:
         """Get current load balancer statistics."""
-        return self._outcome_stats.copy()
+        # Mix outcome stats with internal SLA stats
+        stats = self._outcome_stats.copy()
+        stats.update(self.module.get_sla_summary())
+        return stats

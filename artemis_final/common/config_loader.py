@@ -6,7 +6,7 @@ import os
 import yaml
 from pathlib import Path
 from dataclasses import dataclass, field
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 @dataclass
 class DBConfig:
@@ -19,15 +19,17 @@ class RouterConfig:
     device: str = "cpu"
 
 @dataclass
-class LoadBalancerConfig:
-    config_file: str
-    # Populated after loading the referenced file
-    global_sla_ms: int = 2000
-    models: Dict[str, Any] = field(default_factory=dict)
+class GlobalSLAConfig:
+    total_cost_budget_usd: float
+    min_global_accuracy: float
+    default_latency_ms: int
 
 @dataclass
-class InferenceConfig:
-    models_file: str
+class LoadBalancerConfig:
+    global_sla: GlobalSLAConfig
+    task_slas: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    max_accuracy_drop: float = 0.05
+    default_scheduling_mode: str = "capacity_aware"
 
 @dataclass
 class DataCollectionConfig:
@@ -47,9 +49,9 @@ class GlobalConfig:
     db: DBConfig
     router: RouterConfig
     load_balancer: LoadBalancerConfig
-    inference: InferenceConfig
     data_collection: DataCollectionConfig
     retraining: RetrainingConfig
+    models: List[Dict[str, Any]] = field(default_factory=list)
     _base_dir: str = ""
 
 def get_base_dir() -> Path:
@@ -71,64 +73,83 @@ def load_global_config(config_path: Optional[str] = None) -> GlobalConfig:
     
     if config_path is None:
         # Check environment variable first
-        config_path = os.environ.get("CONFIG_PATH", str(base_dir / "configs" / "artemis.yaml"))
+        # Default is now in the same directory as this file (common/artemis.yaml)
+        config_path = os.environ.get("CONFIG_PATH", str(Path(__file__).parent / "artemis.yaml"))
     
     config_file = Path(config_path)
     if not config_file.is_absolute():
+        # If relative, assume relative to project base or just resolve it
+        # If it was constructed via Path(__file__).parent, it's absolute
         config_file = base_dir / config_file
         
+    if not config_file.exists():
+        # Fallback check: maybe it's relative to base_dir/common/
+        fallback = base_dir / "common" / "artemis.yaml"
+        if fallback.exists():
+            config_file = fallback
+            
     if not config_file.exists():
         raise FileNotFoundError(f"Config file not found: {config_file}")
     
     with open(config_file, 'r') as f:
         raw = yaml.safe_load(f)
     
-    # Parse sections
+    # DB
+    db_raw = raw.get("db", {})
     db_cfg = DBConfig(
-        url=os.environ.get("DATABASE_URL", raw.get("db", {}).get("url", ""))
+        url=os.environ.get("DATABASE_URL", db_raw.get("url", ""))
     )
     
+    # Router
+    rt_raw = raw.get("router", {})
     router_cfg = RouterConfig(
-        checkpoint_path=raw.get("router", {}).get("checkpoint_path", ""),
-        config_file=raw.get("router", {}).get("config_file", ""),
-        device=raw.get("router", {}).get("device", "cpu")
+        checkpoint_path=rt_raw.get("checkpoint_path", ""),
+        config_file=rt_raw.get("config_file", ""),
+        device=rt_raw.get("device", "cpu")
+    )
+    
+    # Load Balancer
+    lb_raw = raw.get("load_balancer", {})
+    gsla_raw = lb_raw.get("global_sla", {})
+    gsla_cfg = GlobalSLAConfig(
+        total_cost_budget_usd=gsla_raw.get("total_cost_budget_usd", 10.0),
+        min_global_accuracy=gsla_raw.get("min_global_accuracy", 0.85),
+        default_latency_ms=gsla_raw.get("default_latency_ms", 2000)
     )
     
     lb_cfg = LoadBalancerConfig(
-        config_file=raw.get("load_balancer", {}).get("config_file", "")
+        global_sla=gsla_cfg,
+        task_slas=lb_raw.get("task_slas", {}),
+        max_accuracy_drop=lb_raw.get("max_accuracy_drop", 0.05),
+        default_scheduling_mode=lb_raw.get("default_scheduling_mode", "capacity_aware")
     )
+
+    # Models
+    models_list = raw.get("models", [])
     
-    # Load LB config file if specified to get models and SLA
-    lb_config_path = base_dir / lb_cfg.config_file
-    if lb_config_path.exists():
-        with open(lb_config_path, 'r') as f:
-            lb_raw = yaml.safe_load(f)
-        lb_cfg.global_sla_ms = lb_raw.get("global", {}).get("latency_sla_ms", 2000)
-        lb_cfg.models = lb_raw.get("models", {})
-    
-    inf_cfg = InferenceConfig(
-        models_file=raw.get("inference_engine", {}).get("models_file", "")
-    )
-    
+    # Data Collection
+    dc_raw = raw.get("data_collection", {})
     dc_cfg = DataCollectionConfig(
-        samples_table=raw.get("data_collection", {}).get("samples_table", "vlm_samples_collected"),
-        responses_table=raw.get("data_collection", {}).get("responses_table", "vlm_responses_collected"),
-        feedback_table=raw.get("data_collection", {}).get("feedback_table", "vlm_feedback")
+        samples_table=dc_raw.get("samples_table", "vlm_samples_collected"),
+        responses_table=dc_raw.get("responses_table", "vlm_responses_collected"),
+        feedback_table=dc_raw.get("feedback_table", "vlm_feedback")
     )
     
-    rt_cfg = RetrainingConfig(
-        epochs=raw.get("retraining", {}).get("epochs", 1),
-        batch_size=raw.get("retraining", {}).get("batch_size", 8),
-        output_checkpoint=raw.get("retraining", {}).get("output_checkpoint", "checkpoints/best_reward_router_updated.pt")
+    # Retraining
+    retr_raw = raw.get("retraining", {})
+    retr_cfg = RetrainingConfig(
+        epochs=retr_raw.get("epochs", 1),
+        batch_size=retr_raw.get("batch_size", 8),
+        output_checkpoint=retr_raw.get("output_checkpoint", "checkpoints/best_reward_router_updated.pt")
     )
     
     return GlobalConfig(
         db=db_cfg,
         router=router_cfg,
         load_balancer=lb_cfg,
-        inference=inf_cfg,
         data_collection=dc_cfg,
-        retraining=rt_cfg,
+        retraining=retr_cfg,
+        models=models_list,
         _base_dir=str(base_dir)
     )
 
@@ -142,8 +163,8 @@ def get_router_config(cfg: GlobalConfig) -> RouterConfig:
 def get_load_balancer_config(cfg: GlobalConfig) -> LoadBalancerConfig:
     return cfg.load_balancer
 
-def get_inference_config(cfg: GlobalConfig) -> InferenceConfig:
-    return cfg.inference
+def get_models_config(cfg: GlobalConfig) -> List[Dict[str, Any]]:
+    return cfg.models
 
 def get_data_collection_config(cfg: GlobalConfig) -> DataCollectionConfig:
     return cfg.data_collection

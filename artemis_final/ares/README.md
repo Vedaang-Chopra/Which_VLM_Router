@@ -1,113 +1,57 @@
-# ARES: Automated Response Evaluation System
+# ARES (Automated Response Evaluation System)
 
-**The Data Engine for Artemis**
+**ARES** is the evaluation and data management subsystem of Artemis. It handles dataset loading, response storage, and automated scoring using judges (Glider, Semantic F1, etc.).
 
-ARES (Automated Response Evaluation System) is the data processing and evaluation engine for the Artemis VLM Router. It handles dataset management, parallel inference, and rigorous evaluation of VLM outputs.
+## Features
+- **Database Management**: Schema definitions and connection handling (`ares.db`).
+- **Evaluation**: Automated scoring metrics (Exact Match, F1, Glider) (`ares.evaluation`).
+- **Data Ingestion**: Tools to import Cauldron datasets (`ares.data`).
+- **Metrics**: Aggregation and reporting (`ares.metrics`).
 
-## 🚀 Quick Start
+## Usage
 
-### Python API
-
-The `ares_api` module provides a central access point for database and evaluation operations.
+### Public API
+All core functionality is exposed via `ares.public_api`:
 
 ```python
-from ares.ares_api import get_db, evaluate_sample, SampleRecord
+from ares import get_db, AresAPI, SampleRecord
 
-# 1. Access Database
+# 1. Database Access
 engine = get_db()
-print(f"Connected to DB: {engine.url}")
 
-# 2. Evaluate a Sample (Conceptual)
-# (Assuming you have a SampleRecord object)
-# score = evaluate_sample(sample_record)
-```
+# 2. Evaluation
+api = AresAPI()
 
-### Setup
-
-```bash
-cd artemis_final/ares
-pip install -r requirements.txt
-```
-
----
-
-## 📂 Directory Layout
-
-The `ares` module is organized into specialized submodules:
-
-- **`ares_api.py`**: **Main Entry Point**. Facade for common operations.
-- **`db/`**: Database operations and schema.
-  - `schema.sql`: PostgreSQL schema definition.
-  - `operations.py`: CRUD operations for samples/responses/evaluations.
-- **`evaluation/`**: Scoring and Judging logic.
-  - `evaluation.py`: Main evaluation pipeline.
-  - `judge_molmo.py`: VLM-as-a-judge implementation.
-- **`parallel/`**: High-performance parallel inference tools.
-- **`configs/`**: Configuration definitions (`ExperimentConfig`, `SampleRecord`).
-
----
-
-## 🏗️ Core Architecture
-
-ARES consists of three main components:
-
-### 1. Database (PostgreSQL)
-A standardized schema for storing VLM inputs, outputs, and scores.
-- **`vlm_samples`**: The questions and ground truth.
-- **`vlm_responses`**: What the models answered.
-- **`vlm_evaluations`**: How good the answers were.
-
-See [db/README.md](db/README.md) for full schema details.
-
-### 2. Parallel Inference
-Tools to run inference across thousands of samples efficiently, managing:
-- Rate limiting
-- Failed request retries
-- Batch processing
-
-### 3. Evaluation Pipeline
-A multi-stage evaluation system:
-1. **Rule-Based**: Exact match, F1 score, numeric match.
-2. **Model-Based**: LLM-as-a-judge (Glider, Molmo) for complex reasoning tasks.
-
----
-
-## 📊 Data Flow
-
-1. **Ingest**: Datasets are loaded from "Cauldron" format into `vlm_samples`.
-2. **Inference**: `parallel` module queries VLMs and saves to `vlm_responses`.
-3. **Evaluate**: `evaluation` module scores responses and saves to `vlm_evaluations`.
-4. **Train**: Router trains on this rich dataset of (Question, Image) -> (Best Model Reward).
-
----
-
-## 🔧 Configuration
-
-ARES uses `configs/config.py` to define:
-- **Task Mappings**: Mapping datasets (e.g., `docvqa`) to router tasks (`document_ocr`).
-- **Data Types**: Defining if a task needs `exact` match or `freeform` evaluation.
-
-Example Task Mapping:
-```python
-CONFIG_TO_TASK = {
-    'docvqa': 'document_ocr',
-    'ai2d': 'diagram_reasoning',
-    # ...
+# Create a sample record (or use dict)
+sample = {
+    "response_parsed": "The answer is 42.",
+    "ground_truth": "42",
+    "ground_truth_type": "exact"
 }
+
+# Run evaluation
+scores = api.evaluate(sample)
+print(scores['score_exact_match']) # 1.0
 ```
 
----
+### Database Operations
+```python
+from ares import insert_samples, get_existing_responses
 
-## ✅ Usage Guide
+# Insert new samples
+insert_samples(samples_list)
 
-### Running Database Migrations
-To set up the database, run the SQL scripts in `db/`:
-```bash
-psql -d vlm_router_db -f db/schema.sql
+# Query responses
+responses = get_existing_responses(run_id="exp_001")
 ```
 
-### Running Evaluation
-(Typically run via notebooks or pipeline scripts)
-
-See `notebooks/` for end-to-end examples of data processing.
-
+## Directory Structure
+```
+ares/
+├── public_api.py         # Main entry point
+├── db/                   # Database schemas and operations
+├── evaluation/           # Scoring logic (Scorer, Glider, SemanticF1)
+├── configs/              # Configuration (Tasks, Prompts)
+├── metrics/              # Aggregation utilities
+└── README.md
+```

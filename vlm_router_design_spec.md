@@ -581,3 +581,129 @@ For the professor:
 - Latency: enforced per task with realistic floors from profiling.
 - Accuracy: global target tracked over sliding window; LB shifts policy if accuracy drops.
 - Everything is **logged in DB**, enabling analysis and retraining.
+
+
+```mermaid
+ flowchart LR
+    %% ============================================================
+    %% Artemis VLM Router – System Architecture
+    %% (for research paper figure)
+    %% ============================================================
+
+    %% ---------- External World ----------
+    U["User / Client"]
+    subgraph EXT["External Interfaces"]
+        API["Router API<br/>(HTTP / gRPC)"]
+        Q["Request Queue<br/>(e.g., RabbitMQ)"]
+    end
+
+    U --> API --> Q
+
+    %% ---------- Config & Profiling ----------
+    subgraph CFG["Configuration & Profiling"]
+        Cfg["Config.yaml<br/>(SLAs, modes, model list)"]
+        Prof["Profiling Data<br/>(per-model latency, cost,<br/>accuracy, utilities)"]
+    end
+
+    Cfg --> LB
+    Prof --> LB
+    Prof --> SimExec
+
+    %% ---------- Core Routing Service ----------
+    subgraph CORE["Routing Service"]
+        direction LR
+
+        subgraph ROUTER["Cheap Text-based Router"]
+            Feat["Feature Extractor<br/>(text + task + metadata)"]
+            RModel["Router Model<br/>(small encoder + MLP)"]
+        end
+
+        subgraph LB["Load Balancer /<br/>SLA Manager"]
+            SLA["SLA Logic<br/>(global accuracy,<br/>total cost budget,<br/>per-task latency)"]
+            ModeSel["Mode Logic<br/>(router / accuracy / fast / cheap / balanced)"]
+            QueueState["Load & Queue State<br/>(RPS, per-model queue_len,<br/>estimated latency)"]
+        end
+    end
+
+    %% Data flow inside CORE
+    Q --> Feat --> RModel
+    RModel -->|"p(model), confidence"| SLA
+    Cfg --> SLA
+    SLA --> ModeSel
+    QueueState --> SLA
+    ModeSel -->|"chosen model"| ModelSel
+
+    %% Abstract node representing the chosen model
+    ModelSel(("Model Decision"))
+
+    %% ---------- Model Execution Layer ----------
+    subgraph EXEC["Model Execution Layer"]
+        direction LR
+
+        subgraph LIVE["Live VLM Endpoints"]
+            LiveExec["Live Model Executor<br/>(HTTP to VLMs)"]
+        end
+
+        subgraph SIM["Simulation Mode"]
+            SimExec["Simulation Executor<br/>(reads model_runs from DB)"]
+        end
+    end
+
+    %% Mode-dependent execution
+    ModelSel -->|"mode = live"| LiveExec
+    ModelSel -->|"mode = simulation"| SimExec
+
+    %% ---------- SQL Database & Data Plane ----------
+    subgraph DB["SQL Database"]
+        Samples[("samples")]
+        ModelRuns[("model_runs")]
+        RoutingLabels[("routing_labels")]
+        ReqLog[("requests_log")]
+        ErrBuf[("router_error_buffer")]
+        ModelState[("models_state")]
+    end
+
+    %% Simulation reads from DB
+    SimExec -->|"answers, scores, latency, cost"| ReqLog
+    Samples --- ModelRuns
+    ModelRuns --- RoutingLabels
+    ModelRuns --> Prof
+    RoutingLabels --> Prof
+
+    %% Live execution logs to DB
+    LiveExec -->|"answer, latency, cost, score?"| ReqLog
+
+    %% CORE uses DB state
+    ReqLog --> Metrics
+    ModelState --> QueueState
+
+    %% ---------- Metrics & Retraining ----------
+    subgraph META["Metrics, Monitoring & Retraining"]
+        direction TB
+        Metrics["Metrics Tracker<br/>(global accuracy,<br/>per-task latency,<br/>cost usage)"]
+        Misroute["Misroute Detector<br/>(utility_gap > margin)"]
+        Retrain["Router Retrainer<br/>(fine-tune router head)"]
+    end
+
+    ReqLog --> Metrics
+    Metrics --> QueueState
+
+    %% Misroutes & retraining loop
+    Metrics --> Misroute
+    Misroute --> ErrBuf
+    ErrBuf --> Retrain
+    Retrain -->|"updated weights"| RModel
+
+    %% ---------- Health & Model State ----------
+    subgraph HEALTH["Health Checks & Model State"]
+        HC["Health Checker<br/>(ping VLM endpoints)"]
+    end
+
+    HC --> ModelState
+    ModelState --> LB
+
+    %% ---------- User Feedback ----------
+    LiveExec --> APIResp["API Response<br/>(answer + metadata)"]
+    SimExec --> APIResp
+    APIResp --> U
+```

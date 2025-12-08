@@ -57,7 +57,7 @@ See individual module docstrings for detailed documentation.
 """
 
 # Core types
-from .types import (
+from .core.types import (
     RouterOutput,
     SchedulingContext,
     SchedulingDecision,
@@ -66,7 +66,7 @@ from .types import (
 )
 
 # Configuration
-from .config import (
+from .core.config import (
     ExperimentConfig,
     LoadProfileConfig,
     ModelCapacityConfig,
@@ -77,7 +77,7 @@ from .config import (
 )
 
 # Statistics
-from .stats_registry import (
+from .core.stats_registry import (
     StatsRegistry,
     load_per_task_model_stats,
     estimate_service_time_ms,
@@ -86,9 +86,9 @@ from .stats_registry import (
 )
 
 # Core components
-from .scheduler import ArtemisLoadBalancer
-from .model_state import ModelStateManager, ModelLoadState, ReplicaState
-from .sla_monitor import (
+from .core.scheduler import ArtemisLoadBalancer
+from .core.model_state import ModelStateManager, ModelLoadState, ReplicaState
+from .core.sla_monitor import (
     SlaMonitor,
     SlaMetrics,
     DetailedMetrics,
@@ -99,20 +99,33 @@ from .sla_monitor import (
 )
 
 # Loggers
-from .metrics_logger import (
+from .core.metrics_logger import (
     CsvMetricsLogger,
     JsonlMetricsLogger,
     load_decisions_from_csv,
     load_decisions_from_jsonl,
 )
-from .wandb_logger import WandbLogger, create_logger as create_wandb_logger
+from .core.wandb_logger import WandbLogger, create_logger as create_wandb_logger
 
-# Evaluation (imported separately to avoid circular imports)
-# from .evaluation import run_experiment
+# Public API Facade
+from .public_api import (
+    ArtemisLoadBalancerModule,
+    init_load_balancer,
+    schedule_request,
+    get_metrics,
+    reset_load_balancer_metrics,
+)
 
 __version__ = "1.0.0"
 
 __all__ = [
+    # Public API
+    "ArtemisLoadBalancerModule",
+    "init_load_balancer",
+    "schedule_request",
+    "get_metrics",
+    "reset_load_balancer_metrics",
+
     # Types
     "RouterOutput",
     "SchedulingContext",

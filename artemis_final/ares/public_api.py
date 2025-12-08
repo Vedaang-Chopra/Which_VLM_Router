@@ -5,7 +5,7 @@ This module provides a centralized interface for the ARES (Automated Response Ev
 It wraps database operations, configuration, and evaluation utilities.
 
 Usage:
-    from ares.ares_api import AresConfig, get_db, evaluate_sample
+    from ares.public_api import AresConfig, get_db, evaluate_sample
     
     # Get DB connection
     engine = get_db()

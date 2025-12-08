@@ -103,17 +103,14 @@ class RewardRouterInference:
         self.checkpoint_path = checkpoint_path
 
         # Load configuration from checkpoint with custom unpickler
+        # Load configuration from checkpoint with custom unpickler
         try:
-            checkpoint = torch.load(checkpoint_path, map_location=self.device, weights_only=False)
-        except ModuleNotFoundError as e:
+            checkpoint = _load_checkpoint_safe(checkpoint_path, map_location=self.device)
+        except Exception as e:
             if verbose:
-                print(f"[INFO] Module not found during load, using fallback: {e}")
-            # Create default config and load just the state dict
-            checkpoint = {
-                'config': RouterModelConfig(),
-                'state_dict': torch.load(checkpoint_path, map_location=self.device, 
-                                         weights_only=True)
-            }
+                print(f"[ERROR] Failed to load checkpoint safe: {e}")
+                # Try fallback just in case, but usually _load_checkpoint_safe covers it
+            raise e
 
         # Extract config - handle various checkpoint formats
         if 'config' in checkpoint and checkpoint['config'] is not None:

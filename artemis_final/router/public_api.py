@@ -16,15 +16,11 @@ from common.config_loader import GlobalConfig, get_base_dir, load_global_config
 from .router_service import RouterService
 
 # Import specific inference classes for advanced usage (e.g. notebooks)
-try:
-    from .artemis_router.inference_reward_router import RewardRouterInference
-    from .artemis_router.legacy.inference_classical_router import ClassicalRouterInference
-    from .artemis_router.legacy.inference_pairwise_router import PairwiseRouterInference
-except ImportError:
-    # Fallback for relative imports if installed as package
-    from artemis_router.inference_reward_router import RewardRouterInference
-    from artemis_router.legacy.inference_classical_router import ClassicalRouterInference
-    from artemis_router.legacy.inference_pairwise_router import PairwiseRouterInference
+# Import specific inference classes
+# Using relative imports suitable for package structure
+from .core.inference_reward_router import RewardRouterInference
+from .core.legacy.inference_classical_router import ClassicalRouterInference
+from .core.legacy.inference_pairwise_router import PairwiseRouterInference
 
 logger = logging.getLogger(__name__)
 

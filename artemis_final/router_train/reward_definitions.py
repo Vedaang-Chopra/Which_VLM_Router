@@ -199,47 +199,76 @@ def compute_rewards_real_schema(df: pd.DataFrame, weights: RewardWeights) -> pd.
 
     df = df.copy()
 
-    # Step 1: Primary accuracy from glider_score (0-5 scale)
-    if "glider_score" in df.columns:
-        # Normalize glider_score to [0, 1]
-        df["primary_acc"] = (df["glider_score"] / 5.0).clip(0, 1)
-        logger.info(f"Using glider_score as primary accuracy (mean={df['primary_acc'].mean():.3f})")
+    # Step 1: Use pre-computed rewards if available
+    precomputed_rewards = ["utility_accuracy", "utility_cheap", "utility_fast", "utility_balanced"]
+    has_precomputed = all(col in df.columns for col in precomputed_rewards)
+
+    if has_precomputed:
+        logger.info("Using pre-computed utility scores from database.")
+        df["reward_accuracy"] = df["utility_accuracy"]
+        df["reward_cheap"] = df["utility_cheap"]
+        df["reward_fast"] = df["utility_fast"]
+        df["reward_balanced"] = df["utility_balanced"]
+        
+        # Still need primary_acc for consistency/logging if possible
+        if "glider_score" in df.columns:
+            df["primary_acc"] = (df["glider_score"] / 5.0).clip(0, 1)
+        else:
+            df["primary_acc"] = 0.5
+            
+        # Use DB normalized metrics if available
+        if "cost_norm_new" in df.columns:
+            df["cost_norm"] = df["cost_norm_new"]
+        if "lat_norm" in df.columns:
+            # lat_norm is already named lat_norm in query, but logic is fine
+            pass
+
     else:
-        logger.warning("glider_score not found, defaulting to 0.5")
-        df["primary_acc"] = 0.5
+        logger.info("Pre-computed utility scores NOT found. Computing on-the-fly.")
 
-    # Step 2: Normalize cost and latency
-    df["cost_norm"], df["lat_norm"] = normalize_cost_latency(df, weights)
+        # Step 1: Primary accuracy from glider_score (0-5 scale)
+        if "glider_score" in df.columns:
+            # Normalize glider_score to [0, 1]
+            df["primary_acc"] = (df["glider_score"] / 5.0).clip(0, 1)
+            logger.info(f"Using glider_score as primary accuracy (mean={df['primary_acc'].mean():.3f})")
+        else:
+            logger.warning("glider_score not found, defaulting to 0.5")
+            df["primary_acc"] = 0.5
 
-    # Step 3: Hallucination cleanliness (not available in current schema, default to 1.0)
-    df["H"] = 1.0
-    logger.info("Hallucination cleanliness H set to 1.0 (no hallucination signal available)")
+        # Step 2: Normalize cost and latency
+        df["cost_norm"], df["lat_norm"] = normalize_cost_latency(df, weights)
 
-    # Step 4: Confidence proxy from confidence_score
-    if "confidence_score" in df.columns:
-        df["C"] = df["confidence_score"].fillna(0.5).clip(0, 1)
-        logger.info(f"Using confidence_score as C (mean={df['C'].mean():.3f})")
-    else:
-        logger.warning("confidence_score not found, using primary_acc as proxy")
-        df["C"] = df["primary_acc"]
+        # Step 3: Hallucination cleanliness (not available in current schema, default to 1.0)
+        df["H"] = 1.0
+        logger.info("Hallucination cleanliness H set to 1.0 (no hallucination signal available)")
 
-    # Step 5: Compute rewards for each mode
-    A = df["primary_acc"]
-    H = df["H"]
-    C = df["C"]
-    cost_norm = df["cost_norm"]
-    lat_norm = df["lat_norm"]
+        # Step 4: Confidence proxy from confidence_score
+        if "confidence_score" in df.columns:
+            df["C"] = df["confidence_score"].fillna(0.5).clip(0, 1)
+            logger.info(f"Using confidence_score as C (mean={df['C'].mean():.3f})")
+        else:
+            logger.warning("confidence_score not found, using primary_acc as proxy")
+            df["C"] = df["primary_acc"]
 
-    df["reward_accuracy"] = compute_reward_accuracy(A, H, weights)
-    df["reward_cheap"] = compute_reward_cheap(A, H, cost_norm, weights)
-    df["reward_fast"] = compute_reward_fast(A, H, lat_norm, weights)
-    df["reward_balanced"] = compute_reward_balanced(A, H, C, cost_norm, lat_norm, weights)
+        # Step 5: Compute rewards for each mode
+        A = df["primary_acc"]
+        H = df["H"]
+        C = df["C"]
+        cost_norm = df["cost_norm"]
+        lat_norm = df["lat_norm"]
+
+        df["reward_accuracy"] = compute_reward_accuracy(A, H, weights)
+        df["reward_cheap"] = compute_reward_cheap(A, H, cost_norm, weights)
+        df["reward_fast"] = compute_reward_fast(A, H, lat_norm, weights)
+        df["reward_balanced"] = compute_reward_balanced(A, H, C, cost_norm, lat_norm, weights)
 
     # Log summary statistics
     logger.info("\n=== Reward Summary Statistics ===")
     for mode in ["accuracy", "cheap", "fast", "balanced"]:
         col = f"reward_{mode}"
-        logger.info(f"{mode:12s}: mean={df[col].mean():7.3f}, std={df[col].std():7.3f}, "
-                   f"min={df[col].min():7.3f}, max={df[col].max():7.3f}")
+        if col in df.columns:
+            logger.info(f"{mode:12s}: mean={df[col].mean():7.3f}, std={df[col].std():7.3f}, "
+                       f"min={df[col].min():7.3f}, max={df[col].max():7.3f}")
 
     return df
+

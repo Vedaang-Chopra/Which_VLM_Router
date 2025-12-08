@@ -28,7 +28,7 @@ from datetime import datetime
 # artemis_final/load_balancer/evaluation/run_experiment.py -> artemis_final/
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
-from load_balancer.config import (
+from load_balancer.core.config import (
     ExperimentConfig,
     default_experiment_config,
     load_capacity_config,
@@ -36,12 +36,12 @@ from load_balancer.config import (
     WANDB_PROJECT,
     WANDB_ENTITY,
 )
-from load_balancer.types import RouterOutput, SchedulingContext
-from load_balancer.stats_registry import StatsRegistry, load_per_task_model_stats
-from load_balancer.scheduler import ArtemisLoadBalancer
-from load_balancer.sla_monitor import SlaMonitor, print_detailed_summary
-from load_balancer.metrics_logger import CsvMetricsLogger, JsonlMetricsLogger
-from load_balancer.wandb_logger import create_logger as create_wandb_logger
+from load_balancer.core.types import RouterOutput, SchedulingContext
+from load_balancer.core.stats_registry import StatsRegistry, load_per_task_model_stats
+from load_balancer.core.scheduler import ArtemisLoadBalancer
+from load_balancer.core.sla_monitor import SlaMonitor, print_detailed_summary
+from load_balancer.core.metrics_logger import CsvMetricsLogger, JsonlMetricsLogger
+from load_balancer.core.wandb_logger import create_logger as create_wandb_logger
 
 logging.basicConfig(
     level=logging.INFO,

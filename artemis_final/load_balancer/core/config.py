@@ -10,18 +10,30 @@ This module provides configuration structures and functions for:
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, List, Any
 import yaml
+import sys
 
+# Import unified config loader
+# Need to ensure artemis_final is in path
+try:
+    from artemis_final.common.config_loader import load_global_config, get_models_config
+except ImportError:
+    # Fallback if running relative
+    import sys
+    sys.path.append(str(Path(__file__).parents[3]))
+    from artemis_final.common.config_loader import load_global_config, get_models_config
 
 # Path configuration
-BASE_DIR = Path(__file__).parents[1]  # points to artemis_final/
+BASE_DIR = Path(__file__).parents[2]  # points to artemis_final/
 ARES_DIR = BASE_DIR / "ares"
 LOAD_BALANCER_DIR = BASE_DIR / "load_balancer"
 
 # Data paths
 STATS_PATH = ARES_DIR / "aggregates" / "per_task_model_stats.json"
-CAPACITY_CONFIG_PATH = LOAD_BALANCER_DIR / "load_balancer_config.yaml"
+# Deprecated: CAPACITY_CONFIG_PATH = LOAD_BALANCER_DIR / "load_balancer_config.yaml"
+# Now we point to the global config just for reference if needed, but we use the loader
+CAPACITY_CONFIG_PATH = BASE_DIR / "configs" / "artemis.yaml"
 
 # W&B configuration
 WANDB_PROJECT = "artemis_load_balancer"
@@ -115,10 +127,47 @@ def default_experiment_config() -> ExperimentConfig:
     """
     Returns a default experiment configuration with standard load profiles.
     """
+    # Load global settings to populate defaults
+    try:
+        cfg = load_global_config()
+        lb_cfg = cfg.load_balancer
+        g_sla = lb_cfg.global_sla
+        
+        # Convert task SLAs dict to what GlobalSLAConfig expects if needed, 
+        # or just use what we have.
+        # GlobalSLAConfig.task_slas expect Dict[str, TaskSLAConfig]
+        # but config loader returns Dict[str, Dict]
+        task_slas_obj = {}
+        for t, params in lb_cfg.task_slas.items():
+            task_slas_obj[t] = TaskSLAConfig(
+                task_type=t,
+                max_latency_ms=int(params.get("max_latency_ms", 2000)),
+                min_accuracy=float(params.get("min_accuracy", 0.85))
+            )
+            
+        global_sla = GlobalSLAConfig(
+            total_cost_budget_usd=g_sla.total_cost_budget_usd,
+            min_global_accuracy=g_sla.min_global_accuracy,
+            default_latency_ms=g_sla.default_latency_ms,
+            task_slas=task_slas_obj
+        )
+        
+        max_drop = lb_cfg.max_accuracy_drop
+        sched_mode = lb_cfg.default_scheduling_mode
+        
+    except Exception as e:
+        # Fallback to defaults if config load fails
+        print(f"Warning: Could not load global config for defaults: {e}")
+        global_sla = GlobalSLAConfig()
+        max_drop = 0.05
+        sched_mode = "capacity_aware"
+
     return ExperimentConfig(
         name="phase5_dynamic_load",
-        latency_sla_ms={"default": 2000.0},
-        max_allowed_accuracy_drop=0.05,
+        global_sla=global_sla,
+        latency_sla_ms={"default": float(global_sla.default_latency_ms)},
+        max_allowed_accuracy_drop=max_drop,
+        scheduling_mode=sched_mode,
         load_profiles={
             "low": LoadProfileConfig("low", qps=2, duration_sec=60),
             "medium": LoadProfileConfig("medium", qps=10, duration_sec=60),
@@ -130,32 +179,34 @@ def default_experiment_config() -> ExperimentConfig:
 
 def load_capacity_config(config_path: Optional[Path] = None) -> Dict[str, ModelCapacityConfig]:
     """
-    Load model capacity configuration from YAML file.
+    Load model capacity configuration from Unified Artemis Config.
 
     Args:
-        config_path: Path to capacity_config.yaml. If None, uses default path.
+        config_path: Ignored/Optional (kept for signature compatibility), logic uses global loader.
 
     Returns:
         Dictionary mapping model_name to ModelCapacityConfig
-
-    Raises:
-        FileNotFoundError: If config file doesn't exist
-        ValueError: If config file is malformed
     """
-    if config_path is None:
-        config_path = CAPACITY_CONFIG_PATH
-
-    if not config_path.exists():
-        raise FileNotFoundError(f"Capacity config not found at {config_path}")
-
-    with open(config_path, 'r') as f:
-        data = yaml.safe_load(f)
-
-    if 'models' not in data:
-        raise ValueError("Capacity config must contain 'models' key")
-
+    # Use global config loader
+    cfg = load_global_config()
+    models_list = get_models_config(cfg)
+    
     configs = {}
-    for model_name, model_data in data['models'].items():
+    for model_data in models_list:
+        model_name = model_data.get("name")
+        if not model_name:
+            continue
+            
+        # Deduplicate: Only load if not already loaded (assuming first entry has relevant stats)
+        # Or if the current one has 'base_latency_ms', we prefer that.
+        if model_name in configs:
+            continue
+            
+        # Check if this model entry has load balancer stats
+        if "base_latency_ms" not in model_data:
+            # Skip entries that don't have LB config (e.g. pure API definitions without simulation params)
+            continue
+            
         # Parse autoscale config if present
         autoscale = None
         if 'autoscale' in model_data:
@@ -169,7 +220,7 @@ def load_capacity_config(config_path: Optional[Path] = None) -> Dict[str, ModelC
 
         configs[model_name] = ModelCapacityConfig(
             model_name=model_name,
-            base_latency_ms=model_data['base_latency_ms'],
+            base_latency_ms=model_data.get('base_latency_ms', 1000.0),
             min_replicas=model_data.get('min_replicas', 1),
             max_replicas=model_data.get('max_replicas', 1),
             sla_ms=model_data.get('sla_ms', 2000.0),
