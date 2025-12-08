@@ -87,14 +87,19 @@ def build_stats_from_df(df: pd.DataFrame) -> Dict:
         if task not in stats_dict:
             stats_dict[task] = {}
         
-        # Calculate average stats
+        # Calculate average stats using normalized keys
+        # Clean data first - remove NaNs
+        latencies = group['latency_ms'].dropna()
+        scores = group['glider_score'].dropna()
+        costs = group['cost_usd'].dropna()
+        
         stats_dict[task][model] = {
-            'accuracy': group['glider_score'].mean() if group['glider_score'].notna().any() else 0.8,
-            'avg_latency_ms': group['latency_ms'].mean() if group['latency_ms'].notna().any() else 500,
-            'avg_cost_usd': group['cost_usd'].mean() if group['cost_usd'].notna().any() else 0.0001,
+            'avg_accuracy': scores.mean() if not scores.empty else 0.5,
+            'avg_latency_ms': latencies.mean() if not latencies.empty else 1000.0,
+            'cost_per_request_usd': costs.mean() if not costs.empty else 0.0001,
         }
     
-    logger.info(f"Built stats dict for {len(stats_dict)} tasks")
+    logger.info(f"Built stats dict for {len(stats_dict)} tasks using normalized schema")
     return stats_dict
 
 
@@ -132,12 +137,15 @@ def artemis_route(sample_id: str, task_type: str, model_scores: Dict[str, float]
     
     router_probs = {m: float(p) for m, p in zip(model_names, probs)}
     preferred_model = max(router_probs, key=router_probs.get)
+    # Calculate max probability
+    max_prob = max(router_probs.values()) if router_probs else 0.0
     
     return RouterOutput(
         sample_id=str(sample_id),
         task_type=str(task_type),
         router_probs=router_probs,
-        preferred_model=preferred_model
+        preferred_model=preferred_model,
+        max_prob=max_prob
     )
 
 
@@ -223,9 +231,11 @@ def run_experiment(
     load_balancer = ArtemisLoadBalancer(
         model_configs=model_configs,
         stats_registry=stats_registry,
-        global_latency_sla_ms=experiment_config.global_latency_sla_ms,
+        latency_sla_ms=experiment_config.latency_sla_ms,
         max_accuracy_drop=experiment_config.max_allowed_accuracy_drop,
         scheduling_mode=experiment_config.scheduling_mode,
+        router_confidence_threshold=experiment_config.router_confidence_threshold,
+        top_k=experiment_config.top_k,
         simulation_only=experiment_config.simulation_only,
     )
 
@@ -247,9 +257,10 @@ def run_experiment(
         wandb_config = {
             "experiment_name": experiment_config.name,
             "scheduling_mode": experiment_config.scheduling_mode,
-            "global_latency_sla_ms": experiment_config.global_latency_sla_ms,
+            "latency_sla_ms": experiment_config.latency_sla_ms,
             "max_accuracy_drop": experiment_config.max_allowed_accuracy_drop,
             "simulation_only": experiment_config.simulation_only,
+            "cost_budget_usd": experiment_config.cost_budget_usd,
             "load_profiles": {
                 name: {"qps": p.qps, "duration_sec": p.duration_sec}
                 for name, p in experiment_config.load_profiles.items()
@@ -268,7 +279,9 @@ def run_experiment(
         logger.info(f"Logging to W&B: {WANDB_PROJECT}/{run_name}")
 
     # Initialize SLA monitor
-    sla_monitor = SlaMonitor(experiment_config.global_latency_sla_ms)
+    # Use default SLA for monitoring overall stats, though per-task is handled in detail
+    default_sla = experiment_config.latency_sla_ms.get("default", 2000.0)
+    sla_monitor = SlaMonitor(default_sla)
 
     # Run experiment across load profiles
     global_step = 0
@@ -304,6 +317,16 @@ def run_experiment(
                 # Schedule with load balancer
                 decision = load_balancer.schedule(router_output, context)
 
+                # Track cost and check budget
+                total_cost_spent += decision.est_cost_usd
+                if experiment_config.cost_budget_usd is not None and total_cost_spent >= experiment_config.cost_budget_usd:
+                    logger.warning(
+                        f"💸 Cost budget exceeded: ${total_cost_spent:.4f} >= ${experiment_config.cost_budget_usd:.4f}. "
+                        "Stopping simulation early."
+                    )
+                    budget_exceeded = True
+                    break # Break from the inner traffic_gen loop
+
                 # Log decision
                 if csv_logger:
                     csv_logger.log(experiment_config.name, profile_name, decision, global_step=global_step)
@@ -320,6 +343,9 @@ def run_experiment(
                 global_step += 1
                 if global_step % 100 == 0:
                     logger.info(f"  Processed {global_step} requests...")
+            
+            if budget_exceeded:
+                break
 
             # Profile completed
             profile_duration = time.time() - profile_start_time
@@ -331,6 +357,7 @@ def run_experiment(
             logger.info(f"  Violation rate: {profile_metrics.violation_rate:.2%}")
             logger.info(f"  Latency p95: {profile_metrics.latency_p95_ms:.1f}ms")
             logger.info(f"  Avg cost: ${profile_metrics.avg_cost_usd:.6f}")
+            logger.info(f"  Avg accuracy: {profile_metrics.avg_accuracy:.4f}")
 
             if wandb_logger:
                 wandb_logger.log_sla_metrics(profile_metrics, profile_name, stage="final")
@@ -346,6 +373,17 @@ def run_experiment(
 
     detailed_metrics = sla_monitor.detailed_snapshot()
     print_detailed_summary(detailed_metrics)
+    
+    # Check global accuracy
+    global_acc = detailed_metrics.overall.avg_accuracy
+    if global_acc < experiment_config.min_global_accuracy:
+        logger.warning(
+            f"❌ Global accuracy {global_acc:.4f} is below target {experiment_config.min_global_accuracy:.4f}"
+        )
+    else:
+        logger.info(
+            f"✅ Global accuracy {global_acc:.4f} meets target {experiment_config.min_global_accuracy:.4f}"
+        )
 
     if wandb_logger:
         wandb_logger.log_detailed_metrics(detailed_metrics, stage="final")
@@ -355,6 +393,7 @@ def run_experiment(
             "overall_violation_rate": detailed_metrics.overall.violation_rate,
             "overall_latency_p95_ms": detailed_metrics.overall.latency_p95_ms,
             "overall_avg_cost_usd": detailed_metrics.overall.avg_cost_usd,
+            "overall_avg_accuracy": detailed_metrics.overall.avg_accuracy,
             "total_cost_usd": detailed_metrics.overall.total_cost_usd,
         }
         wandb_logger.log_summary(summary)
@@ -377,8 +416,9 @@ def main():
     """Command-line entry point."""
     parser = argparse.ArgumentParser(description="Run Artemis load balancer experiment")
     parser.add_argument("--name", type=str, default="load_balancer_test", help="Experiment name")
-    parser.add_argument("--mode", type=str, choices=["router_only", "capacity_aware", "cost_minimizing"], default="capacity_aware", help="Scheduling mode")
-    parser.add_argument("--sla-ms", type=float, default=2000.0, help="Global latency SLA in milliseconds")
+    parser.add_argument("--mode", type=str, choices=["router_only", "capacity_aware", "cost_minimizing", 
+"router", "accuracy", "fast", "cheap", "balanced"], default="capacity_aware", help="Scheduling mode")
+    parser.add_argument("--sla-ms", type=float, default=2000.0, help="Default latency SLA in milliseconds")
     parser.add_argument("--max-accuracy-drop", type=float, default=0.05, help="Maximum allowed accuracy drop")
     parser.add_argument("--simulation-only", action="store_true", help="Run in simulation-only mode")
     parser.add_argument("--no-wandb", action="store_true", help="Disable W&B logging")
@@ -390,7 +430,8 @@ def main():
     config = default_experiment_config()
     config.name = args.name
     config.scheduling_mode = args.mode
-    config.global_latency_sla_ms = args.sla_ms
+    # Update default SLA in the map
+    config.latency_sla_ms["default"] = args.sla_ms
     config.max_allowed_accuracy_drop = args.max_accuracy_drop
     config.simulation_only = args.simulation_only
     config.log_to_wandb = not args.no_wandb

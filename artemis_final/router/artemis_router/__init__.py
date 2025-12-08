@@ -10,8 +10,8 @@ This package provides:
 """
 
 from .schemas import Sample, RouterDecision, InferenceResult, LogRecord
-from .inference_classical_router import ClassicalRouterInference
-from .inference_pairwise_router import PairwiseRouterInference
+from .legacy.inference_classical_router import ClassicalRouterInference
+from .legacy.inference_pairwise_router import PairwiseRouterInference
 from .inference_reward_router import RewardRouterInference
 from .fallback import RouterFallback, FallbackConfig, FallbackResult, create_fallback_handler
 

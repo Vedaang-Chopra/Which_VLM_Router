@@ -6,16 +6,13 @@ including latency, cost, and accuracy for each (task_type, model_name) combinati
 
 Expected input format (JSON):
 {
-  "ocr": {
-    "small_vlm": {
-      "avg_latency_ms": 200.0,
-      "avg_accuracy": 0.85,
-      "cost_per_token_usd": 0.000002,
-      "avg_tokens": 300
-    },
-    ...
-  },
-  ...
+  "task_type": {
+    "model_name": {
+      "avg_latency_ms": 150.0,
+      "avg_accuracy": 0.95,
+      "cost_per_request_usd": 0.0005
+    }
+  }
 }
 
 Developers can refer to Ares notebooks under artemis_final/ares/ to see how
@@ -34,9 +31,9 @@ logger = logging.getLogger(__name__)
 class StatsRegistry:
     """
     Registry for per-task/per-model statistics.
-
-    This class loads statistics from the Ares aggregates and provides
-    helper methods to retrieve stats for specific task/model combinations.
+    
+    Acts as the single source of truth for load balancer statistics.
+    Supports in-memory updates and lazy loading from a JSON file.
     """
 
     def __init__(self, stats_dict: Optional[Dict] = None):
@@ -45,10 +42,10 @@ class StatsRegistry:
 
         Args:
             stats_dict: Pre-loaded statistics dictionary. If None, will be loaded
-                       when needed via load_per_task_model_stats()
+                       from disk when needed via load_per_task_model_stats()
         """
         self._stats_dict = stats_dict
-        self._missing_stats_warned = set()  # Track (task, model) pairs we've warned about
+        self._missing_stats_warned = set()  # Track (task, model, stat_type) tuples we've warned about
 
     @property
     def stats_dict(self) -> Dict:
@@ -82,17 +79,17 @@ class StatsRegistry:
         Args:
             task_type: Type of task
             model_name: Name of the model
-            default_ms: Default latency to use if stats not found
+            default_ms: Default latency to use if stats not found (1000.0 ms)
 
         Returns:
             Estimated service time in milliseconds
         """
         stats = self.get_stats_for(task_type, model_name)
-        if stats is None:
-            self._warn_missing_stats(task_type, model_name, "service_time")
-            return default_ms
-
-        return stats.get("avg_latency_ms", default_ms)
+        if stats and "avg_latency_ms" in stats:
+            return float(stats["avg_latency_ms"])
+        
+        self._warn_missing_stats(task_type, model_name, "avg_latency_ms")
+        return default_ms
 
     def estimate_cost_usd(self, task_type: str, model_name: str) -> float:
         """
@@ -103,16 +100,14 @@ class StatsRegistry:
             model_name: Name of the model
 
         Returns:
-            Estimated cost in USD
+            Estimated cost in USD (default 0.0)
         """
         stats = self.get_stats_for(task_type, model_name)
-        if stats is None:
-            self._warn_missing_stats(task_type, model_name, "cost")
-            return 0.0
-
-        cost_per_token = stats.get("cost_per_token_usd", 0.0)
-        avg_tokens = stats.get("avg_tokens", 0)
-        return cost_per_token * avg_tokens
+        if stats and "cost_per_request_usd" in stats:
+            return float(stats["cost_per_request_usd"])
+            
+        self._warn_missing_stats(task_type, model_name, "cost_per_request_usd")
+        return 0.0
 
     def estimate_accuracy(self, task_type: str, model_name: str) -> float:
         """
@@ -123,14 +118,14 @@ class StatsRegistry:
             model_name: Name of the model
 
         Returns:
-            Estimated accuracy (0.0 to 1.0)
+            Estimated accuracy (0.0 to 1.0, default 0.0)
         """
         stats = self.get_stats_for(task_type, model_name)
-        if stats is None:
-            self._warn_missing_stats(task_type, model_name, "accuracy")
-            return 0.0
+        if stats and "avg_accuracy" in stats:
+            return float(stats["avg_accuracy"])
 
-        return stats.get("avg_accuracy", 0.0)
+        self._warn_missing_stats(task_type, model_name, "avg_accuracy")
+        return 0.0
 
     def has_stats(self, task_type: str, model_name: str) -> bool:
         """
@@ -145,20 +140,79 @@ class StatsRegistry:
         """
         return self.get_stats_for(task_type, model_name) is not None
 
-    def _warn_missing_stats(self, task_type: str, model_name: str, stat_type: str):
+    def update_latency(self, task_type: str, model_name: str, latency_ms: float):
         """
-        Log a warning for missing statistics (once per task/model pair).
+        Update the latency statistic for a task and model.
 
         Args:
             task_type: Type of task
             model_name: Name of the model
-            stat_type: Type of statistic being requested
+            latency_ms: Latency in milliseconds
         """
-        key = (task_type, model_name)
+        entry = self._ensure_entry(task_type, model_name)
+        entry["avg_latency_ms"] = float(latency_ms)
+
+    def update_accuracy(self, task_type: str, model_name: str, accuracy: float):
+        """
+        Update the accuracy statistic for a task and model.
+
+        Args:
+            task_type: Type of task
+            model_name: Name of the model
+            accuracy: Accuracy (0.0 to 1.0)
+        """
+        entry = self._ensure_entry(task_type, model_name)
+        entry["avg_accuracy"] = float(accuracy)
+
+    def update_cost(self, task_type: str, model_name: str, cost_usd: float):
+        """
+        Update the cost statistic for a task and model.
+
+        Args:
+            task_type: Type of task
+            model_name: Name of the model
+            cost_usd: Cost per request in USD
+        """
+        entry = self._ensure_entry(task_type, model_name)
+        entry["cost_per_request_usd"] = float(cost_usd)
+
+    def _ensure_entry(self, task_type: str, model_name: str) -> Dict[str, Any]:
+        """
+        Ensure a stats entry exists for the given task and model.
+        
+        Args:
+            task_type: Type of task
+            model_name: Name of the model
+            
+        Returns:
+            The mutable dictionary for the specific task/model stats.
+        """
+        if self._stats_dict is None:
+            # Initialize with empty dict if not loaded or non-existent
+            self._stats_dict = {}
+            
+        if task_type not in self._stats_dict:
+            self._stats_dict[task_type] = {}
+            
+        if model_name not in self._stats_dict[task_type]:
+            self._stats_dict[task_type][model_name] = {}
+            
+        return self._stats_dict[task_type][model_name]
+
+    def _warn_missing_stats(self, task_type: str, model_name: str, stat_type: str):
+        """
+        Log a warning for missing statistics (once per task/model/field combination).
+
+        Args:
+            task_type: Type of task
+            model_name: Name of the model
+            stat_type: Type of statistic being requested (e.g. 'avg_latency_ms')
+        """
+        key = (task_type, model_name, stat_type)
         if key not in self._missing_stats_warned:
             logger.warning(
-                f"Missing {stat_type} stats for task={task_type}, model={model_name}. "
-                f"Using default values. Check Ares aggregates to ensure stats are available."
+                f"Missing '{stat_type}' stats for task='{task_type}', model='{model_name}'. "
+                f"Using default value."
             )
             self._missing_stats_warned.add(key)
 

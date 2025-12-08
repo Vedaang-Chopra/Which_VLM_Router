@@ -463,11 +463,40 @@ class RouterEvalPipeline:
         all_sample_ids = self.fetch_sample_ids_for_config(source_config)
         
         if not force:
-            completed = self.tracker.get_completed_samples(source_config)
-            sample_ids = [sid for sid in all_sample_ids if sid not in completed]
+            # 1. Check File Tracker (fast)
+            completed_file = self.tracker.get_completed_samples(source_config)
+            
+            # 2. Check Database (robust) - "Check how many are there currently"
+            # We query sample_ids that have BOTH glider and vlm_judge scores (if used)
+            conditions = []
+            if self.use_glider:
+                conditions.append("glider_score IS NOT NULL")
+            if self.use_vlm_judge:
+                conditions.append("judge_molmo_score IS NOT NULL")
+            
+            completed_db = set()
+            if conditions:
+                cond_str = " AND ".join(conditions)
+                # Join with vlm_samples to filter by source_config
+                query = f"""
+                SELECT r.sample_id 
+                FROM vlm_evaluations e
+                JOIN vlm_samples r ON e.sample_id = r.sample_id
+                WHERE r.source_config = '{source_config}' AND {cond_str}
+                """
+                with self.engine.connect() as conn:
+                    completed_db = {row[0] for row in conn.execute(text(query))}
+            
+            # Merge both sources of truth
+            all_completed = set(completed_file).union(completed_db)
+            
+            sample_ids = [sid for sid in all_sample_ids if sid not in all_completed]
             skipped = len(all_sample_ids) - len(sample_ids)
             if skipped > 0:
                 pbar.update(skipped)
+                # Ensure file tracker is up to date with DB reality
+                if len(completed_db) > len(completed_file):
+                    self.tracker.mark_completed(source_config, list(completed_db))
         else:
             sample_ids = all_sample_ids
         

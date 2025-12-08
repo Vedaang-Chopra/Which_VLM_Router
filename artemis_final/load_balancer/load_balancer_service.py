@@ -80,8 +80,11 @@ class LoadBalancerService:
         return ArtemisLoadBalancer(
             model_configs=model_configs,
             stats_registry=self.stats_registry,
-            global_latency_sla_ms=self.lb_cfg.global_sla_ms,
-            scheduling_mode="capacity_aware"
+            latency_sla_ms=self.lb_cfg.latency_sla_ms,
+            max_accuracy_drop=self.lb_cfg.global_config.get('max_accuracy_drop', 0.05), # Access global section safely
+            scheduling_mode=self.lb_cfg.get('default_scheduling_mode', 'capacity_aware'),
+            router_confidence_threshold=self.lb_cfg.get('router_confidence_threshold', 0.6),
+            top_k=self.lb_cfg.get('top_k', 3)
         )
 
     def schedule(self, 
@@ -103,11 +106,15 @@ class LoadBalancerService:
         Returns:
             Dict containing scheduling decision
         """
+        # Calculate max probability for router output
+        max_prob = max(router_probs.values()) if router_probs else 0.0
+
         router_output = RouterOutput(
             sample_id=sample_id,
             task_type=task_type,
             router_probs=router_probs,
-            preferred_model=preferred_model
+            preferred_model=preferred_model,
+            max_prob=max_prob
         )
         
         context = SchedulingContext(

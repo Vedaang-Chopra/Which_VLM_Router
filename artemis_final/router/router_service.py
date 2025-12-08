@@ -65,7 +65,11 @@ class RouterService:
             metadata: Optional additional metadata
             
         Returns:
-            Dict with keys: chosen_model, rewards, mode, inference_ms
+            Dict[str, Any]: A dictionary containing routing details:
+            - `chosen_model` (str): The selected model name.
+            - `rewards` (Dict[str, float]): Scores/logits for each available model.
+            - `mode` (str): The routing mode applied.
+            - `inference_ms` (float): Latency of the routing step.
         """
         if self.engine is None:
             # Fallback when no model is loaded

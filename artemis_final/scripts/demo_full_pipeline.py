@@ -25,7 +25,8 @@ from typing import Dict, List, Optional, Any
 from collections import defaultdict
 
 # Add project root to path
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+print(f"Project Root: {PROJECT_ROOT}")
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import numpy as np
@@ -166,7 +167,7 @@ def run_demo(config: DemoConfig):
     # ─────────────────────────────────────────────────────────────────────
     print("\n🧠 Step 2: Initializing router...")
     
-    checkpoint_path = PROJECT_ROOT / "checkpoints" / config.checkpoint_name
+    checkpoint_path = PROJECT_ROOT / "artemis_final" / "checkpoints" / config.checkpoint_name
     
     if not checkpoint_path.exists():
         print(f"   ⚠ Checkpoint not found: {checkpoint_path}")

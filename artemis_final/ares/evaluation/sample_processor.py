@@ -207,6 +207,7 @@ def process_sample_normalized(
             models_to_process = [(p, m) for p, m in zip(MODEL_PREFIXES, MODEL_NAMES) if m in models_to_run]
         
         # Run inference only for models we need
+        # Run inference in parallel for all models (utilizing runner.fanout)
         if models_to_run is None:
             responses = vlm_client.vlm.run_image(
                 image=image,
@@ -216,19 +217,22 @@ def process_sample_normalized(
                 max_tokens=config.max_tokens,
             )
         else:
-            responses = {}
-            for model_name in models_to_run:
-                try:
-                    resp = vlm_client.vlm.run_image(
-                        image=image,
-                        text=prompt,
-                        models=[model_name],
-                        temperature=config.temperature,
-                        max_tokens=config.max_tokens,
-                    )
-                    responses.update(resp)
-                except Exception as e:
-                    responses[model_name] = {'ok': False, 'error_message': str(e)}
+            # Pass the list of models to run_image to enable parallel fan-out
+            # instead of looping sequentially.
+            try:
+                responses = vlm_client.vlm.run_image(
+                    image=image,
+                    text=prompt,
+                    models=models_to_run,
+                    temperature=config.temperature,
+                    max_tokens=config.max_tokens,
+                )
+            except Exception as e:
+                # If the entire batch fails (rare), mark all as failed
+                responses = {
+                    m: {'ok': False, 'error_message': str(e)} 
+                    for m in models_to_run
+                }
         
         for prefix, model_name in models_to_process:
             response = responses.get(model_name, {})

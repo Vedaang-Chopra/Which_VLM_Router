@@ -31,4 +31,9 @@ ENV PYTHONPATH=/app
 ENV CONFIG_PATH=configs/artemis.yaml
 
 # Run with uvicorn
+# Run with uvicorn (Default Server Mode)
 CMD ["uvicorn", "system_api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# Alternative: Run as CLI
+# docker run --rm -v $(pwd)/data:/app/data artemis-router python main.py --prompt "Describe this image" --image "data/sample.jpg"
+

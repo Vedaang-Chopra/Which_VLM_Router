@@ -66,6 +66,26 @@ class ModelLoadState:
     last_scale_time_ms: float = 0.0
     total_requests_served: int = 0
 
+    def estimate_queue_delay(self, arrival_ts: float) -> float:
+        """
+        Estimate queue delay in milliseconds.
+
+        Args:
+            arrival_ts: Arrival timestamp in seconds
+
+        Returns:
+            Estimated queue delay in milliseconds
+        """
+        arrival_ts_ms = arrival_ts * 1000.0
+        
+        if not self.replicas:
+            return 0.0
+
+        earliest_replica = min(self.replicas, key=lambda r: r.available_at_ms)
+        start_time_ms = max(arrival_ts_ms, earliest_replica.available_at_ms)
+        
+        return start_time_ms - arrival_ts_ms
+
 
 class ModelStateManager:
     """
@@ -150,7 +170,9 @@ class ModelStateManager:
         )
 
         # Check if we had stats
-        missing_stats = not self.stats_registry.has_stats(task_type, model_name)
+        missing_stats = []
+        if not self.stats_registry.has_stats(task_type, model_name):
+            missing_stats.append("all_metrics")
 
         # Calculate finish time
         finish_time_ms = start_time_ms + service_time_ms

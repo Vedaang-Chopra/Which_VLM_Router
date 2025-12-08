@@ -102,6 +102,12 @@ class TrainingConfig:
     val_ratio: float = 0.1
     test_ratio: float = 0.1
 
+    # Metadata augmentation (for generalization)
+    enable_metadata_augmentation: bool = True
+    question_only_ratio: float = 0.70  # Question + image metadata (no task/dataset labels)
+    image_metadata_only_ratio: float = 0.20  # Minimal image metadata only
+    full_metadata_ratio: float = 0.10  # Full metadata (original format)
+
     # Optimization
     optimizer: str = "adamw"
     scheduler: str = "cosine"  # "cosine", "linear", "constant"

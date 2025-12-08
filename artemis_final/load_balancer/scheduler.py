@@ -15,12 +15,19 @@ The scheduler supports multiple modes:
 """
 
 import logging
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Any
 
-from .types import RouterOutput, SchedulingContext, SchedulingDecision
-from .config import ModelCapacityConfig
+from .types import RouterOutput, SchedulingContext, SchedulingDecision, BudgetExhaustedError
+from .config import ModelCapacityConfig, GlobalSLAConfig, TaskSLAConfig
 from .model_state import ModelStateManager
 from .stats_registry import StatsRegistry
+from .sla_budget_tracker import SLABudgetTracker, BudgetConfig
+from .mode_switcher import ModeSwitcher, ModeSwitchConfig
+from .sla_monitor import SlaMonitor
+
+import time
+from collections import deque
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -38,10 +45,13 @@ class ArtemisLoadBalancer:
         self,
         model_configs: Dict[str, ModelCapacityConfig],
         stats_registry: StatsRegistry,
-        global_latency_sla_ms: float,
+        latency_sla_ms: Dict[str, float],
         max_accuracy_drop: float = 0.05,
         scheduling_mode: str = "capacity_aware",
-        simulation_only: bool = False
+        router_confidence_threshold: float = 0.6,
+        top_k: int = 3,
+        simulation_only: bool = False,
+        global_sla_config: Optional[GlobalSLAConfig] = None
     ):
         """
         Initialize the load balancer.
@@ -49,20 +59,39 @@ class ArtemisLoadBalancer:
         Args:
             model_configs: Dictionary of model configurations
             stats_registry: Registry for per-task/model statistics
-            global_latency_sla_ms: Global SLA target in milliseconds
+            latency_sla_ms: Dictionary mapping task types to SLA targets in ms
             max_accuracy_drop: Maximum allowed accuracy drop vs preferred model
-            scheduling_mode: One of "router_only", "capacity_aware", "cost_minimizing"
+            scheduling_mode: One of "router", "capacity_aware", "accuracy", "fast", "cheap", "balanced"
+            router_confidence_threshold: Threshold below which to use top-K fallback
+            top_k: Number of models to consider when confidence is low
+            top_k: Number of models to consider when confidence is low
             simulation_only: If True, don't commit assignments (for what-if analysis)
+            global_sla_config: Optional global SLA configuration
         """
         self.model_state = ModelStateManager(model_configs, stats_registry)
         self.stats_registry = stats_registry
-        self.global_latency_sla_ms = global_latency_sla_ms
+        self.sla_config = latency_sla_ms
         self.max_accuracy_drop = max_accuracy_drop
         self.scheduling_mode = scheduling_mode
+        self.router_confidence_threshold = router_confidence_threshold
+        self.top_k = top_k
         self.simulation_only = simulation_only
+        
+        # New Components
+        self.global_sla_config = global_sla_config or GlobalSLAConfig()
+        
+        # Initialize budget tracker from global config or default
+        budget_cfg = BudgetConfig(total_cost_budget_usd=self.global_sla_config.total_cost_budget_usd)
+        
+        self.budget_tracker = SLABudgetTracker(budget_cfg)
+        self.mode_switcher = ModeSwitcher(ModeSwitchConfig(default_mode=scheduling_mode))
+        self.sla_monitor = SlaMonitor(latency_sla_ms.get('default', 2000.0))
+        
+        # Request Rate Tracking
+        self.request_times = deque(maxlen=1000)
 
         # Validate scheduling mode
-        valid_modes = ["router_only", "capacity_aware", "cost_minimizing"]
+        valid_modes = ["router_only", "capacity_aware", "router", "accuracy", "fast", "cheap", "balanced", "cost_minimizing"]
         if scheduling_mode not in valid_modes:
             raise ValueError(
                 f"Invalid scheduling_mode: {scheduling_mode}. "
@@ -71,9 +100,48 @@ class ArtemisLoadBalancer:
 
         logger.info(
             f"Initialized ArtemisLoadBalancer: mode={scheduling_mode}, "
-            f"sla={global_latency_sla_ms}ms, max_accuracy_drop={max_accuracy_drop}, "
+            f"sla_config={latency_sla_ms}, max_accuracy_drop={max_accuracy_drop}, "
+            f"confidence_threshold={router_confidence_threshold}, top_k={top_k}, "
             f"simulation_only={simulation_only}"
         )
+
+    def _get_current_rps(self) -> float:
+        """Calculate current requests per second."""
+        if len(self.request_times) < 2:
+            return 0.0
+        
+        window_sec = 10.0
+        cutoff_time = time.time() - window_sec
+        recent = [t for t in self.request_times if t > cutoff_time]
+        
+        if not recent:
+            return 0.0
+            
+        return len(recent) / window_sec
+
+    def _get_lb_stats(self):
+        """Aggregate stats for mode switching."""
+        sla_metrics = self.sla_monitor.snapshot()
+        
+        @dataclass
+        class LBStats:
+             global_accuracy: float
+             latency_violation_rate: float
+             budget_remaining_pct: float
+             min_global_accuracy: float
+             
+        spent_pct = self.budget_tracker.get_spent_pct()
+        
+        return LBStats(
+            global_accuracy=sla_metrics.avg_accuracy,
+            latency_violation_rate=sla_metrics.violation_rate,
+            budget_remaining_pct=1.0 - spent_pct,
+            min_global_accuracy=self.global_sla_config.min_global_accuracy
+        )
+
+    def _get_sla(self, task_type: str) -> float:
+        """Get the latency SLA for a specific task type."""
+        return self.sla_config.get(task_type, self.sla_config.get("default", 2000.0))
 
     def schedule(
         self,
@@ -82,258 +150,225 @@ class ArtemisLoadBalancer:
     ) -> SchedulingDecision:
         """
         Schedule a request to a model.
-
-        This is the main entry point for the load balancer. It evaluates
-        candidate models and selects the best one based on the configured
-        scheduling policy.
-
-        Args:
-            router_output: Output from the Artemis router
-            context: Scheduling context with arrival time and metadata
-
-        Returns:
-            SchedulingDecision with chosen model and all metrics
         """
-        if self.scheduling_mode == "router_only":
-            return self._schedule_router_only(router_output, context)
+        # 0. Pre-schedule Checks & Updates
+        self.request_times.append(time.time())
+        current_rps = self._get_current_rps()
+        
+        # Check Budget
+        if not self.budget_tracker.get_remaining_budget() > 0:
+             # Just warn for now to avoid crashing experiment in this demo
+             # raise BudgetExhaustedError("Cost budget exhausted")
+             pass 
+
+        # Dynamic Mode Switching
+        new_mode = self.mode_switcher.should_switch_mode(self._get_lb_stats())
+        if new_mode != self.scheduling_mode:
+             logger.info(f"Dynamic switching: {self.scheduling_mode} -> {new_mode}")
+             self.scheduling_mode = new_mode
+
+        # 1. Determine Candidate Models based on Confidence
+        if router_output.max_prob < self.router_confidence_threshold:
+            # Low confidence: consider top-K models
+            candidates = self._get_sorted_candidates(router_output.router_probs)[:self.top_k]
+        else:
+            # High confidence: consider all models in router output
+            candidates = self._get_sorted_candidates(router_output.router_probs)
+            
+        candidate_names = [name for name, _ in candidates]
+
+        # 2. Apply Routing Mode Logic
+        if self.scheduling_mode in ["router_only", "router"]:
+            decision = self._schedule_router_mode(router_output, context, candidate_names)
         elif self.scheduling_mode == "capacity_aware":
-            return self._schedule_capacity_aware(router_output, context)
-        elif self.scheduling_mode == "cost_minimizing":
-            return self._schedule_cost_minimizing(router_output, context)
+             decision = self._schedule_capacity_aware(router_output, context) # Keep legacy method for backward compat
+        elif self.scheduling_mode == "accuracy":
+            decision = self._schedule_accuracy_mode(router_output, context, candidate_names)
+        elif self.scheduling_mode == "fast":
+            decision = self._schedule_fast_mode(router_output, context, candidate_names)
+        elif self.scheduling_mode in ["cheap", "cost_minimizing"]:
+            decision = self._schedule_cheap_mode(router_output, context, candidate_names)
+        elif self.scheduling_mode == "balanced":
+            decision = self._schedule_balanced_mode(router_output, context, candidate_names)
         else:
-            raise ValueError(f"Unknown scheduling mode: {self.scheduling_mode}")
+             # Fallback
+             decision = self._schedule_capacity_aware(router_output, context)
+             
+        # Post-schedule updates
+        self.budget_tracker.add_cost(decision.est_cost_usd)
+        self.sla_monitor.update(decision, context.load_profile)
+        
+        return decision
 
-    def _schedule_router_only(
-        self,
-        router_output: RouterOutput,
-        context: SchedulingContext
-    ) -> SchedulingDecision:
+    def _get_valid_candidates(self, router_output, context, candidate_model_names) -> List[Tuple[str, Any]]:
         """
-        Baseline mode: always use router's preferred model.
-
-        Args:
-            router_output: Router output
-            context: Scheduling context
-
-        Returns:
-            SchedulingDecision
+        Filter candidates by SLA and Accuracy constraints.
+        Returns list of (model_name, sim_result) tuples.
         """
-        chosen_model = router_output.preferred_model
-
-        # Simulate assignment
-        sim_result = self.model_state.simulate_assignment(
-            chosen_model,
-            router_output.task_type,
-            context.arrival_ts_ms
-        )
-
-        # Commit if not simulation-only
-        if not self.simulation_only:
-            self.model_state.commit_assignment(
-                chosen_model,
-                sim_result,
-                context.arrival_ts_ms
-            )
-
-        # Build decision
-        return self._build_decision(
-            router_output,
-            context,
-            chosen_model,
-            sim_result
-        )
-
-    def _schedule_capacity_aware(
-        self,
-        router_output: RouterOutput,
-        context: SchedulingContext
-    ) -> SchedulingDecision:
-        """
-        Capacity-aware mode: consider SLA and accuracy constraints.
-
-        Policy:
-        1. Get accuracy of preferred model
-        2. Sort models by router probability (descending)
-        3. For each candidate:
-           - Simulate assignment
-           - Check SLA constraint
-           - Check accuracy constraint
-           - Pick first that satisfies both
-        4. If none satisfy, fall back to preferred model
-
-        Args:
-            router_output: Router output
-            context: Scheduling context
-
-        Returns:
-            SchedulingDecision
-        """
-        # Get preferred model accuracy
-        preferred_acc = self.stats_registry.estimate_accuracy(
-            router_output.task_type,
-            router_output.preferred_model
-        )
-
-        # Sort candidates by router probability
-        candidates = self._get_sorted_candidates(router_output.router_probs)
-
-        # Try each candidate
-        for model_name, prob in candidates:
-            sim_result = self.model_state.simulate_assignment(
-                model_name,
-                router_output.task_type,
-                context.arrival_ts_ms
-            )
-
-            # Check SLA constraint
-            if sim_result.total_latency_ms > self.global_latency_sla_ms:
-                continue
-
-            # Check accuracy constraint
-            accuracy_drop = preferred_acc - sim_result.est_accuracy
-            if accuracy_drop > self.max_accuracy_drop:
-                continue
-
-            # This candidate satisfies constraints
-            chosen_model = model_name
-            break
-        else:
-            # No candidate satisfied constraints, fall back to preferred
-            chosen_model = router_output.preferred_model
-            sim_result = self.model_state.simulate_assignment(
-                chosen_model,
-                router_output.task_type,
-                context.arrival_ts_ms
-            )
-
-        # Commit if not simulation-only
-        if not self.simulation_only:
-            self.model_state.commit_assignment(
-                chosen_model,
-                sim_result,
-                context.arrival_ts_ms
-            )
-
-        # Build decision
-        return self._build_decision(
-            router_output,
-            context,
-            chosen_model,
-            sim_result,
-            preferred_acc=preferred_acc
-        )
-
-    def _schedule_cost_minimizing(
-        self,
-        router_output: RouterOutput,
-        context: SchedulingContext
-    ) -> SchedulingDecision:
-        """
-        Cost-minimizing mode: choose cheapest model that satisfies constraints.
-
-        Policy:
-        1. Get accuracy of preferred model
-        2. Evaluate all models
-        3. Filter by SLA and accuracy constraints
-        4. Among valid candidates, pick cheapest
-        5. If none valid, fall back to preferred model
-
-        Args:
-            router_output: Router output
-            context: Scheduling context
-
-        Returns:
-            SchedulingDecision
-        """
-        # Get preferred model accuracy
-        preferred_acc = self.stats_registry.estimate_accuracy(
-            router_output.task_type,
-            router_output.preferred_model
-        )
-
-        # Evaluate all models in router output
         valid_candidates = []
+        preferred_acc = self.stats_registry.estimate_accuracy(
+            router_output.task_type,
+            router_output.preferred_model
+        )
+        task_sla = self._get_sla(router_output.task_type)
 
-        for model_name, prob in router_output.router_probs.items():
+        for model_name in candidate_model_names:
             sim_result = self.model_state.simulate_assignment(
                 model_name,
                 router_output.task_type,
                 context.arrival_ts_ms
             )
 
-            # Check SLA constraint
-            if sim_result.total_latency_ms > self.global_latency_sla_ms:
+            # SLA Check
+            if sim_result.total_latency_ms > task_sla:
                 continue
-
-            # Check accuracy constraint
-            accuracy_drop = preferred_acc - sim_result.est_accuracy
-            if accuracy_drop > self.max_accuracy_drop:
-                continue
-
-            # Valid candidate
+            
+            # Accuracy Check (only if strict dropping is enabled/implied by usage)
+            # Note: For strict modes like "accuracy", we might relax this or enforce it.
+            # Here we enforce max_accuracy_drop constraint as a safety guardrail for all modes
+            if preferred_acc is not None:
+                accuracy_drop = preferred_acc - sim_result.est_accuracy
+                if accuracy_drop > self.max_accuracy_drop:
+                    continue
+            
             valid_candidates.append((model_name, sim_result))
+            
+        return valid_candidates
 
-        # Pick cheapest among valid candidates
+    def _schedule_router_mode(self, router_output, context, candidate_names) -> SchedulingDecision:
+        """Trust router preference, filtered by hard constraints."""
+        # Candidates are already sorted by router probability
+        valid_candidates = self._get_valid_candidates(router_output, context, candidate_names)
+        
+        if valid_candidates:
+            # Pick the valid candidate with highest Router Probability
+            # Since candidate_names provided was sorted by prob, the first valid one we find
+            # that is high in that list is usually best.
+            # However, _get_valid_candidates returns a new list. We should re-sort or pick best.
+            # Let's map back to probs.
+            
+            chosen_model, sim_result = max(
+                valid_candidates,
+                key=lambda x: router_output.router_probs.get(x[0], 0.0)
+            )
+        else:
+            return self._fallback_assignment(router_output, context)
+            
+        return self._commit_and_build(router_output, context, chosen_model, sim_result)
+
+    def _schedule_accuracy_mode(self, router_output, context, candidate_names) -> SchedulingDecision:
+        """Maximize estimated accuracy."""
+        valid_candidates = self._get_valid_candidates(router_output, context, candidate_names)
+        
+        if valid_candidates:
+            chosen_model, sim_result = max(
+                valid_candidates,
+                key=lambda x: x[1].est_accuracy
+            )
+        else:
+            return self._fallback_assignment(router_output, context)
+            
+        return self._commit_and_build(router_output, context, chosen_model, sim_result)
+        
+    def _schedule_fast_mode(self, router_output, context, candidate_names) -> SchedulingDecision:
+        """Minimize total latency."""
+        valid_candidates = self._get_valid_candidates(router_output, context, candidate_names)
+        
+        if valid_candidates:
+            chosen_model, sim_result = min(
+                valid_candidates,
+                key=lambda x: x[1].total_latency_ms
+            )
+        else:
+            return self._fallback_assignment(router_output, context)
+            
+        return self._commit_and_build(router_output, context, chosen_model, sim_result)
+
+    def _schedule_cheap_mode(self, router_output, context, candidate_names) -> SchedulingDecision:
+        """Minimize cost."""
+        valid_candidates = self._get_valid_candidates(router_output, context, candidate_names)
+        
         if valid_candidates:
             chosen_model, sim_result = min(
                 valid_candidates,
                 key=lambda x: x[1].est_cost_usd
             )
         else:
-            # Fall back to preferred model
-            chosen_model = router_output.preferred_model
-            sim_result = self.model_state.simulate_assignment(
-                chosen_model,
-                router_output.task_type,
-                context.arrival_ts_ms
-            )
+            return self._fallback_assignment(router_output, context)
+            
+        return self._commit_and_build(router_output, context, chosen_model, sim_result)
 
-        # Commit if not simulation-only
+    def _schedule_balanced_mode(self, router_output, context, candidate_names) -> SchedulingDecision:
+        """Maximize score = accuracy - alpha*latency - beta*cost."""
+        valid_candidates = self._get_valid_candidates(router_output, context, candidate_names)
+        
+        if valid_candidates:
+            # Heuristic normalization factors
+            # Accuracy is 0-1
+            # Latency: 2000ms is "bad" -> 1.0 penalty. alpha=0.3
+            # Cost: $0.001 is "bad" -> 1.0 penalty. beta=0.2
+            alpha = 0.3
+            beta = 0.2
+            
+            def calculate_score(sim):
+                norm_lat = min(sim.total_latency_ms / 2000.0, 2.0) # Cap penalty
+                norm_cost = min(sim.est_cost_usd / 0.001, 2.0)     # Cap penalty
+                return sim.est_accuracy - (alpha * norm_lat) - (beta * norm_cost)
+
+            chosen_model, sim_result = max(
+                valid_candidates,
+                key=lambda x: calculate_score(x[1])
+            )
+        else:
+            return self._fallback_assignment(router_output, context)
+            
+        return self._commit_and_build(router_output, context, chosen_model, sim_result)
+
+    def _schedule_capacity_aware(self, router_output, context) -> SchedulingDecision:
+        """Legacy capacity-aware mode (kept for backward compatibility)."""
+        # Similar logic to _schedule_router_mode but considering all models sorted
+        candidates = self._get_sorted_candidates(router_output.router_probs)
+        candidate_names = [c[0] for c in candidates]
+        return self._schedule_router_mode(router_output, context, candidate_names)
+    
+    def _schedule_cost_minimizing(self, router_output, context) -> SchedulingDecision:
+         """Legacy cost-minimizing mode."""
+         candidates = self._get_sorted_candidates(router_output.router_probs)
+         candidate_names = [c[0] for c in candidates]
+         return self._schedule_cheap_mode(router_output, context, candidate_names)
+
+    def _fallback_assignment(self, router_output, context) -> SchedulingDecision:
+        """Assign to preferred model regardless of constraints."""
+        chosen_model = router_output.preferred_model
+        sim_result = self.model_state.simulate_assignment(
+            chosen_model,
+            router_output.task_type,
+            context.arrival_ts_ms
+        )
+        return self._commit_and_build(router_output, context, chosen_model, sim_result, sla_violated=True)
+
+    def _commit_and_build(self, router_output, context, chosen_model, sim_result, sla_violated=False) -> SchedulingDecision:
+        """Commit assignment (if not sim-only) and build decision object."""
         if not self.simulation_only:
             self.model_state.commit_assignment(
                 chosen_model,
                 sim_result,
                 context.arrival_ts_ms
             )
-
-        # Build decision
-        return self._build_decision(
-            router_output,
-            context,
-            chosen_model,
-            sim_result,
-            preferred_acc=preferred_acc
+            
+        preferred_acc = self.stats_registry.estimate_accuracy(
+            router_output.task_type,
+            router_output.preferred_model
         )
-
-    def _build_decision(
-        self,
-        router_output: RouterOutput,
-        context: SchedulingContext,
-        chosen_model: str,
-        sim_result,
-        preferred_acc: Optional[float] = None
-    ) -> SchedulingDecision:
-        """
-        Build a SchedulingDecision from simulation result.
-
-        Args:
-            router_output: Router output
-            context: Scheduling context
-            chosen_model: Model that was chosen
-            sim_result: SimulationResult from model_state
-            preferred_acc: Accuracy of preferred model (if available)
-
-        Returns:
-            SchedulingDecision
-        """
-        # Calculate accuracy drop
+        
+        accuracy_drop = 0.0
         if preferred_acc is not None:
             accuracy_drop = preferred_acc - sim_result.est_accuracy
-        else:
-            accuracy_drop = 0.0
 
-        # Check SLA violation
-        sla_violated = sim_result.total_latency_ms > self.global_latency_sla_ms
+        # Recalculate SLA violation using new per-task helper (redundant for valid options but needed for fallback)
+        if not sla_violated:
+            task_sla = self._get_sla(router_output.task_type)
+            sla_violated = sim_result.total_latency_ms > task_sla
 
         return SchedulingDecision(
             sample_id=router_output.sample_id,
@@ -387,7 +422,7 @@ class ArtemisLoadBalancer:
         """
         return {
             "scheduling_mode": self.scheduling_mode,
-            "global_latency_sla_ms": self.global_latency_sla_ms,
+            "sla_config": self.sla_config,
             "max_accuracy_drop": self.max_accuracy_drop,
             "simulation_only": self.simulation_only,
             "model_states": self.model_state.get_summary(),

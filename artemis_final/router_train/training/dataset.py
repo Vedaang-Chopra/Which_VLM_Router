@@ -33,6 +33,10 @@ class RewardRouterDataset(Dataset):
         tokenizer: AutoTokenizer,
         max_seq_length: int = 256,
         split: str = "train",
+        enable_augmentation: bool = True,
+        question_only_ratio: float = 0.70,
+        image_metadata_only_ratio: float = 0.20,
+        full_metadata_ratio: float = 0.10,
     ):
         """
         Initialize dataset.
@@ -42,13 +46,32 @@ class RewardRouterDataset(Dataset):
             tokenizer: HuggingFace tokenizer
             max_seq_length: Maximum sequence length for tokenization
             split: Split name for logging ("train", "val", "test")
+            enable_augmentation: Enable metadata masking augmentation (only for train split)
+            question_only_ratio: Ratio of samples with question + image metadata only (no task/dataset)
+            image_metadata_only_ratio: Ratio of samples with minimal image metadata only
+            full_metadata_ratio: Ratio of samples with full metadata
         """
         self.df = df.reset_index(drop=True)
         self.tokenizer = tokenizer
         self.max_seq_length = max_seq_length
         self.split = split
 
+        # Augmentation config (only apply to train split)
+        self.enable_augmentation = enable_augmentation and (split == "train")
+        self.question_only_ratio = question_only_ratio
+        self.image_metadata_only_ratio = image_metadata_only_ratio
+        self.full_metadata_ratio = full_metadata_ratio
+
+        # Validate ratios sum to 1.0
+        total = question_only_ratio + image_metadata_only_ratio + full_metadata_ratio
+        assert abs(total - 1.0) < 1e-6, f"Augmentation ratios must sum to 1.0 (got {total})"
+
         logger.info(f"Created {split} dataset with {len(self.df)} samples")
+        if self.enable_augmentation:
+            logger.info(f"  Metadata augmentation enabled:")
+            logger.info(f"    Question+Image: {question_only_ratio:.0%}")
+            logger.info(f"    Image only: {image_metadata_only_ratio:.0%}")
+            logger.info(f"    Full metadata: {full_metadata_ratio:.0%}")
 
     def __len__(self) -> int:
         return len(self.df)
@@ -94,13 +117,18 @@ class RewardRouterDataset(Dataset):
 
     def _build_input_text(self, row: pd.Series) -> str:
         """
-        Build input text from row data.
+        Build input text from row data with optional metadata masking.
 
-        Format (using real schema):
-            [ROUTER] Task: {router_task}. Dataset: {source_dataset}. SourceConfig: {source_config}.
-            Split: {data_split}. PromptLenWords: {txt_prompt_length_words}.
-            ImgWidth: {img_width}. ImgHeight: {img_height}. ImgAR: {img_aspect_ratio:.2f}.
-            Question: {prompt_raw}
+        Augmentation strategy (only for train split when enabled):
+        - 70%: Question + Image metadata only (no task/dataset labels)
+          Format: [ROUTER] PromptLenWords: X. ImgWidth: W. ImgHeight: H. ImgAR: A. Question: {prompt}
+        - 20%: Image metadata only (minimal)
+          Format: [ROUTER] ImgWidth: W. ImgHeight: H. ImgAR: A. Question: {prompt}
+        - 10%: Full metadata (original format)
+          Format: [ROUTER] Task: T. Dataset: D. SourceConfig: C. Split: S. PromptLenWords: X.
+                  ImgWidth: W. ImgHeight: H. ImgAR: A. Question: {prompt}
+
+        For val/test splits or when augmentation disabled, always use full metadata.
 
         Args:
             row: DataFrame row
@@ -122,17 +150,50 @@ class RewardRouterDataset(Dataset):
         img_aspect_ratio = float(row.get("img_aspect_ratio", 1.0))
         prompt_raw = str(row.get("prompt_raw", ""))
 
-        # Build text
-        input_text = (
-            f"[ROUTER] Task: {router_task}. Dataset: {source_dataset}. "
-            f"SourceConfig: {source_config}. Split: {data_split}. "
-            f"PromptLenWords: {prompt_len_words}. "
-            f"ImgWidth: {img_width}. ImgHeight: {img_height}. "
-            f"ImgAR: {img_aspect_ratio:.2f}. "
-            f"Question: {prompt_raw}"
-        )
+        # If augmentation disabled or not train split, use full metadata
+        if not self.enable_augmentation:
+            return (
+                f"[ROUTER] Task: {router_task}. Dataset: {source_dataset}. "
+                f"SourceConfig: {source_config}. Split: {data_split}. "
+                f"PromptLenWords: {prompt_len_words}. "
+                f"ImgWidth: {img_width}. ImgHeight: {img_height}. "
+                f"ImgAR: {img_aspect_ratio:.2f}. "
+                f"Question: {prompt_raw}"
+            )
 
-        return input_text
+        # Apply metadata masking augmentation
+        rand = np.random.random()
+
+        if rand < self.question_only_ratio:
+            # 70%: Question + Image metadata only (NO task/dataset labels)
+            # This is the primary inference format
+            return (
+                f"[ROUTER] PromptLenWords: {prompt_len_words}. "
+                f"ImgWidth: {img_width}. ImgHeight: {img_height}. "
+                f"ImgAR: {img_aspect_ratio:.2f}. "
+                f"Question: {prompt_raw}"
+            )
+
+        elif rand < (self.question_only_ratio + self.image_metadata_only_ratio):
+            # 20%: Image metadata only (minimal format)
+            # Teaches model to work with minimal context
+            return (
+                f"[ROUTER] ImgWidth: {img_width}. ImgHeight: {img_height}. "
+                f"ImgAR: {img_aspect_ratio:.2f}. "
+                f"Question: {prompt_raw}"
+            )
+
+        else:
+            # 10%: Full metadata (original format)
+            # Maintains performance on known datasets
+            return (
+                f"[ROUTER] Task: {router_task}. Dataset: {source_dataset}. "
+                f"SourceConfig: {source_config}. Split: {data_split}. "
+                f"PromptLenWords: {prompt_len_words}. "
+                f"ImgWidth: {img_width}. ImgHeight: {img_height}. "
+                f"ImgAR: {img_aspect_ratio:.2f}. "
+                f"Question: {prompt_raw}"
+            )
 
 
 def collate_fn(batch: List[Dict]) -> Dict[str, torch.Tensor]:
@@ -398,6 +459,10 @@ def build_dataloaders(
     max_seq_length: int = 256,
     num_workers: int = 0,
     pin_memory: bool = False,
+    enable_augmentation: bool = True,
+    question_only_ratio: float = 0.70,
+    image_metadata_only_ratio: float = 0.20,
+    full_metadata_ratio: float = 0.10,
 ) -> Tuple[DataLoader, DataLoader, DataLoader]:
     """
     Build dataloaders from pre-split dataframes.
@@ -413,6 +478,10 @@ def build_dataloaders(
         max_seq_length: Maximum sequence length
         num_workers: Number of dataloader workers
         pin_memory: Whether to pin memory
+        enable_augmentation: Enable metadata masking augmentation (train only)
+        question_only_ratio: Ratio of question+image metadata samples
+        image_metadata_only_ratio: Ratio of minimal image metadata samples
+        full_metadata_ratio: Ratio of full metadata samples
 
     Returns:
         Tuple of (train_loader, val_loader, test_loader)
@@ -425,6 +494,10 @@ def build_dataloaders(
         tokenizer,
         max_seq_length=max_seq_length,
         split="train",
+        enable_augmentation=enable_augmentation,
+        question_only_ratio=question_only_ratio,
+        image_metadata_only_ratio=image_metadata_only_ratio,
+        full_metadata_ratio=full_metadata_ratio,
     )
 
     val_dataset = RewardRouterDataset(
@@ -432,6 +505,7 @@ def build_dataloaders(
         tokenizer,
         max_seq_length=max_seq_length,
         split="val",
+        enable_augmentation=False,  # Never augment validation
     )
 
     test_dataset = RewardRouterDataset(
@@ -439,6 +513,7 @@ def build_dataloaders(
         tokenizer,
         max_seq_length=max_seq_length,
         split="test",
+        enable_augmentation=False,  # Never augment test
     )
 
     # Create dataloaders

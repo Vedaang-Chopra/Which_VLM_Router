@@ -12,6 +12,7 @@ import io
 from pathlib import Path
 from typing import Dict, List, Optional
 import time
+from PIL import Image
 
 # Add artemis_final to path for package imports
 artemis_path = Path(__file__).parent.parent.parent.parent  # artemis_final's parent
@@ -65,15 +66,18 @@ class RewardRouterInference:
 
     Example:
         ```python
+        from PIL import Image
+
         router = RewardRouterInference(
             checkpoint_path='checkpoints/best_reward_router.pt',
             device='cuda:0'
         )
 
+        img = Image.open('diagram.jpg')
         result = router.route(
-            prompt="What is in this image?",
-            mode="accuracy",
-            metadata={'router_task': 'vqa', 'source_dataset': 'test'}
+            prompt="What is shown in this diagram?",
+            image=img,
+            mode="accuracy"
         )
 
         print(f"Best model: {result['chosen_model']}")
@@ -185,49 +189,99 @@ class RewardRouterInference:
     def format_sample_text(
         self,
         prompt: str,
+        image: Optional[Image.Image] = None,
         metadata: Optional[Dict] = None
     ) -> str:
         """
-        Format sample text with metadata (matches training format).
+        Format sample text with image metadata computed on-the-fly.
 
-        The text format MUST match what was used during training:
-        [ROUTER] Task: {task}. Dataset: {dataset}. Question: {prompt}
+        This matches the primary training format (70% of training data):
+        [ROUTER] PromptLenWords: X. ImgWidth: W. ImgHeight: H. ImgAR: A. Question: {prompt}
+
+        Key insight: Image resolution tells the model about accuracy/latency/cost trade-offs.
+        - High-res (2048x1536) → needs accurate models (gemma_3_27b)
+        - Low-res (512x384) → can use fast models (qwen2_5_vl_3b)
 
         Args:
             prompt: Question/prompt text
-            metadata: Optional metadata dict with keys:
-                - router_task: Task type (e.g., 'vqa', 'diagram_reasoning')
-                - source_dataset: Dataset name (e.g., 'ai2d', 'chartqa')
+            image: PIL.Image object (optional). If provided, computes width, height, aspect ratio.
+            metadata: Optional metadata dict (rarely used). If provided with 'router_task'
+                     and 'source_dataset', will use full metadata format.
 
         Returns:
-            Formatted text string
+            Formatted text string matching training augmentation format
         """
         if metadata is None:
             metadata = {}
 
-        task = metadata.get('router_task', 'unknown')
-        dataset = metadata.get('source_dataset', 'unknown')
+        # Compute prompt length in words
+        prompt_len = len(prompt.split())
 
-        # Match training format exactly
-        return f"[ROUTER] Task: {task}. Dataset: {dataset}. Question: {prompt}"
+        # Check if user provided full metadata (rare case)
+        has_task = 'router_task' in metadata
+        has_dataset = 'source_dataset' in metadata
+
+        if has_task and has_dataset:
+            # Full metadata format (10% of training) - use when user explicitly provides
+            task = metadata['router_task']
+            dataset = metadata['source_dataset']
+            source_config = metadata.get('source_config', 'unknown')
+            data_split = metadata.get('data_split', 'unknown')
+
+            if image is not None:
+                img_width = image.width
+                img_height = image.height
+                img_ar = img_width / img_height
+            else:
+                img_width = img_height = 0
+                img_ar = 1.0
+
+            return (
+                f"[ROUTER] Task: {task}. Dataset: {dataset}. "
+                f"SourceConfig: {source_config}. Split: {data_split}. "
+                f"PromptLenWords: {prompt_len}. "
+                f"ImgWidth: {img_width}. ImgHeight: {img_height}. "
+                f"ImgAR: {img_ar:.2f}. "
+                f"Question: {prompt}"
+            )
+
+        # Primary format (70% of training): Question + Image metadata
+        # This is the standard inference format
+        if image is not None:
+            img_width = image.width
+            img_height = image.height
+            img_ar = img_width / img_height
+
+            return (
+                f"[ROUTER] PromptLenWords: {prompt_len}. "
+                f"ImgWidth: {img_width}. ImgHeight: {img_height}. "
+                f"ImgAR: {img_ar:.2f}. "
+                f"Question: {prompt}"
+            )
+
+        # Question-only fallback (for text-only queries without image)
+        return f"[ROUTER] Question: {prompt}"
 
     def route(
         self,
         prompt: str,
+        image: Optional[Image.Image] = None,
         mode: str = "accuracy",
         metadata: Optional[Dict] = None
     ) -> Dict:
         """
-        Route a sample to the best VLM model.
+        Route a sample to the best VLM model using text + image metadata.
 
         Args:
             prompt: Question/prompt text
+            image: PIL.Image object (optional). Router computes width, height, aspect ratio
+                   to help predict accuracy/latency/cost trade-offs.
             mode: Routing mode, one of:
                 - "accuracy": Maximize prediction quality
                 - "cheap": Balance quality with low cost
                 - "fast": Balance quality with low latency
                 - "balanced": Multi-objective optimization
-            metadata: Optional metadata dict
+            metadata: Optional metadata dict (rarely needed). Router works without it!
 
         Returns:
             Dictionary with routing results:
@@ -241,6 +295,20 @@ class RewardRouterInference:
 
         Raises:
             ValueError: If mode is not recognized
+
+        Example:
+            ```python
+            from PIL import Image
+            router = RewardRouterInference('checkpoints/best_reward_router.pt')
+
+            img = Image.open('document.jpg')
+            result = router.route(
+                prompt="Extract text from this document.",
+                image=img,
+                mode="fast"
+            )
+            print(f"Route to: {result['chosen_model']}")
+            ```
         """
         # Validate mode
         if mode not in self.mode_names:
@@ -248,8 +316,8 @@ class RewardRouterInference:
                 f"Unknown mode: {mode}. Must be one of {self.mode_names}"
             )
 
-        # Format text
-        sample_text = self.format_sample_text(prompt, metadata)
+        # Format text with image metadata
+        sample_text = self.format_sample_text(prompt, image, metadata)
 
         # Get mode ID
         mode_id = self.mode_to_id[mode]
@@ -308,7 +376,8 @@ class RewardRouterInference:
     def route_batch(
         self,
         prompts: List[str],
-        modes: List[str],
+        images: Optional[List[Optional[Image.Image]]] = None,
+        modes: Optional[List[str]] = None,
         metadata_list: Optional[List[Dict]] = None
     ) -> List[Dict]:
         """
@@ -316,23 +385,36 @@ class RewardRouterInference:
 
         Args:
             prompts: List of question texts
-            modes: List of routing modes (one per prompt)
+            images: Optional list of PIL.Image objects (one per prompt, can be None)
+            modes: List of routing modes (one per prompt). If None, uses "balanced" for all.
             metadata_list: Optional list of metadata dicts
 
         Returns:
             List of routing result dictionaries
         """
-        if metadata_list is None:
-            metadata_list = [None] * len(prompts)
+        batch_size = len(prompts)
 
-        if len(prompts) != len(modes) or len(prompts) != len(metadata_list):
-            raise ValueError("prompts, modes, and metadata_list must have same length")
+        # Set defaults
+        if images is None:
+            images = [None] * batch_size
+        if modes is None:
+            modes = ["balanced"] * batch_size
+        if metadata_list is None:
+            metadata_list = [None] * batch_size
+
+        # Validate lengths
+        if len(images) != batch_size:
+            raise ValueError(f"images length ({len(images)}) must match prompts ({batch_size})")
+        if len(modes) != batch_size:
+            raise ValueError(f"modes length ({len(modes)}) must match prompts ({batch_size})")
+        if len(metadata_list) != batch_size:
+            raise ValueError(f"metadata_list length ({len(metadata_list)}) must match prompts ({batch_size})")
 
         # Route each sample individually
         # Note: Could be optimized with true batching if needed
         results = []
-        for prompt, mode, metadata in zip(prompts, modes, metadata_list):
-            result = self.route(prompt, mode, metadata)
+        for prompt, image, mode, metadata in zip(prompts, images, modes, metadata_list):
+            result = self.route(prompt, image, mode, metadata)
             results.append(result)
 
         return results

@@ -46,6 +46,23 @@ class AutoscaleConfig:
 
 
 @dataclass
+class TaskSLAConfig:
+    """Per-task SLA configuration"""
+    task_type: str
+    max_latency_ms: int
+    min_accuracy: float = 0.85
+
+
+@dataclass
+class GlobalSLAConfig:
+    """Global SLA settings"""
+    total_cost_budget_usd: float = 10.0
+    min_global_accuracy: float = 0.85
+    default_latency_ms: int = 2000
+    task_slas: Dict[str, TaskSLAConfig] = field(default_factory=dict)
+
+
+@dataclass
 class ModelCapacityConfig:
     """Capacity configuration for a single model."""
     model_name: str
@@ -63,10 +80,21 @@ class ExperimentConfig:
     """Configuration for a load balancing experiment."""
     name: str
     load_profiles: Dict[str, LoadProfileConfig]
-    global_latency_sla_ms: float
-    max_allowed_accuracy_drop: float  # vs router's preferred model
-    scheduling_mode: str = "capacity_aware"  # "router_only", "capacity_aware", "cost_minimizing"
-    simulation_only: bool = False  # if True, don't commit assignments (for what-if analysis)
+    
+    
+    # SLA & Constraints
+    global_sla: GlobalSLAConfig = field(default_factory=GlobalSLAConfig)
+    latency_sla_ms: Dict[str, float] = field(default_factory=dict) # Legacy shim
+    max_allowed_accuracy_drop: float = 0.05
+    cost_budget_usd: Optional[float] = None
+    min_global_accuracy: float = 0.85
+
+    # Routing Configuration
+    scheduling_mode: str = "capacity_aware"  # router, capacity_aware, cost_minimizing, accuracy, fast, cheap, balanced
+    router_confidence_threshold: float = 0.6
+    top_k: int = 3
+    
+    simulation_only: bool = False  # if True, don't commit assignments
     random_seed: Optional[int] = None
 
     # Logging configuration
@@ -78,19 +106,18 @@ class ExperimentConfig:
     metadata: Dict = field(default_factory=dict)
 
 
+def get_latency_sla(config: ExperimentConfig, task_type: str) -> float:
+    """Get latency SLA for a specific task type, falling back to default."""
+    return config.latency_sla_ms.get(task_type, config.latency_sla_ms.get("default", 2000.0))
+
+
 def default_experiment_config() -> ExperimentConfig:
     """
     Returns a default experiment configuration with standard load profiles.
-
-    Load profiles:
-    - low: 2 QPS for 60 seconds (light load)
-    - medium: 10 QPS for 60 seconds (moderate load)
-    - high: 30 QPS for 60 seconds (heavy load)
-    - burst: 50 QPS for 20 seconds (spike test)
     """
     return ExperimentConfig(
         name="phase5_dynamic_load",
-        global_latency_sla_ms=2000.0,
+        latency_sla_ms={"default": 2000.0},
         max_allowed_accuracy_drop=0.05,
         load_profiles={
             "low": LoadProfileConfig("low", qps=2, duration_sec=60),

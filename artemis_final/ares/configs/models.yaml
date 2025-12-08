@@ -1,44 +1,5 @@
 models:
-  - name: deepseek_ocr
-    base_url: http://localhost:8804/v1
-    api_key: EMPTY
-    model_id: deepseek-ai/DeepSeek-OCR
-    model_type: vlm
-    pricing:
-      prompt_per_1k: 0.00003
-      completion_per_1k: 0.0001
-    extra_params: {}
-
-  - name: qwen2_5_vl_3b
-    base_url: http://localhost:8803/v1
-    api_key: EMPTY
-    model_id: Qwen/Qwen2.5-VL-3B-Instruct
-    model_type: vlm
-    pricing:
-      prompt_per_1k: 0.0001
-      completion_per_1k: 0.0001
-    extra_params: {}
-
-  - name: qwen2_5_vl_7b
-    base_url: http://localhost:8802/v1
-    api_key: EMPTY
-    model_id: Qwen/Qwen2.5-VL-7B-Instruct
-    model_type: vlm
-    pricing:
-      prompt_per_1k: 0.0002
-      completion_per_1k: 0.0002
-    extra_params: {}
-
-  - name: qwen3_vl_8b_thinking
-    base_url: http://localhost:8801/v1
-    api_key: EMPTY
-    model_id: Qwen/Qwen3-VL-8B-Thinking
-    model_type: vlm
-    pricing:
-      prompt_per_1k: 0.00018
-      completion_per_1k: 0.0021
-    extra_params: {}
-
+  # === Gemma 3 27B (2 instances) ===
   - name: gemma_3_27b
     base_url: http://localhost:8800/v1
     api_key: EMPTY
@@ -47,4 +8,98 @@ models:
     pricing:
       prompt_per_1k: 0.00009
       completion_per_1k: 0.00016
+    extra_params: {}
+
+  - name: gemma_3_27b
+    base_url: http://localhost:8801/v1
+    api_key: EMPTY
+    model_id: google/gemma-3-27b-it
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00009
+      completion_per_1k: 0.00016
+    extra_params: {}
+
+  # === Qwen3 VL 8B Thinking (2 instances) ===
+  - name: qwen3_vl_8b_thinking
+    base_url: http://localhost:8802/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen3-VL-8B-Thinking
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00018
+      completion_per_1k: 0.0021
+    extra_params: {}
+
+  - name: qwen3_vl_8b_thinking
+    base_url: http://localhost:8803/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen3-VL-8B-Thinking
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00018
+      completion_per_1k: 0.0021
+    extra_params: {}
+
+  # === Qwen2.5 VL 7B (2 instances) ===
+  - name: qwen2_5_vl_7b
+    base_url: http://localhost:8804/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen2.5-VL-7B-Instruct
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.0002
+      completion_per_1k: 0.0002
+    extra_params: {}
+
+  - name: qwen2_5_vl_7b
+    base_url: http://localhost:8805/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen2.5-VL-7B-Instruct
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.0002
+      completion_per_1k: 0.0002
+    extra_params: {}
+
+  # === Qwen2.5 VL 3B (2 instances) - Correct ports verified via logs ===
+  - name: qwen2_5_vl_3b
+    base_url: http://localhost:8806/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen2.5-VL-3B-Instruct
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.0001
+      completion_per_1k: 0.0001
+    extra_params: {}
+
+  - name: qwen2_5_vl_3b
+    base_url: http://localhost:8807/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen2.5-VL-3B-Instruct
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.0001
+      completion_per_1k: 0.0001
+    extra_params: {}
+
+  # === DeepSeek OCR (2 instances) ===
+  - name: deepseek_ocr
+    base_url: http://localhost:8808/v1
+    api_key: EMPTY
+    model_id: deepseek-ai/DeepSeek-OCR
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00003
+      completion_per_1k: 0.0001
+    extra_params: {}
+
+  - name: deepseek_ocr
+    base_url: http://localhost:8809/v1
+    api_key: EMPTY
+    model_id: deepseek-ai/DeepSeek-OCR
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00003
+      completion_per_1k: 0.0001
     extra_params: {}

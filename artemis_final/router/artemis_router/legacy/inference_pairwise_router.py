@@ -17,7 +17,7 @@ router_train_path = Path(__file__).parent.parent.parent / "router_train"
 if str(router_train_path) not in sys.path:
     sys.path.insert(0, str(router_train_path))
 
-from models.pairwise_router import PairwiseRouterModel
+from router_train.models.pairwise_router import PairwiseRouterModel
 
 
 class PairwiseRouterInference:

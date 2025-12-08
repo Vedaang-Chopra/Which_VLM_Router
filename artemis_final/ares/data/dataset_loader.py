@@ -145,7 +145,7 @@ class CauldronLoader:
         )
         
         if random_sample:
-            buffer_size = min(n_samples * 5, 1000)
+            buffer_size = max(n_samples * 3, 1000)
             all_samples = list(ds['train'].take(buffer_size))
             if len(all_samples) <= n_samples:
                 samples = all_samples

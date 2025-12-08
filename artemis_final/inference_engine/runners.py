@@ -21,6 +21,8 @@ from __future__ import annotations
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, List, Optional
+from collections import defaultdict
+import random
 
 from openai import OpenAI
 
@@ -52,12 +54,11 @@ class OpenAIStyleRunner:
         self.models_list: List[ModelEndpoint] = models
         self.models: ModelRegistry = build_model_registry(models)
 
-        # One OpenAI client per model.
-        # This keeps the logic simple and avoids having to group by base_url.
-        self.clients: Dict[str, OpenAI] = {
-            m.name: OpenAI(api_key=m.api_key, base_url=m.base_url)
-            for m in models
-        }
+        # One OpenAI client per model endpoint.
+        # We allow multiple endpoints for the same model name (load balancing).
+        self.clients: Dict[str, List[OpenAI]] = defaultdict(list)
+        for m in models:
+            self.clients[m.name].append(OpenAI(api_key=m.api_key, base_url=m.base_url))
 
         self.request_timeout_s = request_timeout_s
         self.max_workers = max_workers
@@ -154,7 +155,9 @@ class OpenAIStyleRunner:
             }
 
         endpoint = self.models[model_name]
-        client = self.clients[model_name]
+        # Load balance between available clients for this model
+        clients = self.clients[model_name]
+        client = random.choice(clients)
         temp = kwargs.pop(
             "temperature",
             endpoint.default_temperature,  # <-- Use model default if no manual override

@@ -17,7 +17,7 @@ router_train_path = Path(__file__).parent.parent.parent / "router_train"
 if str(router_train_path) not in sys.path:
     sys.path.insert(0, str(router_train_path))
 
-from models.classical_router import ClassicalRouterModel
+from router_train.models.classical_router import ClassicalRouterModel
 
 
 class ClassicalRouterInference:

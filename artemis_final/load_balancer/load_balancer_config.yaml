@@ -17,10 +17,31 @@
 # ============================================================================
 
 # Global SLA settings
-global:
-  latency_sla_ms: 2000 # Default SLA target (2 seconds)
-  max_accuracy_drop: 0.05 # Allow max 5% accuracy drop vs best model
-  default_scheduling_mode: capacity_aware # router_only | capacity_aware | cost_minimizing
+global_sla:
+  total_cost_budget_usd: 10.0
+  min_global_accuracy: 0.85
+  default_latency_ms: 2000
+
+# Per-task configuration
+task_slas:
+  captioning:
+    max_latency_ms: 2500
+    min_accuracy: 0.85
+  chart_qa:
+    max_latency_ms: 3500
+    min_accuracy: 0.87
+  doc_vqa:
+    max_latency_ms: 3000
+    min_accuracy: 0.90
+  ocr:
+    max_latency_ms: 1000
+    min_accuracy: 0.92
+  vqa:
+    max_latency_ms: 3000
+    min_accuracy: 0.85
+
+max_accuracy_drop: 0.05
+default_scheduling_mode: "capacity_aware" # router_only | capacity_aware | cost_minimizing
 
 # ============================================================================
 # MODEL CAPACITY CONFIGURATION

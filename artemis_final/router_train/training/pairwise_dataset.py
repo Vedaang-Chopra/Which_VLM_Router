@@ -12,6 +12,8 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
+from .augmentation import build_augmented_input_text
+
 logger = logging.getLogger(__name__)
 
 
@@ -138,16 +140,28 @@ class PairwiseRouterDataset(Dataset):
         pairs_df: pd.DataFrame,
         model_to_id: Dict[str, int],
         mode_to_id: Dict[str, int],
+        enable_augmentation: bool = True,
+        question_only_ratio: float = 0.70,
+        image_metadata_only_ratio: float = 0.20,
+        full_metadata_ratio: float = 0.10,
     ):
         """
         Args:
             pairs_df: DataFrame from generate_pairwise_examples()
             model_to_id: Mapping from model_name to integer ID
             mode_to_id: Mapping from mode_id to integer ID
+            enable_augmentation: Enable metadata augmentation during training
+            question_only_ratio: Ratio for question + image metadata (default 0.70)
+            image_metadata_only_ratio: Ratio for image metadata only (default 0.20)
+            full_metadata_ratio: Ratio for full metadata (default 0.10)
         """
         self.df = pairs_df.reset_index(drop=True)
         self.model_to_id = model_to_id
         self.mode_to_id = mode_to_id
+        self.enable_augmentation = enable_augmentation
+        self.question_only_ratio = question_only_ratio
+        self.image_metadata_only_ratio = image_metadata_only_ratio
+        self.full_metadata_ratio = full_metadata_ratio
 
         # Validate all models and modes are in mappings
         unknown_models = set(self.df["model_i"].unique()) | set(self.df["model_j"].unique())
@@ -186,22 +200,14 @@ class PairwiseRouterDataset(Dataset):
         return sample_text, model_i_id, model_j_id, mode_id, label
 
     def _build_input_text(self, row: pd.Series) -> str:
-        """Build input text from sample metadata."""
-        parts = [f"Prompt: {row['prompt_raw']}"]
-
-        if pd.notna(row.get("txt_prompt_length_chars")):
-            parts.append(f"PromptLen: {int(row['txt_prompt_length_chars'])} chars")
-
-        if pd.notna(row.get("img_width")) and pd.notna(row.get("img_height")):
-            parts.append(f"Image: {int(row['img_width'])}x{int(row['img_height'])}")
-
-        if pd.notna(row.get("source_dataset")):
-            parts.append(f"Dataset: {row['source_dataset']}")
-
-        if pd.notna(row.get("router_task")):
-            parts.append(f"Task: {row['router_task']}")
-
-        return " | ".join(parts)
+        """Build input text from sample metadata with augmentation."""
+        return build_augmented_input_text(
+            row=row,
+            enable_augmentation=self.enable_augmentation,
+            question_only_ratio=self.question_only_ratio,
+            image_metadata_only_ratio=self.image_metadata_only_ratio,
+            full_metadata_ratio=self.full_metadata_ratio,
+        )
 
 
 def collate_pairwise_batch(batch: List[Tuple]) -> Dict[str, torch.Tensor]:
