@@ -1,320 +1,247 @@
-# 🏹 ARTEMIS
-## Adaptive Routing for Task-Efficient Multimodal Inference System
+# Artemis VLM Router
 
-A research-grade toolkit for benchmarking **Vision-Language Models (VLMs)** across dozens of multimodal tasks, deriving router-friendly supervision, and standing up a unified inference layer that can talk to any OpenAI-compatible model host. The project pairs a highly parallelized data-collection pipeline with Glider- and semantic-F1-based judges so you can quickly discover *which* model you should route a request to.
+**Artemis** is a modular, high-performance routing system for Vision-Language Models (VLMs). It intelligently dispatches user requests (image + text) to the most appropriate VLM backend based on the query's complexity, cost constraints, latency requirements, and model strengths.
 
----
+The system consists of three core components working in unison:
+1.  **Router**: A lightweight neural or classical module that analyzes the input prompt/image and predicts the "utility" or score of each available VLM.
+2.  **Load Balancer**: A system-aware scheduler that takes the router's preferences and makes the final routing decision, enforcing global SLAs (cost/latency) and managing model queue capacities.
+3.  **Inference Layer**: A unified interface to execute requests against various VLM backends (e.g., vLLM endpoints).
 
-## Table of Contents
-- [🏹 ARTEMIS](#-artemis)
-  - [Adaptive Routing for Task-Efficient Multimodal Inference System](#adaptive-routing-for-task-efficient-multimodal-inference-system)
-  - [Table of Contents](#table-of-contents)
-  - [Why This Project Exists](#why-this-project-exists)
-  - [Key Capabilities](#key-capabilities)
-  - [Repository Layout](#repository-layout)
-  - [Environment \& Dependencies](#environment--dependencies)
-  - [Quick Start](#quick-start)
-  - [Evaluation Pipeline](#evaluation-pipeline)
-    - [1. Dataset ingestion](#1-dataset-ingestion)
-    - [2. Feature extraction \& scoring](#2-feature-extraction--scoring)
-    - [3. Multi-level parallel execution](#3-multi-level-parallel-execution)
-    - [4. Notebooks](#4-notebooks)
-    - [5. Utility scripts](#5-utility-scripts)
-  - [Results, Metrics \& Router Labels](#results-metrics--router-labels)
-  - [Inference API Layer](#inference-api-layer)
-    - [Highlights](#highlights)
-    - [Usage Snippet](#usage-snippet)
-  - [Configuration](#configuration)
-  - [Troubleshooting](#troubleshooting)
-  - [Documentation Map](#documentation-map)
-  - [Contributing \& Next Steps](#contributing--next-steps)
+## Key Features
 
----
-
-## Why This Project Exists
-
-Routing work across heterogeneous VLMs is hard because no single open benchmark covers:
-
-- The full diversity of visual reasoning tasks (document OCR, chart QA, diagram comprehension, etc.).
-- Fine-grained answers that mix free-form generation, multiple choice, numeric reasoning, and extraction.
-- Fast iteration when expensive models and evaluators (e.g., Glider) are involved.
-
-**Which VLM Router** fills that gap by:
-
-1. Pulling thousands of samples from *HuggingFaceM4/the_cauldron* (50+ configs) with detailed task labels.
-2. Hitting every configured VLM simultaneously via multi-level parallelism (configs × batches × models).
-3. Logging exact match, contains, numeric/MC correctness, latency, token usage, and estimated cost.
-4. Adding optional semantic-F1 and Glider rubric scoring post-hoc without repeating inference.
-5. Producing router-ready supervision so you can train policy models to dispatch future requests.
-
----
-
-## Key Capabilities
-
-- **Parallelized evaluation** — Up to 200 concurrent inference requests (10 configs × 4 batches × 5 models).
-- **Dataset awareness** — Built-in taxonomy that maps every Cauldron config → router task → ground-truth type.
-- **Extensible scoring** — Exact match, contains, token F1, numeric tolerance, MC letter, semantic F1, and Glider judgments.
-- **Unified inference layer** — `which_vlm.inference_api_call` can fan out prompts across any OpenAI-compatible endpoint.
-- **Automatic bookkeeping** — Structured Parquet outputs, summary JSONs, checkpoints, and resume capabilities.
-- **Fast verification** — CLI utility detects missing configs, run completeness, and aggregated metrics in seconds.
-
----
+-   **Multi-Modal Routing**: Optimized for Visual Question Answering (VQA), OCR, Captioning, and Reasoning tasks.
+-   **SLA-Aware Scheduling**: Balances accuracy against cost and latency budgets in real-time.
+-   **Multiple Routing Modes**:
+    -   `accuracy`: Prioritizes the most capable model regardless of cost.
+    -   `cheap`: Minimizes cost while maintaining acceptable quality.
+    -   `fast`: Optimizes for lowest latency.
+    -   `balanced`: A weighted combination of all factors.
+-   **Model Agnostic**: Supports any VLM backend (Gemma 3, Qwen-VL, DeepSeek-OCR, Llama-4, etc.).
+-   **Extensible**: Modular design allowing plug-and-play replacement of routing logic or load balancing strategies.
 
 ## Repository Layout
 
-| Path | Description |
-|------|-------------|
-| `code_base/which_vlm/dataset_builder/` | Core evaluation notebooks, utilities, feature extractors, scorers, and run artifacts. |
-| `code_base/which_vlm/inference_api_call/` | Lightweight client, config loader, suites, and runner for OpenAI-style APIs. |
-| `code_base/which_vlm/configs/` | YAML templates for model endpoints and dataset subsets. |
-| `code_base/frugal_gpt/`, `code_base/cascadeflow/` | Additional experiments/environments (not directly touched by the main pipeline). |
-| `dataset/` | Example media plus any cached intermediate data. |
-| `EVALUATION_WORKFLOW_SUMMARY.md`, `GLIDER_TIMEOUT_FIXES.md`, `QUICK_START.md` | Ops-focused docs referenced throughout this README. |
-| `vlm_router/` | Python virtual environment used by some notebooks/scripts. |
+The codebase is organized as follows:
 
-> **Tip:** All evaluation outputs are stored under `code_base/which_vlm/dataset_builder/experiment_data/runs/exp_YYYYMMDD_HHMMSS/`. Semantic post-hoc artifacts live inside a `semantic_evaluation/` subfolder.
+-   `artemis_final/router/`: The core routing logic (neural, reward-based, classical routers) and training code.
+-   `artemis_final/load_balancer/`: Capacity-aware scheduling, SLA monitoring, and system metrics.
+-   `artemis_final/inference_engine/`: Unified client for calling VLM APIs (vLLM, OpenAI, etc.).
+-   `artemis_final/common/`: Shared utilities and the **centralized configuration** loader.
+-   `artemis_final/examples/`: **Start here.** Jupyter notebooks demonstrating end-to-end usage.
+-   `artemis_final/01_end_to_end_image_inference.ipynb`: The primary "Hello World" notebook.
 
----
+## Installation & Setup
 
-## Environment & Dependencies
-
-The repo does not pin dependencies via `requirements.txt` yet, but the following Python packages are required:
-
-```
-python >= 3.10
-pip install datasets pillow pandas pyarrow numpy tqdm requests pyyaml openai
-```
-
-Optional (semantic evaluation & plotting):
-
-```
-pip install matplotlib seaborn rich
-```
-
-System requirements:
-
-- Access to vLLM (or any OpenAI-compatible server) for each VLM you want to benchmark.
-- A dedicated vLLM instance for the **PatronusAI/glider** evaluator (defaults to `localhost:8805`).
-- Sufficient GPU RAM to host the selected models. See [`GLIDER_TIMEOUT_FIXES.md`](./GLIDER_TIMEOUT_FIXES.md) for recommended launches.
-
-Environment setup example:
+### 1. Environment
+Activate the project virtual environment (assuming standard deployment):
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r <(printf "datasets\npillow\npandas\npyarrow\nnumpy\ntqdm\nrequests\npyyaml\nopenai\n")
-export PYTHONPATH=$PYTHONPATH:$(pwd)/code_base
+source /home/hice1/vchopra37/scratch/projects/vlm_router/vlm_router_env/bin/activate
 ```
 
----
+### 2. Dependencies
+Install the package in editable mode to ensure all imports work correctly:
 
-## Quick Start
-
-1. **Fix / launch Glider (critical).**
-   ```bash
-   pkill -f "vllm serve PatronusAI/glider"
-   CUDA_VISIBLE_DEVICES=0 nohup vllm serve PatronusAI/glider \
-     --trust-remote-code \
-     --dtype bfloat16 \
-     --host 0.0.0.0 \
-     --port 8805 \
-     --max-model-len 8192 \
-     --gpu-memory-utilization 0.85 \
-     --max-num-seqs 32 \
-     --disable-log-requests \
-     > glider_8805.log 2>&1 &
-   curl http://localhost:8805/v1/models
-   ```
-
-2. **Fast evaluation run (10–15 min).**
-   - Open `code_base/which_vlm/dataset_builder/fast_parallel_evaluation.ipynb`.
-   - Set `ENABLE_SEMANTIC_F1 = False`, `ENABLE_GLIDER_EVAL = False`.
-   - Choose configs (default: `ALL_CAULDRON_CONFIGS`) and `N_SAMPLES_PER_CONFIG`.
-   - Run the notebook; outputs land in a fresh `experiment_data/runs/exp_*` directory.
-
-3. **Verify the run.**
-   ```bash
-   cd code_base/which_vlm/dataset_builder
-   python verify_results.py --latest
-   ```
-
-4. **Optional semantic post-hoc (30–60 min).**
-   - Open `semantic_evaluation_posthoc.ipynb`.
-   - Set `USE_LATEST_RUN = True`, pick a sampling strategy (e.g., `"per_model"`), and enable semantic / Glider flags.
-   - Execute all cells to annotate subsets with semantic-F1 and Glider rubric scores.
-
-For a condensed view of the ops workflow, see [`QUICK_START.md`](./QUICK_START.md).
-
----
-
-## Evaluation Pipeline
-
-### 1. Dataset ingestion
-
-- Uses `datasets` streaming to pull samples from *HuggingFaceM4/the_cauldron*.
-- `config.py` defines `ALL_CAULDRON_CONFIGS`, task buckets, and ground-truth types.
-- `CauldronLoader` (`dataset_loader.py`) extracts image(s), prompt, answer, MC options, and router task labels per sample.
-
-### 2. Feature extraction & scoring
-
-- `FeatureExtractor` (`modules.py`) computes image stats (width, height, aspect ratio) and prompt descriptors (length, question type, MC presence).
-- `Scorer` (`evaluation.py`) calculates:
-  - `score_exact_match`, `score_exact_match_normalized`, `score_contains_gt`, `score_gt_in_response`
-  - Token-level F1, numeric tolerance matches, multiple-choice letter accuracy
-  - Refusal detection, boolean `is_correct`
-- Optional semantic-F1 and Glider rubric scoring live in the same module (`GliderEvaluator`).
-
-### 3. Multi-level parallel execution
-
-Implemented in `fast_parallel_evaluation_utils.py` (see `PARALLELIZATION_ARCHITECTURE.md` for diagrams):
-
-| Level | Executor | Purpose | Key knobs |
-|-------|----------|---------|-----------|
-| Config | `ProcessPoolExecutor` | Different Cauldron configs simultaneously | `MAX_WORKERS_CONFIGS`, `parallel_configs` |
-| Batch | `ProcessPoolExecutor` | Split each config into batches | `BATCH_SIZE`, `MAX_WORKERS_BATCHES` |
-| Model | `ThreadPoolExecutor` | Hit all VLM endpoints in parallel per batch | `len(models)` |
-
-`run_parallel_evaluation` orchestrates everything and writes one Parquet per config plus `all_results.parquet`.
-
-### 4. Notebooks
-
-- **`fast_parallel_evaluation.ipynb`**
-  - Primary driver for inference.
-  - Controls sample counts, selected configs, toggles for semantic / Glider scoring, resume mode, worker counts, and checkpointing.
-  - Saves summary statistics under `summary.json` and drops a `COMPLETED.txt` sentinel when finished.
-
-- **`semantic_evaluation_posthoc.ipynb`**
-  - Loads existing `all_results.parquet`.
-  - Supports sampling strategies: `"all"`, `"random"`, `"per_model"`, `"per_config"`.
-  - Filters by ground-truth type, models, or configs.
-  - Generates `semantic_results_*.parquet`, `semantic_scores_*.parquet`, and `summary_semantic_*.json`.
-
-### 5. Utility scripts
-
-- `verify_results.py` — Inspects the latest (or specific) run, counts samples/models per config, confirms combined file integrity, and optionally lists missing configs so you can resume only what failed.
-- `fast_parallel_evaluation_utils.configure(...)` — Adjusts request timeouts, evaluator port, and evaluation toggles programmatically (useful for scripting or headless runs).
-
----
-
-## Results, Metrics & Router Labels
-
-```
-experiment_data/runs/exp_20250127_123456/
-├── docvqa.parquet
-├── chartqa.parquet
-├── ...
-├── all_results.parquet
-├── summary.json
-├── COMPLETED.txt
-└── semantic_evaluation/
-    ├── semantic_results_semantic_*.parquet
-    ├── semantic_scores_semantic_*.parquet
-    └── summary_semantic_*.json
+```bash
+pip install -e .
 ```
 
-Each `SampleRecord` row (see `config.py`) contains:
+### 3. Model Serving (vLLM)
+Artemis expects VLM backends to be available. Below are standard commands to serve supported models using vLLM. Ensure you allocate appropriate GPUs.
 
-- **Identity** — `sample_id`, `source_config`, router task, timestamps, Cauldron indices.
-- **Input features** — Image size/aspect/file size, prompt lengths, detected question type, MC options.
-- **Model metadata** — `model_name`, `model_id`, inference parameters.
-- **Scores** — Exact/contains match, numeric tolerance, MC letter, token F1, semantic precision/recall/F1, Glider score + reasoning/highlights.
-- **Cost metrics** — Token usage, latency, estimated USD cost.
-
-Router supervision helpers live in `modules.py`:
-
-- `compute_routing_labels(df)` — Chooses the fastest correct model per sample, or the highest F1 if none are correct.
-- `analyze_model_strengths(df)` — Produces per-task accuracy tables and identifies the best model per router task.
-
-These tables can be fed into downstream router training or reporting notebooks.
-
----
-
-## Inference API Layer
-
-`which_vlm/inference_api_call` is a stand-alone mini-framework for firing OpenAI-style chat completions at many endpoints.
-
-### Highlights
-
-- Single config file (YAML/JSON) declares every endpoint (`base_url`, `model_id`, `api_key`, pricing, defaults).
-- `WhichVLMClient` exposes `client.llm` and `client.vlm` suites for text-only or multimodal prompts.
-- Built atop the official `openai` Python SDK, so payloads and responses stay compatible with vLLM, LM Studio, OpenAI, etc.
-- Returns structured dicts containing response text, latency, usage, estimated cost, and raw payloads for debugging.
-
-### Usage Snippet
-
-```python
-from which_vlm.inference_api_call.client import WhichVLMClient
-
-client = WhichVLMClient.from_yaml("code_base/which_vlm/configs/models_vlm.yaml")
-print("VLM models:", client.list_vlm_models())
-
-image_example = "dataset/cartoon_describe.png"
-question = "Describe the main character and the setting."
-
-results = client.vlm.run_image(
-    image=image_example,
-    text=question,
-    models="all",
-    max_tokens=256,
-)
-
-for name, out in results.items():
-    print(name, "->", out["response_text"], "(latency:", int(out["latency_ms"]), "ms)")
+**Gemma 3 27B Instruct (Port 8000/8001)**
+```bash
+CUDA_VISIBLE_DEVICES=0 nohup vllm serve google/gemma-3-27b-it --trust-remote-code --dtype bfloat16 --host 0.0.0.0 --port 8000 --max-model-len 32768 > gemma3_27b_it_1.log 2>&1 &
 ```
 
-Need bare-metal access to the APIs only once; after that you can reuse the same client across notebooks, experiments, or unit tests.
+**Qwen3-VL 8B Thinking (Port 8002/8003)**
+```bash
+CUDA_VISIBLE_DEVICES=0 nohup vllm serve Qwen/Qwen3-VL-8B-Thinking --trust-remote-code --dtype bfloat16 --host 0.0.0.0 --port 8002 --max-model-len 32768 --gpu-memory-utilization 0.60 --reasoning-parser qwen3 > qwen3_vl_8b_thinking_1.log 2>&1 &
+```
+
+**Qwen2.5-VL 7B Instruct (Port 8004/8005)**
+```bash
+CUDA_VISIBLE_DEVICES=0 nohup vllm serve Qwen/Qwen2.5-VL-7B-Instruct --trust-remote-code --dtype bfloat16 --host 0.0.0.0 --port 8004 --max-model-len 32768 > qwen_vlm_7b_1.log 2>&1 &
+```
+
+**DeepSeek OCR (Port 8008/8009)**
+```bash
+CUDA_VISIBLE_DEVICES=0 nohup vllm serve deepseek-ai/DeepSeek-OCR --trust-remote-code --dtype bfloat16 --host 0.0.0.0 --port 8008 > deepseek_ocr1.log 2>&1 &
+```
+
+**Glider (Port 8010/8011)**
+```bash
+CUDA_VISIBLE_DEVICES=0 nohup vllm serve PatronusAI/glider --trust-remote-code --dtype bfloat16 --host 0.0.0.0 --port 8010 --max-model-len 32768 --max-num-seqs 32 > glider1.log 2>&1 &
+```
+
+**Llama-4 Scout 17B (Port 8012/8013)**
+```bash
+CUDA_VISIBLE_DEVICES=0 nohup vllm serve nvidia/Llama-4-Scout-17B-16E-Instruct-FP8 --trust-remote-code --kv-cache-dtype fp8 --tensor-parallel-size 1 --max-model-len 65536 --gpu-memory-utilization 0.85 --host 0.0.0.0 --port 8012 > llama4_scout_judge_fp8_64k_gpu1.log 2>&1 &
+```
 
 ---
 
 ## Configuration
 
-- **Model endpoints** — `code_base/which_vlm/configs/models_vlm.yaml` (example ports 8010–8023). Each entry declares pricing and optional `extra_params`. Avoid duplicating `temperature`, `top_p`, etc. between `extra_params` and runtime kwargs.
-- **Dataset subsets** — `code_base/which_vlm/configs/datasets_cauldron.yaml` shows how to limit runs to specific Cauldron configs with per-config metadata.
-- **Runtime knobs** — `mac_config.yaml`, `test_config.yaml`, and notebook cells define more constrained settings for laptops or dry runs.
-- **ExperimentConfig dataclass** — centralizes run IDs, sampling temperature, output directories, and serialization via `to_dict()`.
+Configuration is the **single source of truth** for Artemis. It ensures all components (Router, Load Balancer, Inference) view the system consistently.
 
-When running on new hardware:
+**Main Config File**: `artemis_final/common/artemis.yaml`
 
-1. Update the YAML ports to match the vLLM servers you have running.
-2. Point notebooks/scripts to the refreshed config.
-3. If needed, reduce concurrency by lowering `MAX_WORKERS_CONFIGS`, `MAX_WORKERS_BATCHES`, and `BATCH_SIZE`.
+This file is critical because it defines:
+1.  **Database**: Connection string for logging and stats.
+2.  **Router**: Path to the trained checkpoint (`checkpoints/best_multitask_router_v1.pt`) and model architecture.
+3.  **Load Balancer SLAs**: Global budgets (`total_cost_budget_usd`), latency targets (`default_latency_ms`), and task-specific constraints (e.g., stricter accuracy for OCR).
+4.  **Models Registry**: The most important section. It lists every available model backend, its URL, pricing, throughput limits (`max_qps_per_replica`), and expected latency.
 
----
+**Example `artemis.yaml` segment:**
+```yaml
+load_balancer:
+  default_scheduling_mode: "capacity_aware"
+  task_slas:
+    ocr: { max_latency_ms: 1000, min_accuracy: 0.92 }
 
-## Troubleshooting
+models:
+  - name: qwen2_5_vl_7b
+    base_url: http://localhost:8804/v1
+    pricing: { prompt_per_1k: 0.0002, completion_per_1k: 0.0002 }
+    max_qps_per_replica: 1.2
+```
 
-| Issue | Likely Cause | Fix |
-|-------|--------------|-----|
-| Glider timeouts or 404s | Server still on port 8005 or default timeout too low | Restart Glider on **8805**, bump `REQUEST_TIMEOUT` to 180–300s. |
-| `dict() got multiple values for keyword 'temperature'` | `extra_params` already defines `temperature` | Remove the duplicate from the YAML and set it only when calling `.run_*`. |
-| OOM / CUDA errors | Too many concurrent requests | Drop `MAX_WORKERS_CONFIGS/BATCHES`, shrink `BATCH_SIZE`, or split models across GPUs. |
-| Missing configs in run | Notebook interruption midway | `python verify_results.py --latest --check-missing` shows unprocessed configs—rerun notebook with `configs_to_process = [...]` and `RESUME_MODE = True`. |
-| Semantic notebook finds zero samples | Filters too strict | Relax `FILTER_GT_TYPES`, `FILTER_MODELS`, or use `SAMPLE_STRATEGY="random"` with a higher count. |
-| Image paths cannot be read by inference suite | Relative-path mismatch | Ensure `sys.path` includes repo root and that notebook working dir matches expected image locations. |
-
-More operational tips are in [`GLIDER_TIMEOUT_FIXES.md`](./GLIDER_TIMEOUT_FIXES.md) and the in-notebook troubleshooting cells.
-
----
-
-## Documentation Map
-
-- [`QUICK_START.md`](./QUICK_START.md) — 5-minute setup checklist.
-- [`EVALUATION_WORKFLOW_SUMMARY.md`](./EVALUATION_WORKFLOW_SUMMARY.md) — Detailed narrative of the collection → analysis pipeline.
-- [`GLIDER_TIMEOUT_FIXES.md`](./GLIDER_TIMEOUT_FIXES.md) — Commands and parameters for stable Glider evaluations.
-- [`code_base/which_vlm/dataset_builder/PARALLELIZATION_ARCHITECTURE.md`](code_base/which_vlm/dataset_builder/PARALLELIZATION_ARCHITECTURE.md) — Visual explanation of the 3-level executor stack.
-- [`code_base/which_vlm/dataset_builder/SEMANTIC_EVALUATION_GUIDE.md`](code_base/which_vlm/dataset_builder/SEMANTIC_EVALUATION_GUIDE.md) — How to configure post-hoc Glider scoring and sampling strategies.
-- [`code_base/which_vlm/inference_api_call/readme.md`](code_base/which_vlm/inference_api_call/readme.md) — Deep dive into the inference client package.
+To modify system behavior (e.g., add a new model, change costs), edit this file.
 
 ---
 
-## Contributing & Next Steps
+## Quickstart (End-to-End Execution)
 
-1. **Fork + branch** — Standard GitHub workflow (`feature/<slug>`). Keep Python files formatted (Black) and notebooks cleanly executed.
-2. **Extend configs** — Add new VLM endpoints or Cauldron subsets via YAML; ensure they’re documented in this README if generally useful.
-3. **Add metrics** — `evaluation.py` is the home for new scorers, judges, or heuristics; populate `SampleRecord` fields accordingly.
-4. **Router training** — Use `compute_routing_labels` outputs to train your own dispatcher (e.g., via CascadeFlow or FrugalGPT, both included under `code_base/`).
-5. **Share findings** — Summaries, plots, or instructions that help others reproduce your results belong in `EVALUATION_WORKFLOW_SUMMARY.md` or a new doc in the repo root.
+The best way to run Artemis is to use the provided Jupyter notebook which initializes the full pipeline.
 
-For questions or context, refer to the in-repo docs linked above or open an issue in your downstream Git hosting environment.
+**File**: `artemis_final/01_end_to_end_image_inference.ipynb`
 
-Happy routing! 🚀
+### Minimal Python Workflow
+If you prefer a script, here is how the components interact programmatically:
+
+```python
+import time
+from common.config_loader import load_global_config
+from router.router_service import RouterService
+from load_balancer.load_balancer_service import LoadBalancerService
+from inference_engine.inference_service import InferenceService
+
+# 1. Initialize System
+config = load_global_config("configs/artemis.yaml")
+router = RouterService(config)
+lb = LoadBalancerService(config)
+engine = InferenceService(config)
+
+# 2. Define Request
+prompt = "Describe this image."
+image = "path/to/image.jpg"
+mode = "balanced" # Options: accuracy, cheap, fast
+sample_id = "req_001"
+
+# 3. Router Step: Get model probabilities/scores
+router_output = router.predict(prompt, mode=mode)
+# Returns: {'chosen_model': 'qwen...', 'rewards': {...}}
+
+# 4. Load Balancer Step: Make final scheduling decision based on load/SLA
+# This step might override the router if the preferred model is overloaded.
+decision = lb.schedule(
+    sample_id=sample_id,
+    task_type="vqa",
+    router_probs=router_output['rewards'],
+    preferred_model=router_output['chosen_model']
+)
+final_model = decision['chosen_model']
+
+# 5. Inference Step: Execute
+result = engine.call_model(final_model, prompt, image)
+print(f"Response from {final_model}: {result['text']}")
+```
+
+---
+
+## Router Module – Public API
+
+The Router analyzes the input to determine which model *should* ideally handle the request.
+
+**Import**: `from artemis_final.router.public_api import ...`
+
+### Key Functions
+
+*   **`init_router(config_path: Optional[str])`**
+    Initializes the global router instance using the specified config.
+
+*   **`route_request(prompt: str, mode: str, metadata: dict) -> Dict`**
+    Main entrypoint.
+    *   `prompt`: User query.
+    *   `mode`: 'accuracy', 'cheap', 'fast', 'balanced'.
+    *   **Returns**: Dictionary with `chosen_model` and `rewards` (scores for all models).
+
+*   **`load_router_from_checkpoint(router_type, checkpoint_path, ...)`**
+    Advanced usage for research/notebooks to load a specific trained model (e.g., 'reward', 'classical') directly from a `.pt` file without the full service wrapper.
+
+**Example**:
+```python
+from artemis_final.router.public_api import load_router_from_checkpoint
+
+router = load_router_from_checkpoint("reward", "checkpoints/best_router.pt")
+calc = router.route("What does the text say?", mode="accuracy")
+print(f"Recommended Model: {calc['chosen_model']}")
+```
+
+---
+
+## Load Balancer Module – Public API
+
+The Load Balancer ensures the system remains stable and cost-effective. It takes the router's "wish" and realities of system load to make a binding decision.
+
+**Import**: `from artemis_final.load_balancer.public_api import ...`
+
+### Key Functions
+
+*   **`init_load_balancer(config_path: str)`**
+    Initializes the global scheduler, loading model capacity constraints from `artemis.yaml`.
+
+*   **`schedule_request(sample_id, task_type, router_probs, preferred_model) -> Dict`**
+    Decides where to send the request.
+    *   `router_probs`: The output scores from the Router.
+    *   **Returns**: A decision dict containing:
+        *   `chosen_model`: The final model to use.
+        *   `is_overloaded`: Boolean flag if system is under stress.
+        *   `estimated_latency_ms`: Predicted latency.
+
+*   **`get_metrics() -> Dict`**
+    Returns current system health stats (e.g., avg latency, SLA violation rates).
+
+*   **`simulate_traffic(arrival_rate, duration_s, ...)`**
+    Runs a synthetic load test to validate configuration/SLAs without real GPU backends.
+
+**Example**:
+```python
+from artemis_final.load_balancer.public_api import init_load_balancer, schedule_request
+
+init_load_balancer() # Loads default config
+decision = schedule_request(
+    sample_id="test_1",
+    task_type="ocr",
+    router_probs={"deepseek_ocr": 0.9, "gemma": 0.1},
+    preferred_model="deepseek_ocr"
+)
+print(f"Routing to: {decision['chosen_model']}")
+```
+
+---
+
+## FAQ / Troubleshooting
+
+**Q: "Router checkpoint not found" error during initialization?**
+A: Check `artemis.yaml`. The `checkpoint_path` must point to a valid `.pt` file relative to the repo root. Ensure you have downloaded the weights to `artemis_final/checkpoints/`.
+
+**Q: The Load Balancer keeps selecting "cheap" models even in "accuracy" mode.**
+A: Check your budgets in `artemis.yaml`. If `total_cost_budget_usd` is exhausted or if the cheap model's score is significantly higher due to calibration, the LB forces a downgrade. Try increasing the budget or adjusting `RouterConfig`.
+
+**Q: Inference fails with connection errors.**
+A: Ensure your `vllm serve` commands are running and the ports match those defined in `artemis.yaml`. You can test connectivity with `curl http://localhost:8000/v1/models`.
+
+**Q: How do I add a new model?**
+A: Add a new entry to the `models` list in `artemis_final/common/artemis.yaml`. You must specify its `base_url`, `pricing`, and `base_latency_ms` for the load balancer to schedule it correctly.
