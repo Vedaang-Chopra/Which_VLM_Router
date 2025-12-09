@@ -1,812 +1,812 @@
 {
-  "meme_classification": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 259.673,
-      "avg_accuracy": 0.483,
-      "cost_per_request_usd": 5.906015e-06
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1234.0385,
-      "avg_accuracy": 0.729,
-      "cost_per_request_usd": 4.52544e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1412.8905,
-      "avg_accuracy": 0.7915,
-      "cost_per_request_usd": 9.05088e-05
-    },
+  "web_understanding": {
     "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 5574.96,
-      "avg_accuracy": 0.857,
-      "cost_per_request_usd": 0.0005033941799999999
+      "avg_latency_ms": 21981.712672521957,
+      "avg_accuracy": 0.7693851944792974,
+      "cost_per_request_usd": 0.0047764841405269765
     },
     "gemma_3_27b": {
-      "avg_latency_ms": 3557.638,
-      "avg_accuracy": 0.7635,
-      "cost_per_request_usd": 4.4021075e-05
-    }
-  },
-  "spatial_reasoning": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 357.1799307958477,
-      "avg_accuracy": 0.45628604382929644,
-      "cost_per_request_usd": 8.993776239907728e-06
+      "avg_latency_ms": 24006.603213844253,
+      "avg_accuracy": 0.6093943139678616,
+      "cost_per_request_usd": 0.0002069688133498146
     },
     "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1638.7265570733966,
-      "avg_accuracy": 0.5478119935170178,
-      "cost_per_request_usd": 5.629451261866173e-05
+      "avg_latency_ms": 6442.338832487309,
+      "avg_accuracy": 0.5185279187817259,
+      "cost_per_request_usd": 0.0005975304568527919
     },
     "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1602.4012502894188,
-      "avg_accuracy": 0.6103264644593656,
-      "cost_per_request_usd": 0.00011307149803195184
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 7588.174640037158,
-      "avg_accuracy": 0.871342313051556,
-      "cost_per_request_usd": 0.0007439135113794705
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 1208.6195551436515,
-      "avg_accuracy": 0.5576923076923077,
-      "cost_per_request_usd": 3.021696941612604e-05
-    }
-  },
-  "handwriting_ocr": {
-    "gemma_3_27b": {
-      "avg_latency_ms": 2437.345,
-      "avg_accuracy": 0.5155,
-      "cost_per_request_usd": 3.700713e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1126.2505,
-      "avg_accuracy": 0.555,
-      "cost_per_request_usd": 0.0001261329
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1312.6445,
-      "avg_accuracy": 0.6735,
-      "cost_per_request_usd": 0.0002536854
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 16344.242,
-      "avg_accuracy": 0.5405,
-      "cost_per_request_usd": 0.0018610680899999999
+      "avg_latency_ms": 6891.907594936709,
+      "avg_accuracy": 0.6521518987341772,
+      "cost_per_request_usd": 0.0011832860759493672
     },
     "deepseek_ocr": {
-      "avg_latency_ms": 654.259,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 1.832306e-05
-    }
-  },
-  "diagram_reasoning": {
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 7933.377,
-      "avg_accuracy": 0.261,
-      "cost_per_request_usd": 0.00071845536
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1563.304,
-      "avg_accuracy": 0.836,
-      "cost_per_request_usd": 5.132505000000001e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1486.008,
-      "avg_accuracy": 0.8805,
-      "cost_per_request_usd": 0.00010271940000000002
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 944.641,
-      "avg_accuracy": 0.87,
-      "cost_per_request_usd": 3.1012965e-05
-    },
-    "deepseek_ocr": {
-      "avg_latency_ms": 549.046,
-      "avg_accuracy": 0.2395,
-      "cost_per_request_usd": 1.5876485000000002e-05
-    }
-  },
-  "table_reasoning": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 833.4835425383543,
-      "avg_accuracy": 0.0900976290097629,
-      "cost_per_request_usd": 2.5716627615062764e-05
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 4631.063207942945,
-      "avg_accuracy": 0.35645364284715425,
-      "cost_per_request_usd": 5.6214890225143345e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 2260.2591557170813,
-      "avg_accuracy": 0.31073525300531174,
-      "cost_per_request_usd": 7.580482247693599e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 2166.2699189264745,
-      "avg_accuracy": 0.36287391668996366,
-      "cost_per_request_usd": 0.00014872776069331842
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 14864.304286915103,
-      "avg_accuracy": 0.5053236200616419,
-      "cost_per_request_usd": 0.001882576466797422
-    }
-  },
-  "table_math": {
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 19765.181,
-      "avg_accuracy": 0.24366666666666667,
-      "cost_per_request_usd": 0.0022359906999999996
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 4586.746,
-      "avg_accuracy": 0.2876666666666667,
-      "cost_per_request_usd": 0.00010027448000000002
-    },
-    "deepseek_ocr": {
-      "avg_latency_ms": 1503.852,
-      "avg_accuracy": 0.093,
-      "cost_per_request_usd": 6.026070666666667e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1567.8186666666666,
-      "avg_accuracy": 0.549,
-      "cost_per_request_usd": 7.729236666666667e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1947.7486666666666,
-      "avg_accuracy": 0.607,
-      "cost_per_request_usd": 0.0001577096
-    }
-  },
-  "document_ocr": {
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 4054.2237242311594,
-      "avg_accuracy": 0.8556944913822238,
-      "cost_per_request_usd": 0.0005510046367015884
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 932.4910563617955,
-      "avg_accuracy": 0.6631792102598717,
-      "cost_per_request_usd": 2.8143120148498147e-05
-    },
-    "deepseek_ocr": {
-      "avg_latency_ms": 409.94532301480484,
-      "avg_accuracy": 0.042900403768506054,
-      "cost_per_request_usd": 1.0373982166890985e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1737.2791835357625,
-      "avg_accuracy": 0.7058029689608637,
-      "cost_per_request_usd": 0.00021535236167341432
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 2236.4689608636977,
-      "avg_accuracy": 0.8026315789473685,
-      "cost_per_request_usd": 0.00043169480431848854
-    }
-  },
-  "general_vqa": {
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1881.3194097048524,
-      "avg_accuracy": 0.4917458729364682,
-      "cost_per_request_usd": 3.677558779389695e-05
-    },
-    "deepseek_ocr": {
-      "avg_latency_ms": 582.400700350175,
-      "avg_accuracy": 0.16733366683341672,
-      "cost_per_request_usd": 1.603753126563282e-05
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 1061.5780390195098,
-      "avg_accuracy": 0.5060030015007504,
-      "cost_per_request_usd": 2.7450717858929465e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1630.519259629815,
-      "avg_accuracy": 0.5505252626313156,
-      "cost_per_request_usd": 7.451530765382692e-05
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 4662.334167083542,
-      "avg_accuracy": 0.6683341670835418,
-      "cost_per_request_usd": 0.0003253738019009505
-    }
-  },
-  "chart_reasoning": {
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1386.4546597736482,
-      "avg_accuracy": 0.40086628475618274,
-      "cost_per_request_usd": 4.6459424339807186e-05
-    },
-    "deepseek_ocr": {
-      "avg_latency_ms": 425.3711138993448,
-      "avg_accuracy": 0.3086574654956085,
-      "cost_per_request_usd": 1.1546782378363307e-05
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 6477.306228131561,
-      "avg_accuracy": 0.7865640307907628,
-      "cost_per_request_usd": 0.0005507756053184044
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 530.0292144254962,
-      "avg_accuracy": 0.4858820240424937,
-      "cost_per_request_usd": 2.664855884819681e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1554.216431465698,
-      "avg_accuracy": 0.6558613944390108,
-      "cost_per_request_usd": 9.394925248008941e-05
-    }
-  },
-  "map_reasoning": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 869.9574787393697,
-      "avg_accuracy": 0.2176088044022011,
-      "cost_per_request_usd": 2.6118404202101053e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1054.904452226113,
-      "avg_accuracy": 0.3921960980490245,
-      "cost_per_request_usd": 5.145852926463232e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1386.4457228614308,
-      "avg_accuracy": 0.527263631815908,
-      "cost_per_request_usd": 0.0001058271135567784
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 10039.408316633266,
-      "avg_accuracy": 0.7575150300601202,
-      "cost_per_request_usd": 0.001128771523046092
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 1075.0825412706354,
-      "avg_accuracy": 0.3506753376688344,
-      "cost_per_request_usd": 3.01984092046023e-05
-    }
-  },
-  "dense_captioning": {
-    "gemma_3_27b": {
-      "avg_latency_ms": 2833.8475,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 3.8660855000000005e-05
-    },
-    "deepseek_ocr": {
-      "avg_latency_ms": 333.2525,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 7.290685000000001e-06
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1991.991,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 0.00021242359999999998
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1665.4055,
-      "avg_accuracy": 0.004,
-      "cost_per_request_usd": 0.00010484235000000002
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 5650.2055,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 0.00064921104
-    }
-  },
-  "icon_reasoning": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 1116.8219109554777,
-      "avg_accuracy": 0.304152076038019,
-      "cost_per_request_usd": 3.441882941470736e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 619.0210105052527,
-      "avg_accuracy": 0.5132566283141571,
-      "cost_per_request_usd": 1.38663831915958e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 662.0585292646323,
-      "avg_accuracy": 0.6463231615807904,
-      "cost_per_request_usd": 2.77327663831916e-05
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 7750.693346673336,
-      "avg_accuracy": 0.3411705852926463,
-      "cost_per_request_usd": 0.0007893277638819409
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 1367.7693846923462,
-      "avg_accuracy": 0.6238119059529765,
-      "cost_per_request_usd": 3.375677338669335e-05
-    }
-  },
-  "chart_captioning": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 616.0976992330777,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 1.7351913971323775e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 3122.976325441814,
-      "avg_accuracy": 0.14671557185728576,
-      "cost_per_request_usd": 8.799839946648884e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 5324.875625208403,
-      "avg_accuracy": 0.004668222740913638,
-      "cost_per_request_usd": 0.00019950050016672227
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 19957.396465488495,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 0.002503820046682227
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 8197.667555851951,
-      "avg_accuracy": 0.005001667222407469,
-      "cost_per_request_usd": 7.285985661887296e-05
-    }
-  },
-  "diagram_captioning": {
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 26771.736666666668,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 0.0032693697999999997
-    },
-    "deepseek_ocr": {
-      "avg_latency_ms": 2804.5933333333332,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 8.168830000000002e-05
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 14908.206666666667,
-      "avg_accuracy": 0.006666666666666667,
-      "cost_per_request_usd": 0.00010372073333333335
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 5933.086666666667,
-      "avg_accuracy": 0.05333333333333334,
-      "cost_per_request_usd": 0.00010098733333333333
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 6020.693333333334,
-      "avg_accuracy": 0.01,
-      "cost_per_request_usd": 0.00020237733333333335
+      "avg_latency_ms": 1808.370909090909,
+      "avg_accuracy": 0.13478787878787882,
+      "cost_per_request_usd": 6.46497696969697e-05
     }
   },
   "knowledge_vqa": {
     "qwen2_5_vl_3b": {
-      "avg_latency_ms": 2306.0135,
-      "avg_accuracy": 0.3705,
-      "cost_per_request_usd": 4.563085e-05
-    },
-    "deepseek_ocr": {
-      "avg_latency_ms": 280.127,
-      "avg_accuracy": 0.1765,
-      "cost_per_request_usd": 6.06207e-06
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 2585.284,
-      "avg_accuracy": 0.449,
-      "cost_per_request_usd": 9.573760000000001e-05
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 8392.112,
-      "avg_accuracy": 0.525,
-      "cost_per_request_usd": 0.00071212221
+      "avg_latency_ms": 2273.186299615877,
+      "avg_accuracy": 0.7240717029449424,
+      "cost_per_request_usd": 4.553866837387965e-05
     },
     "gemma_3_27b": {
-      "avg_latency_ms": 2775.095,
-      "avg_accuracy": 0.4895,
-      "cost_per_request_usd": 4.0073835000000005e-05
+      "avg_latency_ms": 2776.826801517067,
+      "avg_accuracy": 0.9061946902654867,
+      "cost_per_request_usd": 4.015893173198484e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 8252.071700507615,
+      "avg_accuracy": 0.928743654822335,
+      "cost_per_request_usd": 0.0006966595812182739
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 284.30534351145036,
+      "avg_accuracy": 0.2919847328244275,
+      "cost_per_request_usd": 6.201488549618321e-06
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2592.57970071568,
+      "avg_accuracy": 0.8232270657124268,
+      "cost_per_request_usd": 9.559453480806766e-05
+    }
+  },
+  "document_ocr": {
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2253.849898167006,
+      "avg_accuracy": 0.9274134419551936,
+      "cost_per_request_usd": 0.00043403686354378824
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1744.2253319713993,
+      "avg_accuracy": 0.8078038815117468,
+      "cost_per_request_usd": 0.0002187018386108274
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 932.0189249043689,
+      "avg_accuracy": 0.825971411314677,
+      "cost_per_request_usd": 2.8137998792027385e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 398.99477176754476,
+      "avg_accuracy": 0.07526643876935452,
+      "cost_per_request_usd": 9.992509551578525e-06
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 3984.2027435949162,
+      "avg_accuracy": 0.9609441194270728,
+      "cost_per_request_usd": 0.0005435660843251968
+    }
+  },
+  "icon_reasoning": {
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 7782.331912302071,
+      "avg_accuracy": 0.9088915956151036,
+      "cost_per_request_usd": 0.0007904186967113276
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 616.2401477832512,
+      "avg_accuracy": 0.5456896551724137,
+      "cost_per_request_usd": 1.3979987684729066e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1458.1181592039802,
+      "avg_accuracy": 0.6435323383084577,
+      "cost_per_request_usd": 3.4303712686567164e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 658.4037530266344,
+      "avg_accuracy": 0.6292372881355932,
+      "cost_per_request_usd": 2.773075060532688e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 1125.0171102661598,
+      "avg_accuracy": 0.36039290240811156,
+      "cost_per_request_usd": 3.465731939163498e-05
+    }
+  },
+  "chart_reasoning": {
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1372.3323343323343,
+      "avg_accuracy": 0.505061605061605,
+      "cost_per_request_usd": 4.6608924408924406e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 414.4002009377093,
+      "avg_accuracy": 0.28054253181513733,
+      "cost_per_request_usd": 1.1217861687876759e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1562.7075907590759,
+      "avg_accuracy": 0.8315511551155115,
+      "cost_per_request_usd": 9.440306930693069e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 530.40397574124,
+      "avg_accuracy": 0.6848045822102425,
+      "cost_per_request_usd": 2.6649769204851752e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 6385.577202910266,
+      "avg_accuracy": 0.9768310428455942,
+      "cost_per_request_usd": 0.0005450057267582861
+    }
+  },
+  "meme_classification": {
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1213.3487951807228,
+      "avg_accuracy": 0.7006626506024096,
+      "cost_per_request_usd": 4.5007409638554215e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 5572.28580060423,
+      "avg_accuracy": 0.86797583081571,
+      "cost_per_request_usd": 0.0005015455468277945
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 251.72283950617285,
+      "avg_accuracy": 0.4178395061728395,
+      "cost_per_request_usd": 5.743759259259259e-06
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1426.2424050632912,
+      "avg_accuracy": 0.7386075949367089,
+      "cost_per_request_usd": 9.148139240506329e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 3501.8202044497893,
+      "avg_accuracy": 0.7884546001202645,
+      "cost_per_request_usd": 4.369006614552014e-05
+    }
+  },
+  "general_vqa": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 573.4085079762277,
+      "avg_accuracy": 0.2243978730059431,
+      "cost_per_request_usd": 1.5754081951829842e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1871.653598774885,
+      "avg_accuracy": 0.7569372128637059,
+      "cost_per_request_usd": 3.669770290964778e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1068.364238410596,
+      "avg_accuracy": 0.8222011983601387,
+      "cost_per_request_usd": 2.7440507726269317e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1624.1990231990233,
+      "avg_accuracy": 0.8425518925518924,
+      "cost_per_request_usd": 7.424969474969476e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 4643.730722154222,
+      "avg_accuracy": 0.9112301101591187,
+      "cost_per_request_usd": 0.0003254036291309669
+    }
+  },
+  "code_generation": {
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 10800.106993006993,
+      "avg_accuracy": 0.544055944055944,
+      "cost_per_request_usd": 0.00017272573426573427
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 26099.08827683616,
+      "avg_accuracy": 0.702542372881356,
+      "cost_per_request_usd": 0.00017840910310734464
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 38729.74456140351,
+      "avg_accuracy": 0.4868070175438597,
+      "cost_per_request_usd": 0.004302903494736842
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 10445.417415342086,
+      "avg_accuracy": 0.39350380096751897,
+      "cost_per_request_usd": 9.197505183137526e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 5622.437238493724,
+      "avg_accuracy": 0.053277545327754534,
+      "cost_per_request_usd": 0.000177142649930265
+    }
+  },
+  "chart_captioning": {
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 3098.8903145695363,
+      "avg_accuracy": 0.5299668874172185,
+      "cost_per_request_usd": 8.825811258278147e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 19930.380258225738,
+      "avg_accuracy": 0.8944606413994171,
+      "cost_per_request_usd": 0.0025025772594752184
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 614.7558823529412,
+      "avg_accuracy": 0.017815126050420172,
+      "cost_per_request_usd": 1.733085294117647e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 5379.969872059431,
+      "avg_accuracy": 0.7843169624432522,
+      "cost_per_request_usd": 0.00019942657862154353
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 8152.005782734407,
+      "avg_accuracy": 0.7872366790582405,
+      "cost_per_request_usd": 7.259102023957042e-05
+    }
+  },
+  "table_math": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 1501.3960113960113,
+      "avg_accuracy": 0.10492470492470496,
+      "cost_per_request_usd": 6.028327635327636e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 4559.273671096345,
+      "avg_accuracy": 0.9061046511627906,
+      "cost_per_request_usd": 0.00010028664451827243
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 19626.736382536383,
+      "avg_accuracy": 0.9402079002079001,
+      "cost_per_request_usd": 0.002222028124740125
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1945.1900361591001,
+      "avg_accuracy": 0.740016070711129,
+      "cost_per_request_usd": 0.00015963423061470474
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1567.4293831168832,
+      "avg_accuracy": 0.5473230844155844,
+      "cost_per_request_usd": 7.807382305194806e-05
+    }
+  },
+  "geometry_reasoning": {
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 4571.4596296296295,
+      "avg_accuracy": 0.6551203703703704,
+      "cost_per_request_usd": 0.0006104873333333334
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 2070.8094004441155,
+      "avg_accuracy": 0.1618260547742413,
+      "cost_per_request_usd": 6.611899333826796e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 16368.042417417417,
+      "avg_accuracy": 0.7116118618618619,
+      "cost_per_request_usd": 0.00012812418543543545
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 3113.5589552238807,
+      "avg_accuracy": 0.4952723880597015,
+      "cost_per_request_usd": 0.00029655783582089554
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 32779.727101394645,
+      "avg_accuracy": 0.7220003769317754,
+      "cost_per_request_usd": 0.003979207621560497
+    }
+  },
+  "diagram_reasoning": {
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1476.4406887755101,
+      "avg_accuracy": 0.7808673469387756,
+      "cost_per_request_usd": 0.00010266262755102043
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 7877.411953727506,
+      "avg_accuracy": 0.9001928020565553,
+      "cost_per_request_usd": 0.000716889910025707
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1550.0816993464052,
+      "avg_accuracy": 0.75,
+      "cost_per_request_usd": 5.0817712418300654e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 540.8073979591836,
+      "avg_accuracy": 0.4961096938775511,
+      "cost_per_request_usd": 1.5592295918367348e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 957.188093730209,
+      "avg_accuracy": 0.7966434452184927,
+      "cost_per_request_usd": 3.108490183660545e-05
+    }
+  },
+  "map_reasoning": {
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1050.6040100250627,
+      "avg_accuracy": 0.43020050125313275,
+      "cost_per_request_usd": 5.136854636591479e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1081.3318965517242,
+      "avg_accuracy": 0.4774630541871921,
+      "cost_per_request_usd": 3.020720443349754e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 839.3335365853659,
+      "avg_accuracy": 0.18445121951219512,
+      "cost_per_request_usd": 2.5106585365853662e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 9931.767803710352,
+      "avg_accuracy": 0.9515260323159784,
+      "cost_per_request_usd": 0.001113724488330341
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1378.807930607187,
+      "avg_accuracy": 0.7253407682775713,
+      "cost_per_request_usd": 0.00010599752168525403
+    }
+  },
+  "handwriting_ocr": {
+    "gemma_3_27b": {
+      "avg_latency_ms": 2429.0098643649817,
+      "avg_accuracy": 0.8466707768187424,
+      "cost_per_request_usd": 3.696735511713934e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1315.891143911439,
+      "avg_accuracy": 0.9319803198031981,
+      "cost_per_request_usd": 0.00025181931119311194
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 632.947172156619,
+      "avg_accuracy": 0.03635798632691113,
+      "cost_per_request_usd": 1.755736482287135e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 16237.876595744681,
+      "avg_accuracy": 0.8565349544072949,
+      "cost_per_request_usd": 0.0018479932887537993
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1115.645080946451,
+      "avg_accuracy": 0.8835616438356164,
+      "cost_per_request_usd": 0.00012671793275217933
+    }
+  },
+  "spatial_reasoning": {
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1600.4639029892837,
+      "avg_accuracy": 0.6925831923293851,
+      "cost_per_request_usd": 0.0001127103214890017
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1649.4513908804129,
+      "avg_accuracy": 0.6097218239174075,
+      "cost_per_request_usd": 5.723567536564382e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1218.9910482240832,
+      "avg_accuracy": 0.6630667051689286,
+      "cost_per_request_usd": 3.0265913947444414e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 7477.844596521243,
+      "avg_accuracy": 0.9285999429712005,
+      "cost_per_request_usd": 0.0007309985799828913
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 368.88961779806044,
+      "avg_accuracy": 0.3452937820878494,
+      "cost_per_request_usd": 9.321657159155734e-06
+    }
+  },
+  "table_reasoning": {
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 2200.3875581595726,
+      "avg_accuracy": 0.4154402895054283,
+      "cost_per_request_usd": 7.506444942271241e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 14686.365316155281,
+      "avg_accuracy": 0.8956433293778607,
+      "cost_per_request_usd": 0.0018637510832344465
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2138.922883064516,
+      "avg_accuracy": 0.782442876344086,
+      "cost_per_request_usd": 0.00014808702956989247
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 813.223978014428,
+      "avg_accuracy": 0.13957402954311235,
+      "cost_per_request_usd": 2.4953514256269326e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 4522.730164158686,
+      "avg_accuracy": 0.8094562243502054,
+      "cost_per_request_usd": 5.553624829001368e-05
+    }
+  },
+  "dense_captioning": {
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1680.7696594427246,
+      "avg_accuracy": 0.7343034055727554,
+      "cost_per_request_usd": 0.00010468383900928792
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 5659.363916256158,
+      "avg_accuracy": 0.9378694581280788,
+      "cost_per_request_usd": 0.0006521673768472905
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1987.7954684629517,
+      "avg_accuracy": 0.8471524800979793,
+      "cost_per_request_usd": 0.00021207740355174527
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 2833.32278088144,
+      "avg_accuracy": 0.8579143389199257,
+      "cost_per_request_usd": 3.866498448168839e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 335.8070841239722,
+      "avg_accuracy": 0.00967741935483871,
+      "cost_per_request_usd": 7.297577482605947e-06
     }
   },
   "medical_report": {
     "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1349.4949337490257,
-      "avg_accuracy": 0.1940763834762276,
-      "cost_per_request_usd": 1.5067965705378021e-05
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 3621.4215456674474,
-      "avg_accuracy": 0.0117096018735363,
-      "cost_per_request_usd": 4.5770874316939896e-05
-    },
-    "deepseek_ocr": {
-      "avg_latency_ms": 271.6766743648961,
-      "avg_accuracy": 0.06697459584295612,
-      "cost_per_request_usd": 6.3645496535796766e-06
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 2028.7731878409977,
-      "avg_accuracy": 0.014809041309431021,
-      "cost_per_request_usd": 3.883117692907249e-05
+      "avg_latency_ms": 1375.5580057526365,
+      "avg_accuracy": 0.17957813998082456,
+      "cost_per_request_usd": 1.5165867689357621e-05
     },
     "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 20413.04022082019,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 0.0024423367192429016
-    }
-  },
-  "geometry_reasoning": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 2101.4058269570337,
-      "avg_accuracy": 0.022954679223072396,
-      "cost_per_request_usd": 6.712954679223073e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 3118.861853832442,
-      "avg_accuracy": 0.08585858585858586,
-      "cost_per_request_usd": 0.00030023401663695784
+      "avg_latency_ms": 20226.723196881092,
+      "avg_accuracy": 0.7525341130604287,
+      "cost_per_request_usd": 0.002421294210526315
     },
     "qwen2_5_vl_7b": {
-      "avg_latency_ms": 4556.221628045158,
-      "avg_accuracy": 0.21271538918597743,
-      "cost_per_request_usd": 0.0006184681521093286
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 32715.188978736147,
-      "avg_accuracy": 0.10122791254866727,
-      "cost_per_request_usd": 0.00397894576819407
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 16489.251489868893,
-      "avg_accuracy": 0.19904648390941598,
-      "cost_per_request_usd": 0.00012888175804529203
-    }
-  },
-  "code_generation": {
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 38167.2895,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 0.0043037436
+      "avg_latency_ms": 2026.8286852589642,
+      "avg_accuracy": 0.4413346613545817,
+      "cost_per_request_usd": 3.893266932270917e-05
     },
     "deepseek_ocr": {
-      "avg_latency_ms": 5690.5955,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 0.000180231185
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 11202.7615,
-      "avg_accuracy": 0.003,
-      "cost_per_request_usd": 0.0001814868
+      "avg_latency_ms": 269.76653696498056,
+      "avg_accuracy": 0.08521400778210116,
+      "cost_per_request_usd": 6.359114785992218e-06
     },
     "gemma_3_27b": {
-      "avg_latency_ms": 27017.205,
-      "avg_accuracy": 0.003,
-      "cost_per_request_usd": 0.00018383839
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 10892.3145,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 9.682535e-05
-    }
-  },
-  "ui_captioning": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 2282.069,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 7.102120000000001e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 3344.431,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 0.00024872070000000004
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 3695.422,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 0.0005056534
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 11682.789,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 0.00182134164
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 9141.601,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 7.735857000000001e-05
-    }
-  },
-  "science_reasoning": {
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 624.579,
-      "avg_accuracy": 0.788,
-      "cost_per_request_usd": 7.988300000000001e-05
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 6548.088,
-      "avg_accuracy": 0.374,
-      "cost_per_request_usd": 0.0009256182
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 1407.583,
-      "avg_accuracy": 0.79,
-      "cost_per_request_usd": 4.5644259999999997e-05
-    },
-    "deepseek_ocr": {
-      "avg_latency_ms": 860.554,
-      "avg_accuracy": 0.304,
-      "cost_per_request_usd": 2.9216530000000006e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 761.852,
-      "avg_accuracy": 0.734,
-      "cost_per_request_usd": 3.99179e-05
-    }
-  },
-  "scene_text_ocr": {
-    "gemma_3_27b": {
-      "avg_latency_ms": 1179.638596491228,
-      "avg_accuracy": 0.7263157894736842,
-      "cost_per_request_usd": 2.6715709273182956e-05
-    },
-    "deepseek_ocr": {
-      "avg_latency_ms": 241.43308270676692,
-      "avg_accuracy": 0.07518796992481203,
-      "cost_per_request_usd": 4.975283208020051e-06
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1474.9869674185463,
-      "avg_accuracy": 0.6621553884711779,
-      "cost_per_request_usd": 6.789348370927318e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1177.7388471177944,
-      "avg_accuracy": 0.7443609022556391,
-      "cost_per_request_usd": 0.00013613814536340854
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 3143.340852130326,
-      "avg_accuracy": 0.7669172932330827,
-      "cost_per_request_usd": 0.0003498553684210526
-    }
-  },
-  "abstract_reasoning": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 786.9980256663376,
-      "avg_accuracy": 0.6199407699901284,
-      "cost_per_request_usd": 2.3001174728529126e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1367.447,
-      "avg_accuracy": 0.61,
-      "cost_per_request_usd": 8.590910000000001e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 2525.515,
-      "avg_accuracy": 0.565,
-      "cost_per_request_usd": 0.00019255580000000002
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 31897.437,
-      "avg_accuracy": 0.714,
-      "cost_per_request_usd": 0.0043915905
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 4289.79,
-      "avg_accuracy": 0.607,
-      "cost_per_request_usd": 5.099911e-05
-    }
-  },
-  "rendered_text_ocr": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 1904.354,
-      "avg_accuracy": 0.001,
-      "cost_per_request_usd": 5.929599000000001e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1519.07,
-      "avg_accuracy": 0.903,
-      "cost_per_request_usd": 0.0001418913
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1543.241,
-      "avg_accuracy": 0.936,
-      "cost_per_request_usd": 0.0002843566000000001
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 11445.899,
-      "avg_accuracy": 0.898,
-      "cost_per_request_usd": 0.0016055204399999998
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 1909.09,
-      "avg_accuracy": 0.785,
-      "cost_per_request_usd": 3.1702140000000005e-05
-    }
-  },
-  "counting": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 235.323,
-      "avg_accuracy": 0.075,
-      "cost_per_request_usd": 5.694920000000001e-06
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 876.842,
-      "avg_accuracy": 0.481,
-      "cost_per_request_usd": 4.1327100000000006e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 843.239,
-      "avg_accuracy": 0.626,
-      "cost_per_request_usd": 8.29146e-05
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 3598.337,
-      "avg_accuracy": 0.552,
-      "cost_per_request_usd": 0.0004494782399999999
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 649.885,
-      "avg_accuracy": 0.026,
-      "cost_per_request_usd": 2.626611e-05
-    }
-  },
-  "difference_detection": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 595.762,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 1.649552e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1494.389,
-      "avg_accuracy": 0.008,
-      "cost_per_request_usd": 1.46698e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1872.747,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 3.9294399999999994e-05
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 20168.782,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 0.00286697586
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 5783.645,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 5.8607230000000006e-05
-    }
-  },
-  "image_captioning": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 2576.054054054054,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 8.102177177177177e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 3210.129129129129,
-      "avg_accuracy": 0.04904904904904905,
-      "cost_per_request_usd": 0.00010811321321321323
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 2908.3413413413414,
-      "avg_accuracy": 0.03303303303303303,
-      "cost_per_request_usd": 0.00021866046046046047
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 9810.591591591592,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 0.001256208168168168
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 7010.524524524524,
-      "avg_accuracy": 0.002002002002002002,
-      "cost_per_request_usd": 5.987540540540541e-05
+      "avg_latency_ms": 3617.7422480620153,
+      "avg_accuracy": 0.5493217054263566,
+      "cost_per_request_usd": 4.577666666666667e-05
     }
   },
   "textbook_qa": {
     "deepseek_ocr": {
-      "avg_latency_ms": 509.228,
-      "avg_accuracy": 0.037,
-      "cost_per_request_usd": 1.4153890000000003e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 1295.017,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 7.79848e-05
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1074.736,
-      "avg_accuracy": 0.005,
-      "cost_per_request_usd": 0.00015606360000000003
+      "avg_latency_ms": 529.087341772152,
+      "avg_accuracy": 0.4673417721518987,
+      "cost_per_request_usd": 1.4842582278481016e-05
     },
     "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 7072.157,
-      "avg_accuracy": 0.22,
-      "cost_per_request_usd": 0.0009663002399999999
+      "avg_latency_ms": 7105.687116564417,
+      "avg_accuracy": 0.8408588957055214,
+      "cost_per_request_usd": 0.0009723324662576687
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1073.4276885043264,
+      "avg_accuracy": 0.7238566131025956,
+      "cost_per_request_usd": 0.0001565372064276885
     },
     "gemma_3_27b": {
-      "avg_latency_ms": 1202.47,
-      "avg_accuracy": 0.013,
-      "cost_per_request_usd": 2.995159e-05
+      "avg_latency_ms": 1189.8505025125628,
+      "avg_accuracy": 0.7100502512562813,
+      "cost_per_request_usd": 2.9882625628140703e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1285.85375,
+      "avg_accuracy": 0.639375,
+      "cost_per_request_usd": 7.8739125e-05
+    }
+  },
+  "diagram_captioning": {
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 5974.844537815126,
+      "avg_accuracy": 0.8516806722689076,
+      "cost_per_request_usd": 0.00018561428571428574
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 14862.078838174273,
+      "avg_accuracy": 0.9066390041493776,
+      "cost_per_request_usd": 0.00010322547717842326
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 5827.791666666667,
+      "avg_accuracy": 0.7787499999999999,
+      "cost_per_request_usd": 9.788166666666668e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 2597.278260869565,
+      "avg_accuracy": 0.05956521739130435,
+      "cost_per_request_usd": 7.550530434782609e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 26320.81512605042,
+      "avg_accuracy": 0.861764705882353,
+      "cost_per_request_usd": 0.0032073872268907557
+    }
+  },
+  "scene_text_ocr": {
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1219.1410564225691,
+      "avg_accuracy": 0.85078031212485,
+      "cost_per_request_usd": 0.00013783013205282115
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 241.71471652593488,
+      "avg_accuracy": 0.11821471652593488,
+      "cost_per_request_usd": 4.977774427020507e-06
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1166.9672528805336,
+      "avg_accuracy": 0.8351121892055791,
+      "cost_per_request_usd": 2.671106731352335e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 3104.973435655254,
+      "avg_accuracy": 0.9109799291617474,
+      "cost_per_request_usd": 0.0003438936481700118
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1482.626939788951,
+      "avg_accuracy": 0.7514587212911235,
+      "cost_per_request_usd": 6.813445065176908e-05
+    }
+  },
+  "abstract_reasoning": {
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2537.3852760736195,
+      "avg_accuracy": 0.5107975460122699,
+      "cost_per_request_usd": 0.00019477202453987733
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 4275.14742014742,
+      "avg_accuracy": 0.5974201474201474,
+      "cost_per_request_usd": 5.093498771498771e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 31974.659831121833,
+      "avg_accuracy": 0.5759951749095297,
+      "cost_per_request_usd": 0.004400621109770807
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1379.7384806973848,
+      "avg_accuracy": 0.5215442092154421,
+      "cost_per_request_usd": 8.625853051058532e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 809.6850961538462,
+      "avg_accuracy": 0.3729567307692308,
+      "cost_per_request_usd": 2.3661141826923082e-05
+    }
+  },
+  "rendered_text_ocr": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 1826.864596273292,
+      "avg_accuracy": 0.020124223602484476,
+      "cost_per_request_usd": 5.668752795031056e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 11321.071078431372,
+      "avg_accuracy": 0.9409313725490197,
+      "cost_per_request_usd": 0.0015874480147058825
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1560.4100367197063,
+      "avg_accuracy": 0.972827417380661,
+      "cost_per_request_usd": 0.0002844722154222766
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1502.3518284993695,
+      "avg_accuracy": 0.9517023959646911,
+      "cost_per_request_usd": 0.00014192232030264817
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1914.3832116788321,
+      "avg_accuracy": 0.9242092457420925,
+      "cost_per_request_usd": 3.171272506082726e-05
+    }
+  },
+  "science_reasoning": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 837.4755944931164,
+      "avg_accuracy": 0.47309136420525655,
+      "cost_per_request_usd": 2.8673066332916148e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 6413.142326732674,
+      "avg_accuracy": 0.8457920792079209,
+      "cost_per_request_usd": 0.0009095050247524751
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1432.097893432466,
+      "avg_accuracy": 0.7287484510532837,
+      "cost_per_request_usd": 4.582737298636927e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 753.388679245283,
+      "avg_accuracy": 0.6577358490566036,
+      "cost_per_request_usd": 3.982578616352202e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 626.4913793103449,
+      "avg_accuracy": 0.6679802955665024,
+      "cost_per_request_usd": 7.975221674876847e-05
+    }
+  },
+  "ui_captioning": {
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 3360.94375,
+      "avg_accuracy": 0.731875,
+      "cost_per_request_usd": 0.00025051900000000005
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 9031.241626794259,
+      "avg_accuracy": 0.8606459330143541,
+      "cost_per_request_usd": 7.678709330143542e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 11527.516284680338,
+      "avg_accuracy": 0.9279855247285886,
+      "cost_per_request_usd": 0.0017976655006031364
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 2271.005044136192,
+      "avg_accuracy": 0.030769230769230767,
+      "cost_per_request_usd": 7.085069356872636e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 3696.121065375303,
+      "avg_accuracy": 0.84636803874092,
+      "cost_per_request_usd": 0.0005051157384987893
+    }
+  },
+  "difference_detection": {
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1892.2657430730478,
+      "avg_accuracy": 0.3600755667506297,
+      "cost_per_request_usd": 3.927783375314862e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 20018.19221411192,
+      "avg_accuracy": 0.7512165450121655,
+      "cost_per_request_usd": 0.0028414802189781017
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1479.3341614906833,
+      "avg_accuracy": 0.19776397515527952,
+      "cost_per_request_usd": 1.4573913043478262e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 5661.099246231156,
+      "avg_accuracy": 0.4331658291457286,
+      "cost_per_request_usd": 5.790634422110553e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 605.46,
+      "avg_accuracy": 0.052125000000000005,
+      "cost_per_request_usd": 1.6774875e-05
+    }
+  },
+  "counting": {
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 871.0233415233415,
+      "avg_accuracy": 0.7696560196560197,
+      "cost_per_request_usd": 4.111265356265356e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 637.328502415459,
+      "avg_accuracy": 0.7242753623188405,
+      "cost_per_request_usd": 2.62743115942029e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 854.5181598062954,
+      "avg_accuracy": 0.8727602905569007,
+      "cost_per_request_usd": 8.283244552058112e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 241.03444034440344,
+      "avg_accuracy": 0.21906519065190655,
+      "cost_per_request_usd": 5.836334563345634e-06
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 3485.8333333333335,
+      "avg_accuracy": 0.903169014084507,
+      "cost_per_request_usd": 0.00043571338028169015
     }
   },
   "visual_mrc": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 551.44,
-      "avg_accuracy": 0.047,
-      "cost_per_request_usd": 1.5837690000000002e-05
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2849.8509615384614,
+      "avg_accuracy": 0.9233173076923078,
+      "cost_per_request_usd": 0.0006628247596153846
     },
     "qwen2_5_vl_3b": {
-      "avg_latency_ms": 2418.588,
-      "avg_accuracy": 0.223,
-      "cost_per_request_usd": 0.000325185
+      "avg_latency_ms": 2419.6695979899496,
+      "avg_accuracy": 0.8301507537688443,
+      "cost_per_request_usd": 0.00032013077889447237
     },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 2888.116,
-      "avg_accuracy": 0.218,
-      "cost_per_request_usd": 0.0006589056
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 4821.81,
-      "avg_accuracy": 0.331,
-      "cost_per_request_usd": 0.0008539618199999998
+    "deepseek_ocr": {
+      "avg_latency_ms": 536.6702767749699,
+      "avg_accuracy": 0.15162454873646208,
+      "cost_per_request_usd": 1.535057761732852e-05
     },
     "gemma_3_27b": {
-      "avg_latency_ms": 3787.662,
-      "avg_accuracy": 0.224,
-      "cost_per_request_usd": 4.480875e-05
+      "avg_latency_ms": 3655.0676506765067,
+      "avg_accuracy": 0.840590405904059,
+      "cost_per_request_usd": 4.3777650676506766e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 4794.5080459770115,
+      "avg_accuracy": 0.962528735632184,
+      "cost_per_request_usd": 0.0008492895172413793
+    }
+  },
+  "image_captioning": {
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 9741.873449131514,
+      "avg_accuracy": 0.9234491315136476,
+      "cost_per_request_usd": 0.001252083052109181
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 7062.953028430161,
+      "avg_accuracy": 0.8289245982694685,
+      "cost_per_request_usd": 6.0420778739184175e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2900.503082614057,
+      "avg_accuracy": 0.7801479654747226,
+      "cost_per_request_usd": 0.00021872725030826144
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 2529.4558258642764,
+      "avg_accuracy": 0.0028169014084507044,
+      "cost_per_request_usd": 7.980540332906531e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 3141.5347985347985,
+      "avg_accuracy": 0.6750915750915752,
+      "cost_per_request_usd": 0.00010776984126984128
     }
   },
   "medical_vqa": {
-    "deepseek_ocr": {
-      "avg_latency_ms": 331.27156549520765,
-      "avg_accuracy": 0.402555910543131,
-      "cost_per_request_usd": 7.510702875399362e-06
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2013.264,
+      "avg_accuracy": 0.6412,
+      "cost_per_request_usd": 0.000177456
     },
     "qwen2_5_vl_3b": {
-      "avg_latency_ms": 2123.645367412141,
-      "avg_accuracy": 0.48242811501597443,
-      "cost_per_request_usd": 8.757476038338657e-05
+      "avg_latency_ms": 2131.157894736842,
+      "avg_accuracy": 0.5898785425101214,
+      "cost_per_request_usd": 9.10497975708502e-05
     },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 1999.3929712460065,
-      "avg_accuracy": 0.48242811501597443,
-      "cost_per_request_usd": 0.0001797782747603834
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 5434.0,
-      "avg_accuracy": 0.6741214057507987,
-      "cost_per_request_usd": 0.0006875122044728433
-    },
-    "gemma_3_27b": {
-      "avg_latency_ms": 1632.4504792332268,
-      "avg_accuracy": 0.5207667731629393,
-      "cost_per_request_usd": 3.0019169329073483e-05
-    }
-  },
-  "web_understanding": {
     "deepseek_ocr": {
-      "avg_latency_ms": 1821.9200799200798,
-      "avg_accuracy": 0.0,
-      "cost_per_request_usd": 6.518326673326673e-05
-    },
-    "qwen2_5_vl_3b": {
-      "avg_latency_ms": 6431.8511488511485,
-      "avg_accuracy": 0.2837162837162837,
-      "cost_per_request_usd": 0.0005982404595404596
-    },
-    "qwen2_5_vl_7b": {
-      "avg_latency_ms": 6952.438561438561,
-      "avg_accuracy": 0.3936063936063936,
-      "cost_per_request_usd": 0.0011907062937062936
-    },
-    "qwen3_vl_8b_thinking": {
-      "avg_latency_ms": 21834.766233766233,
-      "avg_accuracy": 0.03696303696303696,
-      "cost_per_request_usd": 0.004767952747252747
+      "avg_latency_ms": 352.3639846743295,
+      "avg_accuracy": 0.35095785440613025,
+      "cost_per_request_usd": 8.163563218390806e-06
     },
     "gemma_3_27b": {
-      "avg_latency_ms": 24068.773226773228,
-      "avg_accuracy": 0.03196803196803197,
-      "cost_per_request_usd": 0.00020723824175824179
+      "avg_latency_ms": 1642.0389105058366,
+      "avg_accuracy": 0.6501945525291829,
+      "cost_per_request_usd": 2.98168093385214e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 5478.6988416988415,
+      "avg_accuracy": 0.7339768339768341,
+      "cost_per_request_usd": 0.0006928598455598454
     }
   }
 }

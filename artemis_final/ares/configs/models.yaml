@@ -1,0 +1,29 @@
+models:
+  - name: qwen2_5_vl_7b
+    base_url: https://api.openai.com/v1 # Replace with your actual endpoint (e.g. vLLM or OpenAI)
+    api_key: sk-proj-... # Replace with your actual key or set via env var
+    model_id: Qwen/Qwen2.5-VL-7B-Instruct # Actual model ID on server
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.002
+      completion_per_1k: 0.002
+    extra_params:
+      temperature: 0.7
+
+  - name: gemma_3_27b
+    base_url: https://api.openai.com/v1
+    api_key: sk-proj-...
+    model_id: google/gemma-3-27b-it
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.003
+      completion_per_1k: 0.006
+
+  - name: deepseek_ocr
+    base_url: https://api.deepseek.com/v1
+    api_key: sk-...
+    model_id: deepseek-chat
+    model_type: llm
+    pricing:
+      prompt_per_1k: 0.001
+      completion_per_1k: 0.002

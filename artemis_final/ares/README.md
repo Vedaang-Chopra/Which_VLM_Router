@@ -1,57 +1,45 @@
-# ARES (Automated Response Evaluation System)
+# Ares
 
-**ARES** is the evaluation and data management subsystem of Artemis. It handles dataset loading, response storage, and automated scoring using judges (Glider, Semantic F1, etc.).
+Ares (Automated Response Evaluation System) handles dataset management, response storage, and automated evaluation for the Artemis project.
 
-## Features
-- **Database Management**: Schema definitions and connection handling (`ares.db`).
-- **Evaluation**: Automated scoring metrics (Exact Match, F1, Glider) (`ares.evaluation`).
-- **Data Ingestion**: Tools to import Cauldron datasets (`ares.data`).
-- **Metrics**: Aggregation and reporting (`ares.metrics`).
+## Overview
+
+The module provides infrastructure for:
+1.  **Data Ingestion**: Loading and processing datasets (e.g., from Cauldron).
+2.  **Evaluation**: scoring model outputs using various metrics (Exact Match, F1, Glider).
+3.  **Persistence**: Storing experiment results and samples in the database.
+
+## Architecture
+
+- **Public API** (`public_api.py`): Entry point for evaluation and database interactions.
+- **Database** (`db/`): Schema definitions and ORM (SQLModel) classes.
+- **Evaluation** (`evaluation/`): Implementation of judges and scorers.
 
 ## Usage
 
-### Public API
-All core functionality is exposed via `ares.public_api`:
+### Database Access
+
+Retrieve the database engine or session.
 
 ```python
-from ares import get_db, AresAPI, SampleRecord
+from artemis_final.ares.public_api import get_db
 
-# 1. Database Access
 engine = get_db()
+```
 
-# 2. Evaluation
+### Evaluation
+
+Use the `AresAPI` to score model responses.
+
+```python
+from artemis_final.ares.public_api import AresAPI
+
 api = AresAPI()
-
-# Create a sample record (or use dict)
 sample = {
-    "response_parsed": "The answer is 42.",
-    "ground_truth": "42",
+    "response_parsed": "Paris",
+    "ground_truth": "Paris",
     "ground_truth_type": "exact"
 }
-
-# Run evaluation
 scores = api.evaluate(sample)
-print(scores['score_exact_match']) # 1.0
-```
-
-### Database Operations
-```python
-from ares import insert_samples, get_existing_responses
-
-# Insert new samples
-insert_samples(samples_list)
-
-# Query responses
-responses = get_existing_responses(run_id="exp_001")
-```
-
-## Directory Structure
-```
-ares/
-├── public_api.py         # Main entry point
-├── db/                   # Database schemas and operations
-├── evaluation/           # Scoring logic (Scorer, Glider, SemanticF1)
-├── configs/              # Configuration (Tasks, Prompts)
-├── metrics/              # Aggregation utilities
-└── README.md
+# result: {'score_exact_match': 1.0, ...}
 ```
