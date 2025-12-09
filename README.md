@@ -1,5 +1,10 @@
 # Artemis VLM Router
 
+> [!IMPORTANT]
+> **Start Here**: The primary entry point for this project is the `artemis_final/examples/` directory. The modularity of the core Python package is still under active development, so we strongly recommend starting with the provided **Jupyter Notebooks** to understand the system and run end-to-end workflows.
+
+
+
 **Artemis** is a modular, high-performance routing system for Vision-Language Models (VLMs). It intelligently dispatches user requests (image + text) to the most appropriate VLM backend based on the query's complexity, cost constraints, latency requirements, and model strengths.
 
 The system consists of three core components working in unison:
@@ -28,6 +33,9 @@ The codebase is organized as follows:
 -   `artemis_final/inference_engine/`: Unified client for calling VLM APIs (vLLM, OpenAI, etc.).
 -   `artemis_final/common/`: Shared utilities and the **centralized configuration** loader.
 -   `artemis_final/examples/`: **Start here.** Jupyter notebooks demonstrating end-to-end usage.
+    -   `router/`: Router inference demos, confidence analysis, and architecture comparisons.
+    -   `load_balancer/`: Stress tests, cost-mode routing examples, and load balancing tutorials.
+    -   `ops/`: Operational notebooks for capacity planning and system sizing.
 -   `artemis_final/01_end_to_end_image_inference.ipynb`: The primary "Hello World" notebook.
 
 ## Installation & Setup
@@ -36,7 +44,7 @@ The codebase is organized as follows:
 Activate the project virtual environment (assuming standard deployment):
 
 ```bash
-source /home/hice1/vchopra37/scratch/projects/vlm_router/vlm_router_env/bin/activate
+source ./<enviornment_name/bin/activate
 ```
 
 ### 2. Dependencies
