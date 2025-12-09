@@ -122,13 +122,15 @@ class RewardRouterInference:
                 if self.verbose:
                     print("[INFO] Config missing text_encoder_name, using default RouterModelConfig")
         else:
-            self.config = RouterModelConfig()
+            # Fallback for known checkpoint "best_multitask_router_v1.pt" which uses hidden_dim=256
+            self.config = RouterModelConfig(hidden_dim=256)
             if self.verbose:
-                print("[INFO] Using default RouterModelConfig")
+                print("[INFO] Using default RouterModelConfig with hidden_dim=256 (compatible with v1 multitask router)")
 
         # Model metadata - try to get from checkpoint, fallback to defaults
         self.num_models = checkpoint.get('num_models', 5)
         self.num_modes = checkpoint.get('num_modes', 4)
+        self.num_tasks = checkpoint.get('num_tasks', 30)
 
         self.model_names = [
             "deepseek_ocr",
@@ -155,11 +157,19 @@ class RewardRouterInference:
             config=self.config,
             num_models=self.num_models,
             num_modes=self.num_modes,
+            num_tasks=self.num_tasks,
         )
 
         # Load weights - handle both 'state_dict' and 'model_state_dict' keys
-        state_dict_key = 'state_dict' if 'state_dict' in checkpoint else 'model_state_dict'
-        self.model.load_state_dict(checkpoint[state_dict_key])
+        # Load weights - handle 'state_dict', 'model_state_dict', or raw state dict
+        if 'state_dict' in checkpoint:
+            self.model.load_state_dict(checkpoint['state_dict'])
+        elif 'model_state_dict' in checkpoint:
+            self.model.load_state_dict(checkpoint['model_state_dict'])
+        else:
+            if self.verbose:
+                print("[INFO] No 'state_dict' key found. Attempting to load as raw state dict.")
+            self.model.load_state_dict(checkpoint)
         self.model.to(device)
         self.model.eval()
 
@@ -182,6 +192,7 @@ class RewardRouterInference:
             print(f"[INFO] Text encoder: {self.config.text_encoder_name}")
             print(f"[INFO] Models: {self.model_names}")
             print(f"[INFO] Modes: {self.mode_names}")
+            print(f"[INFO] Tasks: {self.num_tasks}")
 
     def format_sample_text(
         self,
@@ -313,6 +324,12 @@ class RewardRouterInference:
                 f"Unknown mode: {mode}. Must be one of {self.mode_names}"
             )
 
+        # Handle swapped arguments (common user error: passing (image, prompt))
+        if not isinstance(prompt, str) and isinstance(image, str):
+            if self.verbose:
+                print("[INFO] Detected swapped arguments in route(). Swapping prompt and image.")
+            prompt, image = image, prompt
+
         # Format text with image metadata
         sample_text = self.format_sample_text(prompt, image, metadata)
 
@@ -339,13 +356,16 @@ class RewardRouterInference:
             mode_ids = torch.tensor([mode_id], device=self.device).expand(self.num_models)
 
             # Predict rewards
-            # Shape: [num_models] (one reward per model)
-            rewards = self.model(
+            # Output is a dict: {'utility_hat': ..., 'task_logits': ...}
+            outputs = self.model(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 model_id=model_ids,
                 mode_id=mode_ids,
             )
+            
+            # Extract utility scores (shape: [num_models])
+            rewards = outputs["utility_hat"]
 
             # Convert to numpy
             rewards = rewards.cpu().numpy()  # [num_models]

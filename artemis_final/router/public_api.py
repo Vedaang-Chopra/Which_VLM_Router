@@ -10,7 +10,7 @@ from typing import Dict, Optional, Any, List
 from pathlib import Path
 
 # Common config loader
-from common.config_loader import GlobalConfig, get_base_dir, load_global_config
+from artemis_final.common.config_loader import GlobalConfig, get_base_dir, load_global_config
 
 # Import Router Service
 from .router_service import RouterService
@@ -62,6 +62,23 @@ def route_request(prompt: str, mode: str = "balanced", metadata: Optional[Dict[s
         raise RuntimeError("Router not initialized. Call init_router() first.")
         
     return _GLOBAL_ROUTER_SERVICE.predict(prompt, mode, metadata)
+
+def route_batch(prompts: List[str], modes: Optional[List[str]] = None, metadata_list: Optional[List[Dict[str, Any]]] = None) -> List[Dict[str, Any]]:
+    """
+    Route a batch of requests.
+    
+    Args:
+        prompts: List of user prompts.
+        modes: Optional list of modes (accuracy, cheap, etc).
+        metadata_list: Optional list of metadata dicts.
+        
+    Returns:
+        List of result dicts.
+    """
+    if _GLOBAL_ROUTER_SERVICE is None:
+        raise RuntimeError("Router not initialized. Call init_router() first.")
+        
+    return _GLOBAL_ROUTER_SERVICE.route_batch(prompts, modes, metadata_list)
 
 # -----------------------------------------------------------------------------
 # Advanced API for Notebooks / Research

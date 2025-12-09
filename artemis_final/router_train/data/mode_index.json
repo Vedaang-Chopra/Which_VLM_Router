@@ -1,6 +1,1 @@
-{
-  "accuracy": 0,
-  "cheap": 1,
-  "fast": 2,
-  "balanced": 3
-}
+["accuracy", "cheap", "fast", "balanced"]

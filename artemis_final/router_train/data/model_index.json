@@ -1,5 +1,1 @@
-{
-  "model_a": 0,
-  "model_b": 1,
-  "model_c": 2
-}
+["deepseek_ocr", "gemma_3_27b", "qwen2_5_vl_3b", "qwen2_5_vl_7b", "qwen3_vl_8b_thinking"]

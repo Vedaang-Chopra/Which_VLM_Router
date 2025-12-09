@@ -10,9 +10,9 @@ from typing import Dict, Optional, Any
 try:
     from .core.inference_reward_router import RewardRouterInference
 except ImportError:
-    from core.inference_reward_router import RewardRouterInference
+    from artemis_final.router.core.inference_reward_router import RewardRouterInference
 
-from common.config_loader import GlobalConfig, get_base_dir
+from artemis_final.common.config_loader import GlobalConfig, get_base_dir
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +81,38 @@ class RouterService:
             }
         
         return self.engine.route(prompt, mode=mode, metadata=metadata)
+
+    def route_batch(
+        self,
+        prompts: list[str],
+        modes: Optional[list[str]] = None,
+        metadata_list: Optional[list[Dict[str, Any]]] = None
+    ) -> list[Dict[str, Any]]:
+        """
+        Route multiple requests in batch.
+        
+        Args:
+            prompts: List of user prompts
+            modes: Optional list of modes (one per prompt)
+            metadata_list: Optional list of metadata dicts
+            
+        Returns:
+            List of routing decisions
+        """
+        if self.engine is None:
+            # Fallback
+            return [{
+                "chosen_model": "qwen2_5_vl_7b",
+                "rewards": {},
+                "mode": m if m else "balanced",
+                "inference_ms": 0.0
+            } for m in (modes or ["balanced"] * len(prompts))]
+            
+        return self.engine.route_batch(
+            prompts=prompts,
+            modes=modes,
+            metadata_list=metadata_list
+        )
 
     def reload_model(self, new_checkpoint_path: Optional[str] = None):
         """
