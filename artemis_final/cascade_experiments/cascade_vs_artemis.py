@@ -60,11 +60,11 @@ ARTEMIS_API_URL = "http://localhost:8000/v1/chat/completions"
 
 # Model Configuration (Reusable from cf_exp_2.py)
 MODEL_ENDPOINTS = {
-    "Qwen/Qwen2.5-VL-3B-Instruct":   "http://localhost:8803/v1",
-    "Qwen/Qwen2.5-VL-7B-Instruct":   "http://localhost:8802/v1",
+    "Qwen/Qwen2.5-VL-3B-Instruct":   "http://localhost:8807/v1",
+    "Qwen/Qwen2.5-VL-7B-Instruct":   "http://localhost:8804/v1",
     "google/gemma-3-27b-it":         "http://localhost:8800/v1",
-    "Qwen/Qwen3-VL-8B-Thinking":     "http://localhost:8801/v1",
-    "deepseek-ai/DeepSeek-OCR":      "http://localhost:8804/v1",
+    "Qwen/Qwen3-VL-8B-Thinking":     "http://localhost:8803/v1",
+    "deepseek-ai/DeepSeek-OCR":      "http://localhost:8808/v1",
 }
 
 MODEL_PRICING = {

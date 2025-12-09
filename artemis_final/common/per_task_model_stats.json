@@ -1,0 +1,812 @@
+{
+  "meme_classification": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 259.673,
+      "avg_accuracy": 0.483,
+      "cost_per_request_usd": 5.906015e-06
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1234.0385,
+      "avg_accuracy": 0.729,
+      "cost_per_request_usd": 4.52544e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1412.8905,
+      "avg_accuracy": 0.7915,
+      "cost_per_request_usd": 9.05088e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 5574.96,
+      "avg_accuracy": 0.857,
+      "cost_per_request_usd": 0.0005033941799999999
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 3557.638,
+      "avg_accuracy": 0.7635,
+      "cost_per_request_usd": 4.4021075e-05
+    }
+  },
+  "spatial_reasoning": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 357.1799307958477,
+      "avg_accuracy": 0.45628604382929644,
+      "cost_per_request_usd": 8.993776239907728e-06
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1638.7265570733966,
+      "avg_accuracy": 0.5478119935170178,
+      "cost_per_request_usd": 5.629451261866173e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1602.4012502894188,
+      "avg_accuracy": 0.6103264644593656,
+      "cost_per_request_usd": 0.00011307149803195184
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 7588.174640037158,
+      "avg_accuracy": 0.871342313051556,
+      "cost_per_request_usd": 0.0007439135113794705
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1208.6195551436515,
+      "avg_accuracy": 0.5576923076923077,
+      "cost_per_request_usd": 3.021696941612604e-05
+    }
+  },
+  "handwriting_ocr": {
+    "gemma_3_27b": {
+      "avg_latency_ms": 2437.345,
+      "avg_accuracy": 0.5155,
+      "cost_per_request_usd": 3.700713e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1126.2505,
+      "avg_accuracy": 0.555,
+      "cost_per_request_usd": 0.0001261329
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1312.6445,
+      "avg_accuracy": 0.6735,
+      "cost_per_request_usd": 0.0002536854
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 16344.242,
+      "avg_accuracy": 0.5405,
+      "cost_per_request_usd": 0.0018610680899999999
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 654.259,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 1.832306e-05
+    }
+  },
+  "diagram_reasoning": {
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 7933.377,
+      "avg_accuracy": 0.261,
+      "cost_per_request_usd": 0.00071845536
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1563.304,
+      "avg_accuracy": 0.836,
+      "cost_per_request_usd": 5.132505000000001e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1486.008,
+      "avg_accuracy": 0.8805,
+      "cost_per_request_usd": 0.00010271940000000002
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 944.641,
+      "avg_accuracy": 0.87,
+      "cost_per_request_usd": 3.1012965e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 549.046,
+      "avg_accuracy": 0.2395,
+      "cost_per_request_usd": 1.5876485000000002e-05
+    }
+  },
+  "table_reasoning": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 833.4835425383543,
+      "avg_accuracy": 0.0900976290097629,
+      "cost_per_request_usd": 2.5716627615062764e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 4631.063207942945,
+      "avg_accuracy": 0.35645364284715425,
+      "cost_per_request_usd": 5.6214890225143345e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 2260.2591557170813,
+      "avg_accuracy": 0.31073525300531174,
+      "cost_per_request_usd": 7.580482247693599e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2166.2699189264745,
+      "avg_accuracy": 0.36287391668996366,
+      "cost_per_request_usd": 0.00014872776069331842
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 14864.304286915103,
+      "avg_accuracy": 0.5053236200616419,
+      "cost_per_request_usd": 0.001882576466797422
+    }
+  },
+  "table_math": {
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 19765.181,
+      "avg_accuracy": 0.24366666666666667,
+      "cost_per_request_usd": 0.0022359906999999996
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 4586.746,
+      "avg_accuracy": 0.2876666666666667,
+      "cost_per_request_usd": 0.00010027448000000002
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 1503.852,
+      "avg_accuracy": 0.093,
+      "cost_per_request_usd": 6.026070666666667e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1567.8186666666666,
+      "avg_accuracy": 0.549,
+      "cost_per_request_usd": 7.729236666666667e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1947.7486666666666,
+      "avg_accuracy": 0.607,
+      "cost_per_request_usd": 0.0001577096
+    }
+  },
+  "document_ocr": {
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 4054.2237242311594,
+      "avg_accuracy": 0.8556944913822238,
+      "cost_per_request_usd": 0.0005510046367015884
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 932.4910563617955,
+      "avg_accuracy": 0.6631792102598717,
+      "cost_per_request_usd": 2.8143120148498147e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 409.94532301480484,
+      "avg_accuracy": 0.042900403768506054,
+      "cost_per_request_usd": 1.0373982166890985e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1737.2791835357625,
+      "avg_accuracy": 0.7058029689608637,
+      "cost_per_request_usd": 0.00021535236167341432
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2236.4689608636977,
+      "avg_accuracy": 0.8026315789473685,
+      "cost_per_request_usd": 0.00043169480431848854
+    }
+  },
+  "general_vqa": {
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1881.3194097048524,
+      "avg_accuracy": 0.4917458729364682,
+      "cost_per_request_usd": 3.677558779389695e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 582.400700350175,
+      "avg_accuracy": 0.16733366683341672,
+      "cost_per_request_usd": 1.603753126563282e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1061.5780390195098,
+      "avg_accuracy": 0.5060030015007504,
+      "cost_per_request_usd": 2.7450717858929465e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1630.519259629815,
+      "avg_accuracy": 0.5505252626313156,
+      "cost_per_request_usd": 7.451530765382692e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 4662.334167083542,
+      "avg_accuracy": 0.6683341670835418,
+      "cost_per_request_usd": 0.0003253738019009505
+    }
+  },
+  "chart_reasoning": {
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1386.4546597736482,
+      "avg_accuracy": 0.40086628475618274,
+      "cost_per_request_usd": 4.6459424339807186e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 425.3711138993448,
+      "avg_accuracy": 0.3086574654956085,
+      "cost_per_request_usd": 1.1546782378363307e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 6477.306228131561,
+      "avg_accuracy": 0.7865640307907628,
+      "cost_per_request_usd": 0.0005507756053184044
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 530.0292144254962,
+      "avg_accuracy": 0.4858820240424937,
+      "cost_per_request_usd": 2.664855884819681e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1554.216431465698,
+      "avg_accuracy": 0.6558613944390108,
+      "cost_per_request_usd": 9.394925248008941e-05
+    }
+  },
+  "map_reasoning": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 869.9574787393697,
+      "avg_accuracy": 0.2176088044022011,
+      "cost_per_request_usd": 2.6118404202101053e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1054.904452226113,
+      "avg_accuracy": 0.3921960980490245,
+      "cost_per_request_usd": 5.145852926463232e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1386.4457228614308,
+      "avg_accuracy": 0.527263631815908,
+      "cost_per_request_usd": 0.0001058271135567784
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 10039.408316633266,
+      "avg_accuracy": 0.7575150300601202,
+      "cost_per_request_usd": 0.001128771523046092
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1075.0825412706354,
+      "avg_accuracy": 0.3506753376688344,
+      "cost_per_request_usd": 3.01984092046023e-05
+    }
+  },
+  "dense_captioning": {
+    "gemma_3_27b": {
+      "avg_latency_ms": 2833.8475,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 3.8660855000000005e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 333.2525,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 7.290685000000001e-06
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1991.991,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 0.00021242359999999998
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1665.4055,
+      "avg_accuracy": 0.004,
+      "cost_per_request_usd": 0.00010484235000000002
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 5650.2055,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 0.00064921104
+    }
+  },
+  "icon_reasoning": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 1116.8219109554777,
+      "avg_accuracy": 0.304152076038019,
+      "cost_per_request_usd": 3.441882941470736e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 619.0210105052527,
+      "avg_accuracy": 0.5132566283141571,
+      "cost_per_request_usd": 1.38663831915958e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 662.0585292646323,
+      "avg_accuracy": 0.6463231615807904,
+      "cost_per_request_usd": 2.77327663831916e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 7750.693346673336,
+      "avg_accuracy": 0.3411705852926463,
+      "cost_per_request_usd": 0.0007893277638819409
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1367.7693846923462,
+      "avg_accuracy": 0.6238119059529765,
+      "cost_per_request_usd": 3.375677338669335e-05
+    }
+  },
+  "chart_captioning": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 616.0976992330777,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 1.7351913971323775e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 3122.976325441814,
+      "avg_accuracy": 0.14671557185728576,
+      "cost_per_request_usd": 8.799839946648884e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 5324.875625208403,
+      "avg_accuracy": 0.004668222740913638,
+      "cost_per_request_usd": 0.00019950050016672227
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 19957.396465488495,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 0.002503820046682227
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 8197.667555851951,
+      "avg_accuracy": 0.005001667222407469,
+      "cost_per_request_usd": 7.285985661887296e-05
+    }
+  },
+  "diagram_captioning": {
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 26771.736666666668,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 0.0032693697999999997
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 2804.5933333333332,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 8.168830000000002e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 14908.206666666667,
+      "avg_accuracy": 0.006666666666666667,
+      "cost_per_request_usd": 0.00010372073333333335
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 5933.086666666667,
+      "avg_accuracy": 0.05333333333333334,
+      "cost_per_request_usd": 0.00010098733333333333
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 6020.693333333334,
+      "avg_accuracy": 0.01,
+      "cost_per_request_usd": 0.00020237733333333335
+    }
+  },
+  "knowledge_vqa": {
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 2306.0135,
+      "avg_accuracy": 0.3705,
+      "cost_per_request_usd": 4.563085e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 280.127,
+      "avg_accuracy": 0.1765,
+      "cost_per_request_usd": 6.06207e-06
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2585.284,
+      "avg_accuracy": 0.449,
+      "cost_per_request_usd": 9.573760000000001e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 8392.112,
+      "avg_accuracy": 0.525,
+      "cost_per_request_usd": 0.00071212221
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 2775.095,
+      "avg_accuracy": 0.4895,
+      "cost_per_request_usd": 4.0073835000000005e-05
+    }
+  },
+  "medical_report": {
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1349.4949337490257,
+      "avg_accuracy": 0.1940763834762276,
+      "cost_per_request_usd": 1.5067965705378021e-05
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 3621.4215456674474,
+      "avg_accuracy": 0.0117096018735363,
+      "cost_per_request_usd": 4.5770874316939896e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 271.6766743648961,
+      "avg_accuracy": 0.06697459584295612,
+      "cost_per_request_usd": 6.3645496535796766e-06
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2028.7731878409977,
+      "avg_accuracy": 0.014809041309431021,
+      "cost_per_request_usd": 3.883117692907249e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 20413.04022082019,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 0.0024423367192429016
+    }
+  },
+  "geometry_reasoning": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 2101.4058269570337,
+      "avg_accuracy": 0.022954679223072396,
+      "cost_per_request_usd": 6.712954679223073e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 3118.861853832442,
+      "avg_accuracy": 0.08585858585858586,
+      "cost_per_request_usd": 0.00030023401663695784
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 4556.221628045158,
+      "avg_accuracy": 0.21271538918597743,
+      "cost_per_request_usd": 0.0006184681521093286
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 32715.188978736147,
+      "avg_accuracy": 0.10122791254866727,
+      "cost_per_request_usd": 0.00397894576819407
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 16489.251489868893,
+      "avg_accuracy": 0.19904648390941598,
+      "cost_per_request_usd": 0.00012888175804529203
+    }
+  },
+  "code_generation": {
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 38167.2895,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 0.0043037436
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 5690.5955,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 0.000180231185
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 11202.7615,
+      "avg_accuracy": 0.003,
+      "cost_per_request_usd": 0.0001814868
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 27017.205,
+      "avg_accuracy": 0.003,
+      "cost_per_request_usd": 0.00018383839
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 10892.3145,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 9.682535e-05
+    }
+  },
+  "ui_captioning": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 2282.069,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 7.102120000000001e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 3344.431,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 0.00024872070000000004
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 3695.422,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 0.0005056534
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 11682.789,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 0.00182134164
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 9141.601,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 7.735857000000001e-05
+    }
+  },
+  "science_reasoning": {
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 624.579,
+      "avg_accuracy": 0.788,
+      "cost_per_request_usd": 7.988300000000001e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 6548.088,
+      "avg_accuracy": 0.374,
+      "cost_per_request_usd": 0.0009256182
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1407.583,
+      "avg_accuracy": 0.79,
+      "cost_per_request_usd": 4.5644259999999997e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 860.554,
+      "avg_accuracy": 0.304,
+      "cost_per_request_usd": 2.9216530000000006e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 761.852,
+      "avg_accuracy": 0.734,
+      "cost_per_request_usd": 3.99179e-05
+    }
+  },
+  "scene_text_ocr": {
+    "gemma_3_27b": {
+      "avg_latency_ms": 1179.638596491228,
+      "avg_accuracy": 0.7263157894736842,
+      "cost_per_request_usd": 2.6715709273182956e-05
+    },
+    "deepseek_ocr": {
+      "avg_latency_ms": 241.43308270676692,
+      "avg_accuracy": 0.07518796992481203,
+      "cost_per_request_usd": 4.975283208020051e-06
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1474.9869674185463,
+      "avg_accuracy": 0.6621553884711779,
+      "cost_per_request_usd": 6.789348370927318e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1177.7388471177944,
+      "avg_accuracy": 0.7443609022556391,
+      "cost_per_request_usd": 0.00013613814536340854
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 3143.340852130326,
+      "avg_accuracy": 0.7669172932330827,
+      "cost_per_request_usd": 0.0003498553684210526
+    }
+  },
+  "abstract_reasoning": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 786.9980256663376,
+      "avg_accuracy": 0.6199407699901284,
+      "cost_per_request_usd": 2.3001174728529126e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1367.447,
+      "avg_accuracy": 0.61,
+      "cost_per_request_usd": 8.590910000000001e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2525.515,
+      "avg_accuracy": 0.565,
+      "cost_per_request_usd": 0.00019255580000000002
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 31897.437,
+      "avg_accuracy": 0.714,
+      "cost_per_request_usd": 0.0043915905
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 4289.79,
+      "avg_accuracy": 0.607,
+      "cost_per_request_usd": 5.099911e-05
+    }
+  },
+  "rendered_text_ocr": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 1904.354,
+      "avg_accuracy": 0.001,
+      "cost_per_request_usd": 5.929599000000001e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1519.07,
+      "avg_accuracy": 0.903,
+      "cost_per_request_usd": 0.0001418913
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1543.241,
+      "avg_accuracy": 0.936,
+      "cost_per_request_usd": 0.0002843566000000001
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 11445.899,
+      "avg_accuracy": 0.898,
+      "cost_per_request_usd": 0.0016055204399999998
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1909.09,
+      "avg_accuracy": 0.785,
+      "cost_per_request_usd": 3.1702140000000005e-05
+    }
+  },
+  "counting": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 235.323,
+      "avg_accuracy": 0.075,
+      "cost_per_request_usd": 5.694920000000001e-06
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 876.842,
+      "avg_accuracy": 0.481,
+      "cost_per_request_usd": 4.1327100000000006e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 843.239,
+      "avg_accuracy": 0.626,
+      "cost_per_request_usd": 8.29146e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 3598.337,
+      "avg_accuracy": 0.552,
+      "cost_per_request_usd": 0.0004494782399999999
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 649.885,
+      "avg_accuracy": 0.026,
+      "cost_per_request_usd": 2.626611e-05
+    }
+  },
+  "difference_detection": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 595.762,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 1.649552e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1494.389,
+      "avg_accuracy": 0.008,
+      "cost_per_request_usd": 1.46698e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1872.747,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 3.9294399999999994e-05
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 20168.782,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 0.00286697586
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 5783.645,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 5.8607230000000006e-05
+    }
+  },
+  "image_captioning": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 2576.054054054054,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 8.102177177177177e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 3210.129129129129,
+      "avg_accuracy": 0.04904904904904905,
+      "cost_per_request_usd": 0.00010811321321321323
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2908.3413413413414,
+      "avg_accuracy": 0.03303303303303303,
+      "cost_per_request_usd": 0.00021866046046046047
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 9810.591591591592,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 0.001256208168168168
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 7010.524524524524,
+      "avg_accuracy": 0.002002002002002002,
+      "cost_per_request_usd": 5.987540540540541e-05
+    }
+  },
+  "textbook_qa": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 509.228,
+      "avg_accuracy": 0.037,
+      "cost_per_request_usd": 1.4153890000000003e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 1295.017,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 7.79848e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1074.736,
+      "avg_accuracy": 0.005,
+      "cost_per_request_usd": 0.00015606360000000003
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 7072.157,
+      "avg_accuracy": 0.22,
+      "cost_per_request_usd": 0.0009663002399999999
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1202.47,
+      "avg_accuracy": 0.013,
+      "cost_per_request_usd": 2.995159e-05
+    }
+  },
+  "visual_mrc": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 551.44,
+      "avg_accuracy": 0.047,
+      "cost_per_request_usd": 1.5837690000000002e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 2418.588,
+      "avg_accuracy": 0.223,
+      "cost_per_request_usd": 0.000325185
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 2888.116,
+      "avg_accuracy": 0.218,
+      "cost_per_request_usd": 0.0006589056
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 4821.81,
+      "avg_accuracy": 0.331,
+      "cost_per_request_usd": 0.0008539618199999998
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 3787.662,
+      "avg_accuracy": 0.224,
+      "cost_per_request_usd": 4.480875e-05
+    }
+  },
+  "medical_vqa": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 331.27156549520765,
+      "avg_accuracy": 0.402555910543131,
+      "cost_per_request_usd": 7.510702875399362e-06
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 2123.645367412141,
+      "avg_accuracy": 0.48242811501597443,
+      "cost_per_request_usd": 8.757476038338657e-05
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 1999.3929712460065,
+      "avg_accuracy": 0.48242811501597443,
+      "cost_per_request_usd": 0.0001797782747603834
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 5434.0,
+      "avg_accuracy": 0.6741214057507987,
+      "cost_per_request_usd": 0.0006875122044728433
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 1632.4504792332268,
+      "avg_accuracy": 0.5207667731629393,
+      "cost_per_request_usd": 3.0019169329073483e-05
+    }
+  },
+  "web_understanding": {
+    "deepseek_ocr": {
+      "avg_latency_ms": 1821.9200799200798,
+      "avg_accuracy": 0.0,
+      "cost_per_request_usd": 6.518326673326673e-05
+    },
+    "qwen2_5_vl_3b": {
+      "avg_latency_ms": 6431.8511488511485,
+      "avg_accuracy": 0.2837162837162837,
+      "cost_per_request_usd": 0.0005982404595404596
+    },
+    "qwen2_5_vl_7b": {
+      "avg_latency_ms": 6952.438561438561,
+      "avg_accuracy": 0.3936063936063936,
+      "cost_per_request_usd": 0.0011907062937062936
+    },
+    "qwen3_vl_8b_thinking": {
+      "avg_latency_ms": 21834.766233766233,
+      "avg_accuracy": 0.03696303696303696,
+      "cost_per_request_usd": 0.004767952747252747
+    },
+    "gemma_3_27b": {
+      "avg_latency_ms": 24068.773226773228,
+      "avg_accuracy": 0.03196803196803197,
+      "cost_per_request_usd": 0.00020723824175824179
+    }
+  }
+}

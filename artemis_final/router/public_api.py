@@ -86,7 +86,7 @@ def route_batch(prompts: List[str], modes: Optional[List[str]] = None, metadata_
 
 def load_router_from_checkpoint(
     router_type: str, 
-    checkpoint_path: str, 
+    checkpoint_path: Optional[str] = None, 
     device: str = "cpu",
     verbose: bool = True
 ):
@@ -95,13 +95,19 @@ def load_router_from_checkpoint(
     
     Args:
         router_type: 'classical', 'pairwise', or 'reward'
-        checkpoint_path: Path to the .pt file
+        checkpoint_path: Path to the .pt file. If None, uses artemis.yaml.
         device: 'cpu', 'cuda', 'mps'
         verbose: Print loading info
         
     Returns:
         The inference object for that router type.
     """
+    if checkpoint_path is None:
+        if verbose:
+            print(f"No checkpoint path provided. Loading from default config...")
+        cfg = load_global_config()
+        checkpoint_path = cfg.router.checkpoint_path
+        
     checkpoint_path = str(checkpoint_path)
     
     if router_type.lower() == "classical":

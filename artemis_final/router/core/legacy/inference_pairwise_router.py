@@ -48,7 +48,7 @@ class PairwiseRouterInference:
 
     def __init__(
         self,
-        checkpoint_path: str,
+        checkpoint_path: Optional[str] = None,
         device: str = 'cpu',
         verbose: bool = True
     ):
@@ -56,12 +56,18 @@ class PairwiseRouterInference:
         Initialize the pairwise router for inference.
 
         Args:
-            checkpoint_path: Path to trained .pt checkpoint
+            checkpoint_path: Path to trained .pt checkpoint. If None, loads from config.
             device: Device for inference ('cpu', 'cuda:0', 'mps', etc.)
             verbose: Print initialization messages
         """
         self.device = device
         self.verbose = verbose
+        
+        if checkpoint_path is None:
+            from artemis_final.common.config_loader import load_global_config
+            cfg = load_global_config()
+            checkpoint_path = cfg.router.checkpoint_path
+
         self.checkpoint_path = checkpoint_path
 
         # Load checkpoint

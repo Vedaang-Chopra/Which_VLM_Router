@@ -28,7 +28,7 @@ import time
 import logging
 from typing import Dict, Optional, Any, List
 from pathlib import Path
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 
 from .core.config import (
     load_capacity_config,
@@ -282,3 +282,144 @@ def reset_load_balancer_metrics() -> None:
     """
     assert _GLOBAL_MODULE_INSTANCE is not None, "Load balancer not initialized. Call init_load_balancer() first."
     _GLOBAL_MODULE_INSTANCE.reset_metrics()
+
+
+# -----------------------------------------------------------------------------
+# Simulation API for Experiments
+# -----------------------------------------------------------------------------
+
+@dataclass
+class TrafficSimulationResult:
+    """
+    Result of a traffic simulation run.
+    
+    Attributes:
+        arrival_rate: Requests per second used in simulation
+        duration_s: Duration of simulation in seconds
+        total_requests: Total number of requests simulated
+        decisions: List of scheduling decision dicts
+        avg_latency_ms: Average total latency
+        p50_latency_ms: 50th percentile latency
+        p95_latency_ms: 95th percentile latency
+        p99_latency_ms: 99th percentile latency
+        max_queue_length: Maximum queue length observed
+        avg_queue_delay_ms: Average queue delay
+        throughput_rps: Actual throughput (requests completed per second)
+        sla_violation_rate: Fraction of requests violating latency SLA
+        avg_cost_usd: Average cost per request
+        total_cost_usd: Total cost for all requests
+        model_usage: Dict mapping model names to request counts
+    """
+    arrival_rate: float
+    duration_s: float
+    total_requests: int
+    decisions: List[Dict[str, Any]]
+    avg_latency_ms: float
+    p50_latency_ms: float
+    p95_latency_ms: float
+    p99_latency_ms: float
+    max_queue_length: float
+    avg_queue_delay_ms: float
+    throughput_rps: float
+    sla_violation_rate: float
+    avg_cost_usd: float
+    total_cost_usd: float
+    model_usage: Dict[str, int]
+
+
+def simulate_traffic(
+    lb: 'ArtemisLoadBalancerModule',
+    arrival_rate: float,
+    duration_s: float,
+    task_types: Optional[List[str]] = None,
+    traffic_pattern: str = "poisson"
+) -> TrafficSimulationResult:
+    """
+    Simulate traffic at a given arrival rate and collect metrics.
+    
+    Args:
+        lb: ArtemisLoadBalancerModule instance
+        arrival_rate: Requests per second
+        duration_s: Duration of simulation in seconds
+        task_types: List of task types to randomly sample from
+        traffic_pattern: 'poisson' or 'uniform' arrival pattern
+        
+    Returns:
+        TrafficSimulationResult with aggregated metrics
+    """
+    import random
+    import numpy as np
+    
+    if task_types is None:
+        task_types = ["vqa", "ocr", "captioning"]
+    
+    models = list(lb.model_configs.keys())
+    decisions = []
+    queue_depths = []
+    
+    # Calculate number of requests based on rate and duration
+    total_requests = int(arrival_rate * duration_s)
+    
+    # Generate arrival times
+    if traffic_pattern == "poisson":
+        inter_arrivals = np.random.exponential(1.0 / arrival_rate, total_requests)
+        arrival_times = np.cumsum(inter_arrivals)
+    else:  # uniform
+        arrival_times = np.linspace(0, duration_s, total_requests)
+    
+    start_time = time.time()
+    
+    for i, arrival_offset in enumerate(arrival_times):
+        # Simulate arrival time
+        current_time_ms = (start_time + arrival_offset) * 1000
+        
+        # Random task type
+        task_type = random.choice(task_types)
+        
+        # Generate synthetic router probabilities
+        probs = {m: random.random() for m in models}
+        total_prob = sum(probs.values())
+        probs = {m: p / total_prob for m, p in probs.items()}
+        preferred = max(probs, key=probs.get)
+        
+        decision = lb.schedule(
+            sample_id=f"sim_{i}",
+            task_type=task_type,
+            router_probs=probs,
+            preferred_model=preferred,
+            metadata={"simulated": True, "arrival_rate": arrival_rate}
+        )
+        decisions.append(decision)
+        
+        # Track queue depth (approximation)
+        queue_depths.append(decision.get('queue_delay_ms', 0))
+    
+    # Compute aggregate metrics
+    latencies = [d['total_latency_ms'] for d in decisions]
+    queue_delays = [d['queue_delay_ms'] for d in decisions]
+    costs = [d['est_cost_usd'] for d in decisions]
+    sla_violations = [d['sla_violated'] for d in decisions]
+    
+    # Model usage
+    model_usage = {}
+    for d in decisions:
+        m = d['chosen_model']
+        model_usage[m] = model_usage.get(m, 0) + 1
+    
+    return TrafficSimulationResult(
+        arrival_rate=arrival_rate,
+        duration_s=duration_s,
+        total_requests=total_requests,
+        decisions=decisions,
+        avg_latency_ms=float(np.mean(latencies)) if latencies else 0.0,
+        p50_latency_ms=float(np.percentile(latencies, 50)) if latencies else 0.0,
+        p95_latency_ms=float(np.percentile(latencies, 95)) if latencies else 0.0,
+        p99_latency_ms=float(np.percentile(latencies, 99)) if latencies else 0.0,
+        max_queue_length=float(max(queue_depths)) if queue_depths else 0.0,
+        avg_queue_delay_ms=float(np.mean(queue_delays)) if queue_delays else 0.0,
+        throughput_rps=total_requests / duration_s if duration_s > 0 else 0.0,
+        sla_violation_rate=sum(sla_violations) / len(sla_violations) if sla_violations else 0.0,
+        avg_cost_usd=float(np.mean(costs)) if costs else 0.0,
+        total_cost_usd=float(sum(costs)),
+        model_usage=model_usage
+    )

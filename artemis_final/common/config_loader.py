@@ -59,6 +59,11 @@ def get_base_dir() -> Path:
     # Assumes common/config_loader.py is at artemis_final/common/
     return Path(__file__).parent.parent.resolve()
 
+# =============================================================================
+# Common Paths
+# =============================================================================
+STATS_PATH = get_base_dir() / "ares" / "aggregates" / "per_task_model_stats.json"
+
 def load_global_config(config_path: Optional[str] = None) -> GlobalConfig:
     """
     Load the unified configuration from configs/artemis.yaml.

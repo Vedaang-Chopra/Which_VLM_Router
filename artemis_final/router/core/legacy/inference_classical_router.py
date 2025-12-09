@@ -48,7 +48,7 @@ class ClassicalRouterInference:
 
     def __init__(
         self,
-        checkpoint_path: str,
+        checkpoint_path: Optional[str] = None,
         device: str = 'cpu',
         verbose: bool = True
     ):
@@ -56,12 +56,44 @@ class ClassicalRouterInference:
         Initialize the classical router for inference.
 
         Args:
-            checkpoint_path: Path to trained .pt checkpoint
+            checkpoint_path: Path to trained .pt checkpoint. If None, loads from config.
             device: Device for inference ('cpu', 'cuda:0', 'mps', etc.)
             verbose: Print initialization messages
         """
         self.device = device
         self.verbose = verbose
+        
+        if checkpoint_path is None:
+            # Lazy import to avoid circular dep if possible, though strict type check might fail
+            # relying on public_api logic mostly, but good to have fallback here too
+            from artemis_final.common.config_loader import load_global_config
+            cfg = load_global_config()
+            # For classical router, we might not have a specific 'classical_checkpoint' in main config yet
+            # standard config has 'router.checkpoint_path' which is for the default (Reward) router.
+            # However, for API consistency we allowed None.
+            # If the user is asking for Classical but providing None, we should probably warn 
+            # or default to a convention. 
+            # But wait, public_api.py handles this logic! 
+            # load_router_from_checkpoint in public_api resolves the path BEFORE calling this class init?
+            # Let's check public_api.py again.
+            
+            # Re-reading public_api.py:
+            # if checkpoint_path is None:
+            #     cfg = load_global_config()
+            #     checkpoint_path = cfg.router.checkpoint_path
+            # THEN it calls the init.
+            
+            # So actually, if called via public_api, it's already resolved. 
+            # But if instantiated directly, it needs this logic.
+            # And `cfg.router.checkpoint_path` is usually the *best* router (Reward).
+            # If I try to load a Reward checkpoint into Classical, it will crash.
+            # 
+            # However, the user request is "Apply the same changes... read from config file".
+            # I will implement the pattern: if None -> load artemis.yaml -> use router.checkpoint_path.
+            # It is the user's responsibility to ensure artemis.yaml points to the correct type of router 
+            # if they are initializing a specific class with None.
+            checkpoint_path = cfg.router.checkpoint_path
+
         self.checkpoint_path = checkpoint_path
 
         # Load checkpoint

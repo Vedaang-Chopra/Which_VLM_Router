@@ -114,6 +114,8 @@ from .public_api import (
     schedule_request,
     get_metrics,
     reset_load_balancer_metrics,
+    simulate_traffic,
+    TrafficSimulationResult,
 )
 
 __version__ = "1.0.0"
@@ -125,6 +127,8 @@ __all__ = [
     "schedule_request",
     "get_metrics",
     "reset_load_balancer_metrics",
+    "simulate_traffic",
+    "TrafficSimulationResult",
 
     # Types
     "RouterOutput",

@@ -3,15 +3,20 @@
 
 db:
   # Connection string for Postgres. Use "postgres" hostname inside Docker.
-  url: "postgresql+psycopg2://artemis:artemis@postgres:5432/artemis"
+  url: "postgresql+psycopg2://vlmrouter:vlmrouter@localhost:5432/vlmrouter"
+  
+  # If some other name is give
+  # url: "postgresql+psycopg2://artemis:artemis@localhost:5432/artemis"
 
 router:
   # Path to trained reward router checkpoint
-  checkpoint_path: "checkpoints/best_reward_router.pt"
+  checkpoint_path: "checkpoints/best_multitask_router_v1.pt"
   # Path to router-specific config (model architecture, modes, etc.)
   config_file: "router/router_config_reward.yaml"
   # Device for inference
   device: "cpu" # Use "cuda" or "mps" if available
+  # Path to per task aggregates
+  task_aggregates_path: "router/per_task_model_stats.json"
 
 load_balancer:
   global_sla:
