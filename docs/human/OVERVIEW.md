@@ -1,62 +1,56 @@
 # ARTEMIS — Overview
 
-## What It Does
+## What It Is
 
-ARTEMIS is a cost-aware Vision-Language Model (VLM) router that dynamically selects the optimal VLM for each user request. Rather than routing every query to the most capable (and expensive) model, ARTEMIS uses a trained MLP classifier on top of frozen CLIP + DistilBERT encoders to predict reward scores for each of five candidate VLMs, then selects the cheapest model that meets the user's accuracy constraints.
+ARTEMIS is an intelligent routing system for Vision-Language Models. Given a user query with optional image, it decides which of five available VLMs to use — balancing accuracy, cost, and latency. It is not a model itself; it sits in front of existing VLM deployments and chooses between them automatically.
 
-The system routes across five VLMs: **deepseek_ocr** (specialized OCR), **qwen2_5_vl_3b** (lightweight), **qwen2_5_vl_7b** (balanced), **qwen3_vl_8b_thinking** (reasoning), and **gemma_3_27b** (maximum accuracy). It supports four routing modes — accuracy, cheap, fast, and balanced — allowing operators to trade cost against quality per request.
+The core mechanism is a small neural network (frozen DistilBERT text encoder + 2-layer MLP) trained to predict reward scores for each of the five VLMs. The VLM with the highest predicted reward for the given mode is selected. Four modes are available: **accuracy** (best quality, uses larger models), **cheap** (lowest cost, uses the smallest model), **fast** (lowest latency), and **balanced** (reasonable trade-off).
 
-## Architecture Summary
+The five candidate VLMs are: `deepseek_ocr` (specialized for text extraction), `qwen2_5_vl_3b` (fastest, cheapest), `qwen2_5_vl_7b` (balanced), `qwen3_vl_8b_thinking` (reasoning-capable), and `gemma_3_27b` (largest, most accurate). All must expose an OpenAI-compatible `/v1/chat/completions` endpoint.
 
-The system is composed of four primary modules:
+ARTEMIS is built for continuous improvement: every request and its outcome are stored in PostgreSQL, periodically evaluated against ground truth and by VLM judges, and used to retrain the router. This means the router adapts to the actual distribution of queries in production, rather than only what was seen during initial training.
 
-1. **Router** (`artemis_final/router/`) — Loads a trained checkpoint (Reward, Pairwise, or Classical architecture) and predicts reward scores for all five VLMs given a text prompt. Takes ~5–50ms depending on hardware.
+## Architecture in One Paragraph
 
-2. **Load Balancer** (`artemis_final/load_balancer/`) — Receives the router's decision and applies SLA constraints (latency targets, queue capacity) before dispatching. Can override the router's choice if the preferred model is overloaded.
-
-3. **Inference Engine** (`artemis_final/inference_engine/`) — Unified OpenAI-compatible client for calling all five VLM backends. Tracks latency, cost, and token usage for each call.
-
-4. **ARES** (`artemis_final/ares/`) — Evaluation and data pipeline. Runs VLM Judge (Molmo) and Glider evaluators to score responses, writes results to PostgreSQL, and feeds data back into the retraining loop.
-
-Supporting modules: **Router Training** (`router_train/`) for training new checkpoints from PostgreSQL data; **Data Loop** (`data_loop/`) for online logging and periodic retraining; **System API** (`system_api/`) for the FastAPI OpenAI-compatible endpoint.
-
-## Key Design Decisions
-
-1. **Frozen Encoders + Lightweight MLP.** Rather than fine-tuning large vision-language backbones, ARTEMIS freezes DistilBERT (66M params) and CLIP image embeddings, training only a small MLP head (~2 layers, 512-dim). This makes routing inference fast and cheap enough to be a pre-dispatch step.
-
-2. **Reward-Based Formulation.** The router predicts a scalar reward for each VLM in each routing mode, trained with MSE loss against multi-objective reward functions. This decouples the training objective from the specific dispatch policy and allows a single checkpoint to serve all four routing modes.
-
-3. **SLA-Aware Load Balancing.** The load balancer is not just a passthrough — it maintains per-model queue state and SLA monitors, and can redirect traffic away from overloaded models even when the router prefers them. This decouples routing accuracy from system availability.
-
-4. **PostgreSQL-Backed Training Loop.** All samples, responses, and evaluations are stored in PostgreSQL, enabling periodic retraining from accumulated data. The loop supports hot-swapping router checkpoints without downtime.
-
-5. **Three Router Architectures.** Reward (MSE prediction), Pairwise (margin ranking), and Classical (cross-entropy classification) — allowing operators to pick the approach best suited to their training data quality and latency requirements.
+A request arrives at the FastAPI endpoint (`/v1/chat/completions`), which passes it through three stages. The **Router** encodes the text with DistilBERT, adds learned embeddings for each VLM and the routing mode, runs the MLP to produce reward scores, and returns the highest-scoring model. The **Load Balancer** then checks whether that model's queue and latency SLA would be violated — if so, it redirects to the next-best feasible model. The **Inference Engine** calls the selected VLM's API endpoint and returns the response. Asynchronously, the **Evaluation Pipeline** scores the response against ground truth and VLM judges, writing results back to PostgreSQL for periodic **Router Retraining**. See [ARCHITECTURE.md](ARCHITECTURE.md) for diagrams and [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for the full component breakdown.
 
 ## Current State
 
-**Working:** Router inference (all three architectures), load balancer scheduling with SLA monitoring, inference engine client, ARES evaluation pipeline (scorer + judge + glider), router training notebooks, FastAPI system API, PostgreSQL schema and DB operations.
+**Working end-to-end:** Router inference (all 3 architectures), load balancer scheduling with SLA monitoring, FastAPI endpoints, PostgreSQL schema and DB operations, training notebooks, and the clean `artemis_core/src/` reference implementation.
 
-**Partial:** Load balancer capacity config loading (has TODOs about config override respect), ARES data collection (returns None for some error paths), data loop (mostly stubs).
+**Not yet end-to-end:** The inference engine has stub methods returning `False` — it cannot make actual VLM calls yet. The data loop's `retrain()` body is empty — automated retraining does not run. These are the two main blockers for a fully automatic production pipeline.
 
-**Not yet implemented:** Traffic simulation (`traffic_simulator.py` has NotImplementedError at line 142), cascadeflow domain routing strategy (incomplete), full online retraining trigger from the system API.
+**Research variants:** CascadeFlow (cascade-based routing), FrugalGPT (model-chain optimization), and LOVM (orchestration benchmarks) exist as separate codebases. They are not integrated with the main ARTEMIS pipeline.
 
-See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for the full component table.
+**What this means in practice:** You can run the router + load balancer in isolation. You can train new router checkpoints via notebooks. You cannot yet make end-to-end requests through the FastAPI endpoint until the inference engine is completed.
 
-## Quick Start
+See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for the full honest breakdown.
 
-```python
+## How to Run It
+
+```bash
+# Start the FastAPI server (requires inference_engine to be completed first)
+cd artemis_final
+python -m uvicorn system_api.main:app --reload --port 8000
+
+# Or use Docker (includes PostgreSQL):
+docker-compose up -d
+
+# Train a new router checkpoint:
+jupyter notebook artemis_final/router_train/notebooks/02_reward_router_sql_to_training.ipynb
+
+# Run a routing-only demo (no VLM calls needed):
+python -c "
 from artemis_final.router.public_api import init_router, route_request
-
-# Initialize router (loads checkpoint)
 init_router()
-
-# Route a single request
-result = route_request(
-    prompt="What is shown in this diagram?",
-    mode="balanced",
-    metadata={"task": "diagram_reasoning"}
-)
-# result["chosen_model"] -> e.g. "qwen2_5_vl_7b"
+result = route_request('What is shown in this diagram?', mode='balanced')
+print(result['chosen_model'])
+"
 ```
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the full data flow diagrams.
+## Where to Go Next
+
+- **Understand the system:** Start with [ARCHITECTURE.md](ARCHITECTURE.md) (diagrams + component descriptions), then [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) (what works, what doesn't)
+- **Start coding:** Read [docs/ai_context/INDEX.md](../ai_context/INDEX.md) for the module registry and data flow, then open the relevant module doc in `docs/ai_context/modules/`
+- **Train the router:** Follow `router_train/notebooks/02_reward_router_sql_to_training.ipynb` — this is fully working via notebooks even though the `service.py` entry point is incomplete
+- **Understand what's safe to build on:** See the "Safe to Build On" and "Do Not Build On Yet" sections in [docs/ai_context/SYSTEM_STATE.md](../ai_context/SYSTEM_STATE.md)
