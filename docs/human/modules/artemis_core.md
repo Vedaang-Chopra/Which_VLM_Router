@@ -1,8 +1,8 @@
-# Module: ARTEMIS Core (`artemis_core/src/artemis/`)
+# Module: ARTEMIS Core Entry (`artemis_core/`)
 
 ## What It Does
 
-A minimal, self-contained implementation of the ARTEMIS router, inference client, load balancer, and configuration system. ~859 lines total, clean code with zero notable findings.
+The top-level entry wrapper for the minimal ARTEMIS implementation. The clean implementation itself is documented separately under `artemis_core/src/artemis/`.
 
 ## Architecture
 
@@ -31,4 +31,4 @@ graph LR
 
 ## Status
 
-**COMPLETE.** Clean, minimal implementation. Fully functional. No NotImplementedError, no placeholder returns, no TODOs. Use as reference for understanding the core ARTEMIS design pattern.
+**PARTIAL.** `SYSTEM_STATE.md` classifies this top-level entry wrapper as partial. The nested `artemis_core/src/artemis/` module remains COMPLETE and is the reference implementation.

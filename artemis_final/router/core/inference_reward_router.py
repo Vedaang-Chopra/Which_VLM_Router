@@ -104,133 +104,8 @@ class RewardRouterInference:
 
         # Load configuration from checkpoint with custom unpickler
         # Load configuration from checkpoint with custom unpickler
-        try:
-            checkpoint = _load_checkpoint_safe(checkpoint_path, map_location=self.device)
-        except Exception as e:
-            if verbose:
-                print(f"[ERROR] Failed to load checkpoint safe: {e}")
-                # Try fallback just in case, but usually _load_checkpoint_safe covers it
-            raise e
-
-        # Extract config - handle various checkpoint formats
-        if 'config' in checkpoint and checkpoint['config'] is not None:
-            config = checkpoint['config']
-            if hasattr(config, 'text_encoder_name') and config.text_encoder_name is not None:
-                self.config = config
-            else:
-                self.config = RouterModelConfig()
-                if self.verbose:
-                    print("[INFO] Config missing text_encoder_name, using default RouterModelConfig")
-        else:
-            # Fallback for known checkpoint "best_multitask_router_v1.pt" which uses hidden_dim=256
-            self.config = RouterModelConfig(hidden_dim=256)
-            if self.verbose:
-                print("[INFO] Using default RouterModelConfig with hidden_dim=256 (compatible with v1 multitask router)")
-
-        # Model metadata - try to get from checkpoint, fallback to defaults
-        self.num_models = checkpoint.get('num_models', 5)
-        self.num_modes = checkpoint.get('num_modes', 4)
-        self.num_tasks = checkpoint.get('num_tasks', 30)
-
-        self.model_names = [
-            # IMPORTANT: Re-ordered to match V2 notebook / dataset creation order
-            # The indices MUST match the ones used during training!
-            # Based on notebook V2, we usually have them sorted or in specific order.
-            # Here assuming standard config order, but V2 notebook used specific mapping.
-            # Since we don't have the mapping metadata in checkpoint easily without 'config',
-            # we rely on these being consistent.
-            # If V2 training reused the same idx->str mapping, we are good.
-            "qwen2_5_vl_7b",  # Defaulting to common ones, pending explicit metadata inside checkpoint
-            "qwen2_5_vl_3b",
-            "deepseek_ocr",
-            "qwen3_vl_8b_thinking",
-            "gemma_3_27b"
-        ]
-        # Sort them to ensure deterministic ID mapping if training did the same
-        self.model_names.sort()
-
-        self.mode_names = ["accuracy", "cheap", "fast", "balanced"]
-
-        # Create model ID mappings
-        self.model_to_id = {name: idx for idx, name in enumerate(self.model_names)}
-        self.id_to_model = {idx: name for idx, name in enumerate(self.model_names)}
-
-        self.mode_to_id = {name: idx for idx, name in enumerate(self.mode_names)}
-        self.id_to_mode = {idx: name for idx, name in enumerate(self.mode_names)}
-
-        # Initialize model
-        if self.verbose:
-            print(f"[INFO] Loading model from: {checkpoint_path}")
-
-        self.model = RewardRouterModel(
-            config=self.config,
-            num_models=self.num_models,
-            num_modes=self.num_modes,
-            num_tasks=self.num_tasks,
-        )
-
-        # Load weights - handle both 'state_dict' and 'model_state_dict' keys
-        # Load weights - handle 'state_dict', 'model_state_dict', or raw state dict
-        # Load weights - handle V1 vs V2 compatibility
-        state_dict = None
-        if 'state_dict' in checkpoint:
-            state_dict = checkpoint['state_dict']
-        elif 'model_state_dict' in checkpoint:
-            state_dict = checkpoint['model_state_dict']
-        else:
-            state_dict = checkpoint
-
-        # 1. Strip 'module.' prefix if present (common with DataParallel)
-        new_state_dict = {}
-        for k, v in state_dict.items():
-            if k.startswith('module.'):
-                new_state_dict[k[7:]] = v
-            else:
-                new_state_dict[k] = v
-        state_dict = new_state_dict
-
-        # 2. Check for V1 checkpoint (single routing_mlp) vs V2 model (routing_heads)
-        # We look for keys containing 'routing_mlp'
-        v1_keys = [k for k in state_dict.keys() if 'routing_mlp' in k]
-        is_v1_checkpoint = len(v1_keys) > 0
-        is_v2_model = hasattr(self.model, 'routing_heads')
-        
-        if is_v1_checkpoint and is_v2_model:
-            if self.verbose:
-                print("[WARNING] Detected V1 checkpoint (single head) loading into V2 Model (multi-head).")
-                print("          Attempting to map 'routing_mlp' weights to ALL 'routing_heads' for compatibility.")
-            
-            # Create new state dict with V2 keys
-            converted_state_dict = {}
-            for k, v in state_dict.items():
-                if 'routing_mlp' in k:
-                    # k might be 'routing_mlp.0.weight' or 'something.routing_mlp.0.weight'
-                    # We want to replace 'routing_mlp' with 'routing_heads.{i}'
-                    # Find the part after 'routing_mlp'
-                    # Assuming k is like 'routing_mlp.0.weight'
-                    if k.startswith('routing_mlp'):
-                        suffix = k[len('routing_mlp'):] # .0.weight
-                        for i in range(self.num_modes):
-                            new_key = f"routing_heads.{i}{suffix}"
-                            converted_state_dict[new_key] = v
-                    else:
-                        # Fallback for unexpected nesting, though stripped 'module.' should handle most
-                        converted_state_dict[k] = v
-                else:
-                    converted_state_dict[k] = v
-            state_dict = converted_state_dict
-            
-        try:
-            self.model.load_state_dict(state_dict, strict=False)
-            if self.verbose:
-                print("[INFO] Weights loaded successfully (strict=False).")
-        except Exception as e:
-            if self.verbose:
-                print(f"[ERROR] Error loading state dict: {e}")
-                # Print some debug info about keys
-                print(f"      Model keys: {list(self.model.state_dict().keys())[:5]}")
-                print(f"      Ckpt keys: {list(state_dict.keys())[:5]}")
-            raise e
+        # Let exceptions propagate naturally with their original type
+        checkpoint = _load_checkpoint_safe(checkpoint_path, map_location=self.device)
 
         self.model.to(device)
         self.model.eval()
@@ -386,11 +261,13 @@ class RewardRouterInference:
                 f"Unknown mode: {mode}. Must be one of {self.mode_names}"
             )
 
-        # Handle swapped arguments (common user error: passing (image, prompt))
-        if not isinstance(prompt, str) and isinstance(image, str):
-            if self.verbose:
-                print("[INFO] Detected swapped arguments in route(). Swapping prompt and image.")
-            prompt, image = image, prompt
+        # Validate prompt is a string
+        if not isinstance(prompt, str):
+            raise TypeError(f"prompt must be a string, got {type(prompt)}")
+
+        # Validate image is None, PIL.Image, or str path
+        if image is not None and not isinstance(image, (Image.Image, str)):
+            raise TypeError(f"image must be None, PIL.Image, or str path, got {type(image)}")
 
         # Format text with image metadata
         sample_text = self.format_sample_text(prompt, image, metadata)

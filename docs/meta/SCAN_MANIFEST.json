@@ -1,6 +1,6 @@
 {
   "scan_date": "2026-06-20T21:52:18.297256+00:00",
-  "last_updated": "2026-06-21T00:00:00Z",
+  "last_updated": "2026-06-21T18:48:17.254Z",
   "project_root": "/Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/Which_VLM_Router",
   "project_name": "Which_VLM_Router",
   "agent_model": "pi-cascade",
@@ -5672,7 +5672,7 @@
     {
       "path": "docs/ai_context/SYSTEM_STATE.md",
       "type": "markdown",
-      "sha256": "80f5ecdf7e125821e55fb0c70dbe775eff34c780e086ded10857da18c58c2bfd",
+      "sha256": "d6d315eb3330535d640c11c29541de62e2a2a8b399b238c7cb122797529a8d8d",
       "size_bytes": 6644,
       "purpose": "Documentation: ai_context/SYSTEM_STATE.md",
       "module": "docs",
@@ -5682,7 +5682,7 @@
     {
       "path": "docs/ai_context/INDEX.md",
       "type": "markdown",
-      "sha256": "a1d8f58168be5652f24222fd38e1a961f63741f98bcb6d4f6c2adeca4f694bab",
+      "sha256": "7c469142ab9861673766e927b1b18acb58c8995dc52a599745430746adadc16c",
       "size_bytes": 6259,
       "purpose": "Documentation: ai_context/INDEX.md",
       "module": "docs",
@@ -5782,7 +5782,7 @@
     {
       "path": "docs/ai_context/modules/helpers.md",
       "type": "markdown",
-      "sha256": "5b564b151b988cd0c1aed1d22caa64622b1bf59b629fe9a3112e003d9210d277",
+      "sha256": "38dbc26b3fcae2e6e6c65aa2db53f9db93be1a77bdcd86759ca804af476d2575",
       "size_bytes": 470,
       "purpose": "Documentation: modules/helpers.md",
       "module": "docs",
@@ -5842,7 +5842,7 @@
     {
       "path": "docs/ai_context/modules/frugal_gpt.md",
       "type": "markdown",
-      "sha256": "f48bf37d31156fcef292415640113828054588c567393ed4325764e85fe71e11",
+      "sha256": "4933345be5921365e5d50e13a4e4e048d50d97f62de7ca57b39f60bebc1a98d6",
       "size_bytes": 1871,
       "purpose": "Documentation: modules/frugal_gpt.md",
       "module": "docs",
@@ -5872,7 +5872,7 @@
     {
       "path": "docs/ai_context/modules/lovm.md",
       "type": "markdown",
-      "sha256": "c9ca823fd381835078b5b365d0bb71e6272553bcfd027d56366e31272a1c5cf3",
+      "sha256": "80430d5698c9af04bd33ada42caf6249d68588a3eef5e5e3a332827b89557a92",
       "size_bytes": 1034,
       "purpose": "Documentation: modules/lovm.md",
       "module": "docs",
@@ -5892,7 +5892,7 @@
     {
       "path": "docs/ai_context/modules/aurelio.md",
       "type": "markdown",
-      "sha256": "036bb5a80d085ed1e4fc62f07d0f4a6aada058f494112d95d98ca96b262abea4",
+      "sha256": "5cc755bd255c35232afd3193f64c05e494bb35af2dc45993f81caa3682a99344",
       "size_bytes": 531,
       "purpose": "Documentation: modules/aurelio.md",
       "module": "docs",
@@ -5902,7 +5902,7 @@
     {
       "path": "docs/human/IMPLEMENTATION_STATUS.md",
       "type": "markdown",
-      "sha256": "6b9e1124447de90544069fcf6488aececa6990e3d105c25455a87ec5ba7e033d",
+      "sha256": "a937a621aaeba71267da832b74776ba5c7953d5a17d4cef124fb2660e39b26e5",
       "size_bytes": 6557,
       "purpose": "Documentation: human/IMPLEMENTATION_STATUS.md",
       "module": "docs",
@@ -5912,7 +5912,7 @@
     {
       "path": "docs/human/ARCHITECTURE.md",
       "type": "markdown",
-      "sha256": "5e9ab98e02909846df94281891f1ce9c0c8f5aba63be0f93d5e0fc28bab9c053",
+      "sha256": "b5a55003a8475b7cf822c3743120f8a25b40dccc7ad1463d9de4501e272cce7a",
       "size_bytes": 6893,
       "purpose": "Documentation: human/ARCHITECTURE.md",
       "module": "docs",
@@ -5922,7 +5922,7 @@
     {
       "path": "docs/human/OVERVIEW.md",
       "type": "markdown",
-      "sha256": "257d37755c2d15a8411eaabc931a361a211cf945e4b04ef1322b1a186f12d8a9",
+      "sha256": "b6c9d750ef7d81878dcf8dbea575ef55c81bb50419fc15ec7b5dd026e23e0b63",
       "size_bytes": 4582,
       "purpose": "Documentation: human/OVERVIEW.md",
       "module": "docs",
@@ -5992,7 +5992,7 @@
     {
       "path": "docs/human/modules/frugal_gpt.md",
       "type": "markdown",
-      "sha256": "56dc2a86ffafa7fe727f1c8596b7054a9ef8ec7d95c11cf032a8c6e94bfc86ef",
+      "sha256": "9f52f8d64eef1a3510280de247a3a3e8182a072287b1e6a1b8bd8d99cbb909e3",
       "size_bytes": 924,
       "purpose": "Documentation: modules/frugal_gpt.md",
       "module": "docs",
@@ -6002,7 +6002,7 @@
     {
       "path": "docs/human/modules/artemis_core.md",
       "type": "markdown",
-      "sha256": "9c80ae1029908b4811c6bbf037a19881bc83872aea96a6e79f0740a89ba8933c",
+      "sha256": "acc841419423dca0d7cf20efbdd3b2c53d442ead84cbd7f42606502265216085",
       "size_bytes": 1257,
       "purpose": "Documentation: modules/artemis_core.md",
       "module": "docs",
@@ -6012,7 +6012,7 @@
     {
       "path": "docs/human/modules/lovm.md",
       "type": "markdown",
-      "sha256": "25682b77238fbff37d517a7a2a862c23bab6fcf5b7700f6326878d15d029afbd",
+      "sha256": "f5e516f590d01ea7adf6d51228571a8cad794e6b4db450da1443c31b6aca156f",
       "size_bytes": 610,
       "purpose": "Documentation: modules/lovm.md",
       "module": "docs",
@@ -6032,7 +6032,7 @@
     {
       "path": "docs/codebase_map/PROJECT_MAP.md",
       "type": "markdown",
-      "sha256": "8bd350fd7a4ed9b24c9ad040a3b389556912990f1c8d8608ed6ce32b0a4359e2",
+      "sha256": "7d36aa7d2b329620e9c9e7d55bf8096d417549478088f02a1615dac5a9bd709f",
       "size_bytes": 4826,
       "purpose": "Documentation: codebase_map/PROJECT_MAP.md",
       "module": "docs",
@@ -6068,6 +6068,1161 @@
       "module": "docs",
       "notable_findings": [],
       "documentation_targets": []
+    },
+    {
+      "path": "docs/ai_context/modules/01_router_single_and_batch_modes.ipynb.md",
+      "type": "markdown",
+      "sha256": "2c9a87f0d95afd399fa761f70c5059d6632ad2a210c102c44ba886e350f2c0f1",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/01_router_single_and_batch_modes.ipynb.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/02_router_experiments_and_modes.ipynb.md",
+      "type": "markdown",
+      "sha256": "dc6070b991d195f03661105d51d7ad7d759c5aa1eb8fe159be181eddf5f37071",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/02_router_experiments_and_modes.ipynb.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/COMPLETE_SYSTEM_OVERVIEW.md.md",
+      "type": "markdown",
+      "sha256": "60d9673ed3d49f251bf429296b2bce23671aa32779ea58a7adf454c3a6c1e8e9",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/COMPLETE_SYSTEM_OVERVIEW.md.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/IMPLEMENTATION_WALKTHROUGH.md.md",
+      "type": "markdown",
+      "sha256": "f4c71c32330bd492a2baf113a8297ce5f77bbba8892341bd33ab241855895b76",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/IMPLEMENTATION_WALKTHROUGH.md.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/README.md.md",
+      "type": "markdown",
+      "sha256": "53dd6d0165bb3baae5161b34e56c3efffc8ad9756e1c2e582128b67a98e556af",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/README.md.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/REFACTOR_NOTES.md.md",
+      "type": "markdown",
+      "sha256": "684a4cd56f58e62737e53269581ed8f4c222093655d0479d23e6ccce216097cb",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/REFACTOR_NOTES.md.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/artemis_final.md",
+      "type": "markdown",
+      "sha256": "cf1abef76e3b60bc3cb8a64014f9644dff6554951bd83abb42a413a7bef2b343",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/artemis_final.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/config.md",
+      "type": "markdown",
+      "sha256": "b5a488218ddacaaaf7dda72e81d60b4e15648e9a7cd613180da59791239d5eff",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/config.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/docker-compose.yml.md",
+      "type": "markdown",
+      "sha256": "6e61b756f06090caf28b49b795b6b225541a4a1a18f7aaf57e12200c0932031d",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/docker-compose.yml.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/examples_README.md.md",
+      "type": "markdown",
+      "sha256": "8ff0de52d2b33e3ff9f35a95b8638c27c121e87e7b0326dabb02134738a24573",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/examples_README.md.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/examples_load_balancer.md",
+      "type": "markdown",
+      "sha256": "d36f8f35a5e4934e1ad9a04d4b9c0514950a700bffad97808a45475a5dd2dc09",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/examples_load_balancer.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/examples_ops.md",
+      "type": "markdown",
+      "sha256": "cb983649d08643d16a66bb3317226ba63eb69c54cffd167bfb8cb90a3ade3046",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/examples_ops.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/examples_router.md",
+      "type": "markdown",
+      "sha256": "7b6fe5e325c06ad4f86c140babe56451e1d336d166d2df46f8baf7d2c50064c4",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/examples_router.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/main.py.md",
+      "type": "markdown",
+      "sha256": "2ed0e58066eda563229a8677a55a5049a4b4ebebf1b37cf77a0a6e9886d35125",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/main.py.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/requirements.txt.md",
+      "type": "markdown",
+      "sha256": "9bc1cc4549b44a69aa39b389eb0272b55b329ebbdd3095b5b47f7813fe58ff64",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/requirements.txt.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/root.md",
+      "type": "markdown",
+      "sha256": "3e2aff71e3240d1b83041e81fdf725bd6dc42517f9646cef9fb0fb8bc7485f9d",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/root.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/test_vllm_model.ipynb.md",
+      "type": "markdown",
+      "sha256": "3435bacff150ead00374d36513d6b8e895f7d0dfee24228c95dc788f5b59a503",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/test_vllm_model.ipynb.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/utils.md",
+      "type": "markdown",
+      "sha256": "0d4bcfa624581c7a166ea4532450a86b09caa0ac330c84b31ff51c02f410fdd0",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/utils.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/which_vlm___init__.py.md",
+      "type": "markdown",
+      "sha256": "fb916bfda70625b27e5086ff5d01148d12ea22979c00c9bc078830ff718a4ae5",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/which_vlm___init__.py.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/which_vlm_configs.md",
+      "type": "markdown",
+      "sha256": "7ac62a7ee1a37e35a390b6d68d1fa2b8b5c2e6ae29b4028afba37bf974b7cd8e",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/which_vlm_configs.md"
+      ]
+    },
+    {
+      "path": "docs/ai_context/modules/which_vlm_inference_api_call.md",
+      "type": "markdown",
+      "sha256": "a04c026d4261f393e6097a6df2895b53e9329768a52a8dee37a304fb70c32a28",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/ai_context/modules/which_vlm_inference_api_call.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/01_router_single_and_batch_modes.ipynb/MODULE.md",
+      "type": "markdown",
+      "sha256": "65f4986bae411dc84d24083f9d874548ea3346e3297c40dd72b6b5b7d4d2a992",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/01_router_single_and_batch_modes.ipynb/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/02_router_experiments_and_modes.ipynb/MODULE.md",
+      "type": "markdown",
+      "sha256": "103e94c3e8214b977a38e8948fe59e29c9cd7c2ec951e456d2d4e8fd41623f83",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/02_router_experiments_and_modes.ipynb/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/COMPLETE_SYSTEM_OVERVIEW.md/MODULE.md",
+      "type": "markdown",
+      "sha256": "e3acff4b97a73e93b7e3ba778b7e22d61406b98b81f813914287dd5a775dad5b",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/COMPLETE_SYSTEM_OVERVIEW.md/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/IMPLEMENTATION_WALKTHROUGH.md/MODULE.md",
+      "type": "markdown",
+      "sha256": "b55673ac0c9c50cc88fe8fe6119286a0f57317430cfb6cd50707cf4a17e82ffc",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/IMPLEMENTATION_WALKTHROUGH.md/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/README.md/MODULE.md",
+      "type": "markdown",
+      "sha256": "c48747588eaf65ba84dbed3efbf32e168605f8b9e8037c702fab66cdffcce695",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/README.md/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/REFACTOR_NOTES.md/MODULE.md",
+      "type": "markdown",
+      "sha256": "80c3c410769f982efbe4e20f3f70da1775809a8e4ba7537c00f2a1018b740acf",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/REFACTOR_NOTES.md/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/ares/files/db_operations.md",
+      "type": "markdown",
+      "sha256": "d190481a8fff70d9a0ddddd52577f6d670e50a61c92bf3e6866fce4563b30876",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/ares/files/db_operations.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/ares/files/evaluation.md",
+      "type": "markdown",
+      "sha256": "c5eba8462ed1a9ec81eb8c1f250aac248659c4a59f1c6505899c4b945b77d7e7",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/ares/files/evaluation.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/ares/files/router_eval_pipeline.md",
+      "type": "markdown",
+      "sha256": "30ebdeab93489dfc1e249e0741f720e36d44b4f28cf18e8b5dbb5a2a3ad77563",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/ares/files/router_eval_pipeline.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/artemis_core/MODULE.md",
+      "type": "markdown",
+      "sha256": "b622c9aee75ab37f7609fd4f8183ac27a010fcfa2d331199a70eb1467af729ce",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/artemis_core/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/artemis_core_src/MODULE.md",
+      "type": "markdown",
+      "sha256": "84d80c582b048379c0093620add7ee0a9354fa9f1ff9277c55e0e8e8e5dac59b",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/artemis_core_src/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/artemis_final/MODULE.md",
+      "type": "markdown",
+      "sha256": "349aa4dbc50684e77453282fc9c1655b750e0e265b5dd725a0d2cd0c22a8e644",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/artemis_final/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/aurelio/MODULE.md",
+      "type": "markdown",
+      "sha256": "3bc3e781e382b465be0b33696370c468908eb65ec753968dca6be6f0985b0a2b",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/aurelio/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/cascade_experiments/MODULE.md",
+      "type": "markdown",
+      "sha256": "9c766c0acfb76c08670c6fec0d0c0c569343e26a0b73b3ee16f89c7472311865",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/cascade_experiments/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/cascadeflow/MODULE.md",
+      "type": "markdown",
+      "sha256": "475b1959b6aca69915237460e16fc0aa6f79ffe5dd4b9b3fd8f03054df78c264",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/cascadeflow/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/common/MODULE.md",
+      "type": "markdown",
+      "sha256": "ea0a825e9b94cf9843146995b56d1bc779fffce3d54fb3b5b26cba060158ba68",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/common/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/config/MODULE.md",
+      "type": "markdown",
+      "sha256": "15f7846ceefc5bd1f6d2d67316b732a2e747bdb70b412ad7d88c3beb758daf47",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/config/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/data_loop/MODULE.md",
+      "type": "markdown",
+      "sha256": "e789903161bdd7d47c7e2496f4cbcd67b320a865723f59473bd60b31cff5d0e2",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/data_loop/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/docker-compose.yml/MODULE.md",
+      "type": "markdown",
+      "sha256": "847664b88f03658d4d4959995206bd136a02f7a1354982f624c7b60434dafbad",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/docker-compose.yml/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/examples/MODULE.md",
+      "type": "markdown",
+      "sha256": "c3f0949d2e33fc1cbfee5b155f77c0dcae00ebd2efa145582e1a83205b6f5705",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/examples/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/examples_README.md/MODULE.md",
+      "type": "markdown",
+      "sha256": "085ac1fe433902bc354645ed032c5283bdaf96a8f3d770a04fb9f0e7a2468df1",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/examples_README.md/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/examples_load_balancer/MODULE.md",
+      "type": "markdown",
+      "sha256": "a40d88cb85ddf3d0fc24b6e211b9bb39c9aec4eedcdcc59e146de7fdcf50e912",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/examples_load_balancer/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/examples_ops/MODULE.md",
+      "type": "markdown",
+      "sha256": "9209cd692720ff98bb4b6f85cf046fff4e5bdf8e33150ff6085c11108f3693c1",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/examples_ops/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/examples_router/MODULE.md",
+      "type": "markdown",
+      "sha256": "c137a8d980bf3238647b05a2874ff466d48bd36095e1b0ac946ee029ba47e112",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/examples_router/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/frugal_gpt/MODULE.md",
+      "type": "markdown",
+      "sha256": "da9242bedb619a109d66dedf7e6b9d726a361aaee2f5ed8d1c9f5aa23487bc6e",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/frugal_gpt/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/frugal_gpt/files/modelservice.md",
+      "type": "markdown",
+      "sha256": "723018d0f4ddb3bffec7c1be2cd721c5e7e6469841995d2ed98645ab6149b853",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/frugal_gpt/files/modelservice.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/helpers/MODULE.md",
+      "type": "markdown",
+      "sha256": "3edaa838cb6bca95f7aac31cdefbf269171c3d9db536a6b94b8e7692afc26d73",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/helpers/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/inference_engine/MODULE.md",
+      "type": "markdown",
+      "sha256": "4823408cb0162b39948cdb51430130d66b70cbaf52ae37f0868c6930bfa922ed",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/inference_engine/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/load_balancer/files/scheduler.md",
+      "type": "markdown",
+      "sha256": "439e6f15cca0bf32b02493b5e7e84630226879e5c3758b9fc943e2ad45dd2945",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/load_balancer/files/scheduler.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/load_balancer/files/stats_registry.md",
+      "type": "markdown",
+      "sha256": "291dc9f8baecf567368fbdcbf643b09b96ee6770cec962d606807bc29166511a",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/load_balancer/files/stats_registry.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/load_balancer/files/types.md",
+      "type": "markdown",
+      "sha256": "1aa88baa58cb2bb90e39df1b605709ba2ccc777a3a7c4d70df014432f7115941",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/load_balancer/files/types.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/lovm/MODULE.md",
+      "type": "markdown",
+      "sha256": "3c1a2cfea3ad539bf7980aa5a43cfab22563ed735a936d9260161fca484575f0",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/lovm/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/lovm/files/lovm.md",
+      "type": "markdown",
+      "sha256": "77f8652bf082f2ea4da908528e28f7866ed2fc15056de6542fdb2d0a3d6a560c",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/lovm/files/lovm.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/main.py/MODULE.md",
+      "type": "markdown",
+      "sha256": "44cca62363da1b7eb2c248ec135d7d75ccbd33cb904fe0a1cbc2c6c00c7505c4",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/main.py/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/requirements.txt/MODULE.md",
+      "type": "markdown",
+      "sha256": "173f81e2875198414c4f8ae0f56e1ad075c1fe4d45b36f84132c014ddda898c5",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/requirements.txt/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/root/MODULE.md",
+      "type": "markdown",
+      "sha256": "306b2343fbd414b6dc9d4b704af525c9e10c6528dd9bbdf4dff4a751024bc317",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/root/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/router/files/config.md",
+      "type": "markdown",
+      "sha256": "32d8c341262a1f0ae621cb135c977cc4e34ae05af8666ec9f71159ab2b424f99",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/router/files/config.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/router/files/schemas.md",
+      "type": "markdown",
+      "sha256": "dacbc22d5d83e305b9a58cba80b2b7e5208d831ef2adc1e241c23ec6e417d5e2",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/router/files/schemas.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/router_train/MODULE.md",
+      "type": "markdown",
+      "sha256": "5a379bcf0609bf1024a6c4beb49e5f149aae2008b839803fa14638f6680e8d81",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/router_train/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/system_api/MODULE.md",
+      "type": "markdown",
+      "sha256": "bfb5101487606469d50103426b1f592f15e98c504b1241dd4970b1dbd593bd54",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/system_api/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/test_vllm_model.ipynb/MODULE.md",
+      "type": "markdown",
+      "sha256": "5b85318607fd05ceb65df94fcace7f6c9b59d7c8b5ca62a3fc4f6efb411e58cb",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/test_vllm_model.ipynb/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/tests/MODULE.md",
+      "type": "markdown",
+      "sha256": "20a8c97750bfebf2a717a19047d6be2a79c586b696a3e9d7f4a8fc1938326ec9",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/tests/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/utils/MODULE.md",
+      "type": "markdown",
+      "sha256": "b37309740f8697256335759fbc74f3c167b9dc41c76e179be634eff3288a138c",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/utils/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/which_vlm___init__.py/MODULE.md",
+      "type": "markdown",
+      "sha256": "5591579e1477bbf44d4ac6eeab7738309cbc3755dc904e2f4904c272b9ab2856",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/which_vlm___init__.py/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/which_vlm_ares/MODULE.md",
+      "type": "markdown",
+      "sha256": "d52adad681c59111726b82cda76523e36b1fe679596c7ac2a9c4f1e248348cae",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/which_vlm_ares/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/which_vlm_artemis/MODULE.md",
+      "type": "markdown",
+      "sha256": "e99a479c85cab24e8254e171a71bfeb08cf3e07512025a9a26367f059db91631",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/which_vlm_artemis/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/which_vlm_configs/MODULE.md",
+      "type": "markdown",
+      "sha256": "fcfefc1d660337bca3bc6c84fd610dbedbeb70354a766e772cae1407dc335223",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/which_vlm_configs/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/which_vlm_experiments/MODULE.md",
+      "type": "markdown",
+      "sha256": "b34f31491be9bc71ee9d37da35e6fff13732a7053f6fb8b2596e859df009b6e2",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/which_vlm_experiments/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/codebase_map/modules/which_vlm_inference_api_call/MODULE.md",
+      "type": "markdown",
+      "sha256": "49d28c61914106f3da1b91d4582180d17f71cf072d1b7c386cb310828d4bec63",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/codebase_map/modules/which_vlm_inference_api_call/MODULE.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/01_router_single_and_batch_modes.ipynb.md",
+      "type": "markdown",
+      "sha256": "5b9631f474025d51eec32f4e2466437f5d31cbe6c4c74ed60e3c006839783140",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/01_router_single_and_batch_modes.ipynb.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/02_router_experiments_and_modes.ipynb.md",
+      "type": "markdown",
+      "sha256": "18f99f5934362cbfa08eac6b03ac4a0cc110aff3949a3f674766e2eb34aae85d",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/02_router_experiments_and_modes.ipynb.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/COMPLETE_SYSTEM_OVERVIEW.md.md",
+      "type": "markdown",
+      "sha256": "93997fe1c9771adbce208a1d9a81d2153408afab0ced01140a86c958d271834d",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/COMPLETE_SYSTEM_OVERVIEW.md.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/IMPLEMENTATION_WALKTHROUGH.md.md",
+      "type": "markdown",
+      "sha256": "2913f690d7877fc568defdeb9d157e86abf6631e0085eb660d7c7daaea7fdd14",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/IMPLEMENTATION_WALKTHROUGH.md.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/README.md.md",
+      "type": "markdown",
+      "sha256": "ee4e64ad27dc5064fb6a3693c5a18d9325cf8a41b62c8a383735a42e5d188c7e",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/README.md.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/REFACTOR_NOTES.md.md",
+      "type": "markdown",
+      "sha256": "7c26e31695ef7137b4b8a003af7527c93cd1da35948723bf008cec7a97573344",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/REFACTOR_NOTES.md.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/artemis_core_src.md",
+      "type": "markdown",
+      "sha256": "bfd4e06994482092154e066233b6c3d2b26220121e2dcb87b9b3698b9447e2e4",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/artemis_core_src.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/artemis_final.md",
+      "type": "markdown",
+      "sha256": "322457acf71abc66918652e4947b87010ce5cf894f07dc4085d6d1ad07f0a419",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/artemis_final.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/aurelio.md",
+      "type": "markdown",
+      "sha256": "8a8219c1eaca51c7bf797572e8b003067969f6f6fd5b1a8ccffa2303c90c18f5",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/aurelio.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/cascade_experiments.md",
+      "type": "markdown",
+      "sha256": "189f80d6c5d09280cf2d1e7e7db9325d771589f6fa64682ade3a1551ffc5d886",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/cascade_experiments.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/common.md",
+      "type": "markdown",
+      "sha256": "edc1c4a604025514bf48e0281c2ae971cecc6feb03ef79188bf28178be174042",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/common.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/config.md",
+      "type": "markdown",
+      "sha256": "00942e6846c4ead701697d52750aedf4f0eccaf86a95dc362f91abc152554413",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/config.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/data_loop.md",
+      "type": "markdown",
+      "sha256": "fe748aa43e392ff3b95a8b0c26405f70dc9fb28be7b26ba21840b92aa1618a7e",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/data_loop.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/docker-compose.yml.md",
+      "type": "markdown",
+      "sha256": "dbcb94647081813e4ac6fd889e9628cde0ca2320446c3daf4816ba1d7c496572",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/docker-compose.yml.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/examples.md",
+      "type": "markdown",
+      "sha256": "6337f155df05073ac6dfa79fbb57337d90342325a76214105b1f2bcdb29b5387",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/examples.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/examples_README.md.md",
+      "type": "markdown",
+      "sha256": "282af23a3965f0b4b0579a21cc57de48ea0f44089428fc9fe016d66a0acb96ca",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/examples_README.md.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/examples_load_balancer.md",
+      "type": "markdown",
+      "sha256": "5514bffd8bba9b7d646d1204f39ed3aef0c704f4e56903ebf56e35b095ee2c72",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/examples_load_balancer.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/examples_ops.md",
+      "type": "markdown",
+      "sha256": "c0c1d54d96789dbc005385a9b2f32c147372676fbe679ab910acb68d5737931f",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/examples_ops.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/examples_router.md",
+      "type": "markdown",
+      "sha256": "89f679a166f0d1eee0bf6535e5e6e060a58c3f4c7cc355196059273d94529583",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/examples_router.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/helpers.md",
+      "type": "markdown",
+      "sha256": "21d8ca01568389ea960ee701973b18769b2c7d2212baeef295899301af01dc6d",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/helpers.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/main.py.md",
+      "type": "markdown",
+      "sha256": "85cb17c559cf65cdeb586bcaafc2ea6fb1e863774a08d304f02026530f8c70d3",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/main.py.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/requirements.txt.md",
+      "type": "markdown",
+      "sha256": "a1b8fe258575a146304ed65b4e610b0d02964151b54314d1fe5ab89274ca3a49",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/requirements.txt.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/root.md",
+      "type": "markdown",
+      "sha256": "311da8cf9d1149fe64767f462e328a2808600785e7a130b2971614755a77b8bf",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/root.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/system_api.md",
+      "type": "markdown",
+      "sha256": "a163ad72f27338d0078c5e84bf0a2a6114e89266c93c82def4d1dbf88462216d",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/system_api.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/test_vllm_model.ipynb.md",
+      "type": "markdown",
+      "sha256": "5e31ab23f2837c7e65dc4e640e544e6bb0ab486b81e6cee0347b077befba35e4",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/test_vllm_model.ipynb.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/tests.md",
+      "type": "markdown",
+      "sha256": "70686f9d200d9daf2cb9a72e0db379fc04d3ca10ad0a56b86c22b8c071d6994f",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/tests.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/utils.md",
+      "type": "markdown",
+      "sha256": "f317baad395bf2b16a54029f3332ce0669c45ad237ea85e75941f29347f70a56",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/utils.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/which_vlm___init__.py.md",
+      "type": "markdown",
+      "sha256": "fdf407aa9682927c5dc735d8dd4182b3340e6c3b23a90f96da446254ceb46ef4",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/which_vlm___init__.py.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/which_vlm_ares.md",
+      "type": "markdown",
+      "sha256": "ea018c9de278e9bcaedd43526e77198dbd0e3a5a7058ade1439f97d8db11cdd4",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/which_vlm_ares.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/which_vlm_artemis.md",
+      "type": "markdown",
+      "sha256": "866d9890a4cd97a535a1efdaf8fdc0fb6fe23d739789e95a69ead04857f8fd5e",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/which_vlm_artemis.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/which_vlm_configs.md",
+      "type": "markdown",
+      "sha256": "b4a8ece039c654a07adfae6d2ddd6ef10b61d2377b6bdf561df9734fda00db0a",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/which_vlm_configs.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/which_vlm_experiments.md",
+      "type": "markdown",
+      "sha256": "a4a85aec3dddd1c1b3bdf249acc75c0468b80dec83ae0878df018e01ea23be32",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/which_vlm_experiments.md"
+      ]
+    },
+    {
+      "path": "docs/human/modules/which_vlm_inference_api_call.md",
+      "type": "markdown",
+      "sha256": "ff58c9601b7a9968c4f832a7cf3c6ad9ae7cef8a42256220097115ee486545a2",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/human/modules/which_vlm_inference_api_call.md"
+      ]
+    },
+    {
+      "path": "docs/meta/DOC_AUDIT.md",
+      "type": "markdown",
+      "sha256": "ed97792415d89069d2b33d8613985e2fa9c8db895913d1721ca6a73f03d7dc87",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/meta/DOC_AUDIT.md"
+      ]
+    },
+    {
+      "path": "docs/meta/UPDATE_LOG.md",
+      "type": "markdown",
+      "sha256": "1f947304adef22f702dccb3e0b311567240c0334a50474eac225db19af0a71e3",
+      "purpose": "Documentation generated or verified during Phase 3",
+      "module": "documentation",
+      "notable_findings": [],
+      "documentation_targets": [
+        "docs/meta/UPDATE_LOG.md"
+      ]
     }
   ],
   "modules_found": [
