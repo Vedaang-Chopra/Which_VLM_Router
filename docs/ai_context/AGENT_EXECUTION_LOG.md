@@ -1,22 +1,30 @@
 # Agent Execution Log
+
 # Location: docs/ai_context/AGENT_EXECUTION_LOG.md
+
 # Updated by: every agent, after every task attempt (success or failure)
+
 # Read by:    every agent, before starting any task
+
 #
-# PURPOSE: Prevent repeated mistakes across sessions and across models.
-# If an approach is marked FAILED, do not repeat it without explicit human override.
+
+# PURPOSE: Prevent repeated mistakes across sessions and across models
+
+# If an approach is marked FAILED, do not repeat it without explicit human override
 
 ---
 
 ## HOW TO USE THIS LOG
 
 ### Before starting any task
+
 1. Open this file.
 2. Search for entries matching the files, modules, or approach you plan to use.
 3. If a FAILED entry exists for your planned approach: use the Resolution instead.
 4. If no entry exists: proceed, but write one after completing.
 
 ### After completing or failing any task
+
 Add an entry at the top of the Entries section using the template below.
 Do not skip this step. It is a required output of every task.
 
@@ -66,6 +74,46 @@ Copy this block and fill it in. Add at the TOP of the Entries section.
 ## Entries
 
 <!-- New entries go HERE, at the top -->
+
+## SYNC-001 — Push branch with large-file cleanup
+
+**Date:** 2026-07-08
+**Agent:** Pi
+**Model:** local
+**Status:** ✓ Complete
+
+**Approach taken:**
+Rewrote branch history with `git-filter-repo` to remove `dataset/data/vlm_router_cache.db`, restored the remote after `git-filter-repo` deleted `origin`, cleaned `.gitignore`, then committed the validation notebook and force-pushed the rewritten branch.
+
+**What worked:**
+`git-filter-repo` successfully removed the oversized database file from all commits. After fetching the remote-tracking ref, `git push --force-with-lease official main` completed successfully and `HEAD` now matches `official/main`.
+
+**What failed:**
+A normal `git push` was rejected by GitHub with `GH001: Large files detected` because `dataset/data/vlm_router_cache.db` was still in history. An initial `--force-with-lease` push failed with `stale info` before fetching the updated remote-tracking ref.
+
+**Root cause:**
+The oversized DB file was committed in repo history, not just present in the working tree. `git-filter-repo` also removed the `origin` remote, so the local remote-tracking ref had to be refreshed before force-pushing.
+
+**Resolution:**
+Use `git-filter-repo --path dataset/data/vlm_router_cache.db --invert-paths --force`, then `git fetch official` and `git push --force-with-lease official main`.
+
+**Files modified:**
+
+- `examples/load_balancer/06_real_vlm_validation.ipynb`
+- `.gitignore`
+- `docs/ai_context/AGENT_EXECUTION_LOG.md`
+- `docs/session_state.md`
+
+**Verify result:**
+`git status --short` returned clean, and `git rev-parse HEAD` matched `git rev-parse official/main`.
+
+**Model fallback used:** no
+
+**DO NOT REPEAT:**
+
+- Do not rely on `git rm --cached` alone for a file already committed in history.
+- Do not push before fetching after `git-filter-repo` removes the remote-tracking ref.
+- Do not assume the remote is named `origin`; confirm with `git remote -v`.
 
 <!-- Example entry — delete when real entries are added:
 
