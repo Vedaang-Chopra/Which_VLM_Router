@@ -1,0 +1,97 @@
+db:
+  url: "postgresql+psycopg2://vlmrouter:vlmrouter@localhost:5432/vlmrouter"
+
+router:
+  checkpoint_path: "checkpoints/best_multitask_router_v1.pt"
+  config_file: "router/router_config_reward.yaml"
+  device: "cpu"
+  task_aggregates_path: "router/per_task_model_stats.json"
+
+load_balancer:
+  global_sla:
+    total_cost_budget_usd: 10.0
+    min_global_accuracy: 0.85
+    default_latency_ms: 2000
+
+  task_slas:
+    captioning:
+      max_latency_ms: 2500
+      min_accuracy: 0.85
+    chart_qa:
+      max_latency_ms: 3500
+      min_accuracy: 0.87
+    doc_vqa:
+      max_latency_ms: 3000
+      min_accuracy: 0.90
+    ocr:
+      max_latency_ms: 1000
+      min_accuracy: 0.92
+    vqa:
+      max_latency_ms: 3000
+      min_accuracy: 0.85
+
+  max_accuracy_drop: 0.05
+  default_scheduling_mode: "capacity_aware"
+
+models:
+  - name: gemma_3_27b
+    base_url: http://localhost:8800/v1
+    api_key: EMPTY
+    model_id: google/gemma-3-27b-it
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00009
+      completion_per_1k: 0.00016
+    base_latency_ms: 2000
+    sla_ms: 4000
+    max_qps_per_replica: 0.5
+    cost_per_request_usd: 0.0005
+
+  - name: qwen3_vl_8b_thinking
+    base_url: http://localhost:8802/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen3-VL-8B-Thinking
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00018
+      completion_per_1k: 0.0021
+    base_latency_ms: 1200
+    sla_ms: 3000
+    max_qps_per_replica: 0.8
+    cost_per_request_usd: 0.003
+
+  - name: qwen2_5_vl_7b
+    base_url: http://localhost:8804/v1
+    api_key: EMPTY
+    model_id: Qwen/Qwen2.5-VL-7B-Instruct
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.0002
+      completion_per_1k: 0.0002
+    base_latency_ms: 800
+    sla_ms: 2500
+    max_qps_per_replica: 1.2
+    cost_per_request_usd: 0.0004
+
+  - name: deepseek_ocr
+    base_url: http://localhost:8808/v1
+    api_key: EMPTY
+    model_id: deepseek-ai/DeepSeek-OCR
+    model_type: vlm
+    pricing:
+      prompt_per_1k: 0.00003
+      completion_per_1k: 0.0001
+    base_latency_ms: 300
+    sla_ms: 1500
+    max_qps_per_replica: 3.0
+    cost_per_request_usd: 0.0001
+
+data_collection:
+  samples_table: "vlm_samples_collected"
+  responses_table: "vlm_responses_collected"
+  feedback_table: "vlm_feedback"
+
+retraining:
+  epochs: 1
+  batch_size: 8
+  output_checkpoint: "checkpoints/best_reward_router_updated.pt"

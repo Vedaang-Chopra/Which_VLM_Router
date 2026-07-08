@@ -1,0 +1,139 @@
+import torch
+import pickle
+import io
+import time
+from pathlib import Path
+from typing import Dict, List, Optional
+from PIL import Image
+from transformers import AutoTokenizer, DebertaV2Tokenizer
+
+from .model import RewardRouterModel, RouterModelConfig
+
+# Helper for loading checkpoints that pickle generic configs
+class _ConfigRemappingUnpickler(pickle.Unpickler):
+    def find_class(self, module, name):
+        if module == 'config' and name == 'RouterModelConfig':
+            return RouterModelConfig
+        return super().find_class(module, name)
+
+def _load_checkpoint_safe(path, map_location='cpu'):
+    with open(path, 'rb') as f:
+        # Try-catch specifically for the unpickler logic might be cleaner outside,
+        # but here we need to intercept the stream.
+        try:
+            return torch.load(f, map_location=map_location, weights_only=False)
+        except (ModuleNotFoundError, AttributeError):
+            f.seek(0)
+            return torch.load(f, map_location=map_location, weights_only=False, 
+                             pickle_module=type('FakePickle', (), {
+                                 'Unpickler': _ConfigRemappingUnpickler,
+                                 'load': pickle.load,
+                                 'dump': pickle.dump,
+                             }))
+
+class RewardRouter:
+    def __init__(self, checkpoint_path: str, device: str = 'cpu'):
+        self.device = device
+        self.checkpoint_path = checkpoint_path
+        
+        checkpoint = _load_checkpoint_safe(checkpoint_path, map_location=device)
+        
+        # Load config
+        if 'config' in checkpoint and checkpoint['config'] is not None:
+            # We assume it matches the dataclass structure roughly
+            # or we might need to map manual fields if they differ.
+            # ideally the unpickler handles the class mapping.
+            self.config = checkpoint['config']
+        else:
+             # Fallback
+            self.config = RouterModelConfig(hidden_dim=256)
+
+        # Ensure config is of right type if unpickling failed to map perfectly
+        if not isinstance(self.config, RouterModelConfig):
+            # Reconstruct from dict or object if needed, or trust it quacks like a duck
+            pass
+
+        self.num_models = checkpoint.get('num_models', 5)
+        self.num_modes = checkpoint.get('num_modes', 4)
+        self.num_tasks = checkpoint.get('num_tasks', 30)
+
+        # Standard hardcoded mapping for V2 compatibility
+        self.model_names = sorted([
+            "qwen2_5_vl_7b",
+            "qwen2_5_vl_3b",
+            "deepseek_ocr",
+            "qwen3_vl_8b_thinking",
+            "gemma_3_27b"
+        ])
+        
+        self.mode_names = ["accuracy", "cheap", "fast", "balanced"]
+        self.mode_to_id = {name: idx for idx, name in enumerate(self.mode_names)}
+
+        self.model = RewardRouterModel(
+            config=self.config,
+            num_models=self.num_models,
+            num_modes=self.num_modes,
+            num_tasks=self.num_tasks,
+        )
+
+        # Load weights
+        state_dict = checkpoint.get('state_dict', checkpoint)
+        # Handle module. prefix
+        state_dict = {k.replace('module.', ''): v for k, v in state_dict.items()}
+        
+        try:
+            self.model.load_state_dict(state_dict, strict=False)
+        except Exception as e:
+            print(f"Warning: partial load of weights: {e}")
+
+        self.model.to(device)
+        self.model.eval()
+
+        # Tokenizer
+        name = self.config.text_encoder_name
+        if 'deberta' in name.lower():
+            self.tokenizer = DebertaV2Tokenizer.from_pretrained(name)
+        else:
+            self.tokenizer = AutoTokenizer.from_pretrained(name, use_fast=False)
+
+    def route(self, prompt: str, image: Optional[Image.Image] = None, mode: str = "accuracy") -> Dict:
+        if mode not in self.mode_names:
+            raise ValueError(f"Unknown mode: {mode}")
+
+        # Format input (simplified for readability)
+        prompt_len = len(prompt.split())
+        if image:
+            w, h = image.width, image.height
+            ar = w / h
+            text = f"[ROUTER] PromptLenWords: {prompt_len}. ImgWidth: {w}. ImgHeight: {h}. ImgAR: {ar:.2f}. Question: {prompt}"
+        else:
+            text = f"[ROUTER] Question: {prompt}"
+
+        # Tokenize and Inference
+        encoded = self.tokenizer(
+            [text] * self.num_models,
+            padding=True,
+            truncation=True,
+            max_length=self.config.max_seq_length,
+            return_tensors="pt"
+        )
+        input_ids = encoded['input_ids'].to(self.device)
+        attention_mask = encoded['attention_mask'].to(self.device)
+        
+        mode_id = self.mode_to_id[mode]
+        model_ids = torch.arange(self.num_models, device=self.device)
+        mode_ids = torch.tensor([mode_id], device=self.device).expand(self.num_models)
+
+        start = time.time()
+        with torch.no_grad():
+            outputs = self.model(input_ids, attention_mask, model_ids, mode_ids)
+            scores = outputs["utility_hat"].cpu().numpy()
+        
+        latency = (time.time() - start) * 1000
+        best_idx = int(scores.argmax())
+        
+        return {
+            'chosen_model': self.model_names[best_idx],
+            'inference_ms': latency,
+            'scores': {self.model_names[i]: float(scores[i]) for i in range(self.num_models)}
+        }

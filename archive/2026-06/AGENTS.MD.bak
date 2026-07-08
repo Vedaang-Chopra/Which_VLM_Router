@@ -1,0 +1,255 @@
+# AGENTS.md
+
+Mandatory rules for all AI coding agents working in this codebase.
+**Read this file before making any change. All rules are non-negotiable.**
+
+> Rename to `CLAUDE.md` when using Claude Code. Rules are tool-agnostic.
+
+---
+
+## 0. Role and Scope
+
+- You are an **execution agent**. Architecture and design decisions come from the spec or the human.
+- Do not invent structure, modules, or patterns not specified in the task or spec.
+- **When requirements are ambiguous or the existing codebase is unclear — ask, do not assume.**
+- One task = one focused change. Do not silently fix, refactor, or reorganize unrelated code.
+- Each implementation step must be separately verifiable before moving to the next. Do not bundle unrelated changes into one step.
+- If you notice something broken outside your scope, flag it. Do not fix it silently.
+
+---
+
+## 1. Pre-Implementation Checklist
+
+**Complete all steps before writing any code.**
+
+- [ ] Read the relevant spec in `docs/specs/` if one exists for this feature.
+- [ ] Read `docs/ai_context/CODEBASE_MAP.md` to understand module ownership and structure.
+- [ ] Read the `README.md` of every module you will touch.
+- [ ] Identify all existing files, classes, and functions related to this task.
+- [ ] Confirm whether similar functionality already exists.
+- [ ] Confirm which module owns the behavior you are implementing.
+- [ ] List all files your change will affect before touching any of them.
+
+If no spec exists for a substantial feature, follow `SKILL: write-spec` before implementing.
+
+---
+
+## 2. File and Module Creation Rules
+
+- **Do not create a new file** unless no existing module owns the behavior.
+- Before creating any file, answer explicitly:
+  1. Does similar functionality already exist?
+  2. Can an existing module be extended instead?
+  3. Is this logic specific to one feature or shared across modules?
+  4. If shared — does it belong in `utils/` or a common layer?
+- If you create a new file → update `docs/ai_context/CODEBASE_MAP.md`.
+- If you create a new directory → add a `README.md` to it using `SKILL: write-module-readme`.
+
+---
+
+## 3. Import Rules
+
+- Import from a module's `interfaces.py`, `api.py`, or `runners.py` — not from internal files.
+- No wildcard imports (`from module import *`).
+- No circular imports.
+- No unused imports left in files.
+- Import order within every file: **standard library → third-party → internal**.
+
+---
+
+## 4. Documentation System Rules
+
+This project uses a living documentation system. Documentation is never optional.
+
+### Three documentation layers
+
+| Layer | Location | Audience | What it contains |
+|-------|----------|----------|-----------------|
+| AI Context | `docs/ai_context/` | Agents, chatbots | Dense structured context; module registry; system state |
+| Human Docs | `docs/human/` | Collaborators, reviewers | Narrative; Mermaid diagrams; architecture |
+| Codebase Map | `docs/codebase_map/` | Agents making code changes | Layered reference: project → module → file → function signatures |
+
+### Before starting any task
+
+1. Read `docs/ai_context/INDEX.md` — understand the current system state.
+2. Read `docs/ai_context/modules/<relevant_module>.md` — understand the module you are about to touch.
+3. Read `docs/codebase_map/modules/<relevant_module>/MODULE.md` — know the file layout and entry points.
+
+### After completing any task that modifies code
+
+Run the drift detector before committing:
+
+```bash
+python scripts/check-doc-drift.py --since HEAD
+```
+
+This outputs an ordered list of documentation files that need updating and which skill to use for each.
+Follow every item in that list before marking your task complete.
+
+If you modified a runner, interface, or api file, also update:
+- `docs/codebase_map/PROJECT_MAP.md`
+- `docs/ai_context/INDEX.md`
+
+### When adding a new module
+
+Run the full module documentation sequence:
+1. `.codex/skills/create-module/SKILL.md` — structure the module
+2. `.codex/skills/write-module-readme/SKILL.md` — write the README
+3. `.codex/skills/update-codebase-map/SKILL.md` — add it to the codebase map
+4. Create `docs/ai_context/modules/<module_name>.md`
+5. Create `docs/human/modules/<module_name>.md`
+6. Update `docs/ai_context/INDEX.md`
+
+### When removing or renaming a module or file
+
+1. Remove or rename the corresponding entries in `docs/codebase_map/`
+2. Update `docs/ai_context/INDEX.md`
+3. Update `docs/ai_context/SYSTEM_STATE.md`
+4. Update `docs/meta/SCAN_MANIFEST.json` — remove the old entry, add the new one
+
+### What must never be described as implemented
+
+- Any function whose body is `pass` or `raise NotImplementedError`
+- Any function that returns a hardcoded dummy value
+- Any code block that is commented out or disabled
+- Any result that has not been confirmed by end-to-end execution
+
+### Scan manifest
+
+`docs/meta/SCAN_MANIFEST.json` is the source of truth for what the documentation system knows.
+Update it after every documentation task:
+- Update the `sha256` of any file you changed
+- Add entries for any new files you created
+- Append an entry to `docs/meta/UPDATE_LOG.md`
+
+Never delete `docs/meta/SCAN_MANIFEST.json`. If it becomes corrupted, re-run the initial scan.
+---
+
+## 5. Naming Rules
+
+| Element | Convention | Example |
+|---|---|---|
+| Function / variable | `snake_case` | `load_dataset()` |
+| Class | `PascalCase` | `EvaluationPipeline` |
+| Constant | `UPPER_SNAKE_CASE` | `MAX_RETRIES` |
+| Module / file | `snake_case`, responsibility-named | `repair_loop.py` |
+| Directory | `snake_case`, purpose-named | `data_loading/` |
+
+**Forbidden file names:** `helper.py`, `utils2.py`, `new_*.py`, `final_*.py`, `misc.py`, `everything.py`, `main2.py`, or any name with version suffixes (`v1`, `v2`, `_new`, `_final`).
+
+---
+
+## 6. Forbidden Patterns
+
+- **No giant pipeline functions.** A single function must not contain an entire workflow. See `SKILL: design-runner`.
+- **No hardcoded values.** Model names, file paths, thresholds, table names, and credentials must live in config or `.env`.
+- **No duplicated schemas.** Do not redefine a dataclass, Pydantic model, or schema that already exists elsewhere.
+- **No dead code in active files.** Move deprecated code to `archive/` following `SKILL: deprecate-code`.
+- **No commented-out code as a backup.** Use version control instead.
+- **No silent exceptions.** Do not swallow errors without logging actionable context.
+- **No duplicate logic.** If something exists, reuse it. Do not reimplement.
+- **No shared utilities buried in a single feature module.** Move them to `utils/`.
+
+---
+
+## 7. Code Standards Summary
+
+Full details in `CONVENTIONS.md`. Non-negotiables:
+
+- All public functions and classes must have **type hints** and a **docstring**.
+- A function does one thing. If you are writing "and" in a function name, split it.
+- Use **classes** when logic has shared state, shared config, or multiple related methods.
+- Use **functions** for stateless, small, globally reusable operations.
+- Every new package must be added to `requirements.txt` or `pyproject.toml` immediately.
+- Secrets go in `.env`. Never in code. `.env` must be in `.gitignore`.
+
+---
+
+## 8. Self-Check Before Finalizing
+
+Before submitting any output, verify:
+
+- [ ] No logic duplicated from an existing module.
+- [ ] No misplaced code (wrong module ownership).
+- [ ] All public functions have type hints and a one-line docstring minimum.
+- [ ] No hardcoded values (paths, model names, credentials, thresholds).
+- [ ] No wildcard, circular, or unused imports.
+- [ ] No dead or commented-out code in active files.
+- [ ] No silent exception handling.
+- [ ] No giant orchestration functions containing all logic.
+- [ ] Documentation updated where required (see §4).
+- [ ] `docs/ai_context/CODEBASE_MAP.md` updated if structure changed.
+- [ ] `requirements.txt` / `pyproject.toml` updated if new packages were added.
+- [ ] Backward compatibility preserved unless explicitly instructed otherwise.
+
+---
+
+## 9. Required Change Report
+
+**After every task, output a change report in this exact format:**
+
+```
+## Change Report
+
+### Files Modified
+- `path/to/file.py` — what changed and why
+
+### Files Created
+- `path/to/new_file.py` — purpose
+
+### Files Deleted / Archived
+- `path/to/old_file.py` → `archive/old_file.py` — reason
+
+### Documentation Updated
+- `docs/specs/NNN_feature.md` — what was updated
+- `docs/ai_context/CODEBASE_MAP.md` — what was updated
+- `module/README.md` — what was updated
+
+### Validation Run
+- Command / notebook / test run, and result.
+
+### Validation NOT Run
+- What was not tested and why.
+
+### Known Limitations / Follow-up Work
+- Any gaps, edge cases not handled, or tasks for the next session.
+```
+
+Do not omit sections. If a section has nothing to report, write `None`.
+
+---
+
+## Layered Architecture Rule
+
+For any new feature, module, workflow, notebook-backed implementation, or structural edit, follow `SKILL: design-layered-module`.
+
+Code must be organized by abstraction layer:
+
+```text
+notebooks/
+  → inspection, debugging, visualization
+
+interfaces.py / api.py / runners.py
+  → public entry points and thin workflow calls
+
+orchestration/
+  → workflow composition and stage ordering
+
+core/ and responsibility-specific submodules
+  → implementation logic
+
+schemas/ and utils/
+  → data contracts, config objects, parsing helpers, reusable primitives
+```
+
+Do not place production logic in notebooks.
+Do not place core implementation logic inside `runners.py`.
+Do not make `run_full_pipeline()` a giant function.
+Do not import deep internal files from notebooks or unrelated modules unless debugging.
+Do not let low-level utilities import high-level feature modules.
+
+Before implementation, the agent must state where each part of the change belongs in the layer model. During edits, the agent must preserve or improve the existing layer boundaries instead of making them worse.
+
+
+
+
