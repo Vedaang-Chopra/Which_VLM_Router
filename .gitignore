@@ -269,4 +269,11 @@ examples/data/
 
 dataset_old_copy/
 code_base/cascadeflow/all_sample_run.txt
-examples/load_balancer/06_real_vlm_validation.ipynb
+examples/load_balancer/06_real_vlm_validation.ipynbdataset/data/vlm_router_cache.db
+*.db
+*.sqlite
+
+# Large data files (exceeds GitHub limit)
+dataset/data/vlm_router_cache.db
+*.db
+*.sqlite
