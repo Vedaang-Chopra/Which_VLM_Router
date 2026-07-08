@@ -278,3 +278,6 @@ code_base/cascadeflow/all_sample_run.txt
 dataset/data/vlm_router_cache.db
 *.db
 *.sqlite
+
+artemis_final/checkpoints
+dataset/
