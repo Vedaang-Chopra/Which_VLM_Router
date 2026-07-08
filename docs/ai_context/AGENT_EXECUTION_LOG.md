@@ -73,6 +73,43 @@ Copy this block and fill it in. Add at the TOP of the Entries section.
 
 ## Entries
 
+## SYNC-003 — Force sync local branch to official
+
+**Date:** 2026-07-08
+**Agent:** Pi
+**Model:** local
+**Status:** ✓ Complete
+
+**Approach taken:**
+Fetched the latest remote state, confirmed local `main` was the authoritative branch, and force-pushed `main` to `official/main`.
+
+**What worked:**
+`git push --force-with-lease official main` updated the GitHub remote successfully, and the remote now points at local HEAD.
+
+**What failed:**
+Nothing failed. The branch was divergent, so a normal push would not have been sufficient.
+
+**Root cause:**
+The remote had newer sync/documentation commits that were lower priority than the local branch history.
+
+**Resolution:**
+Use a force push from local `main` to `official/main` when local history should win.
+
+**Files modified:**
+
+- `docs/ai_context/AGENT_EXECUTION_LOG.md`
+- `docs/session_state.md`
+
+**Verify result:**
+`git rev-parse HEAD` matched `git rev-parse official/main` after the force push.
+
+**Model fallback used:** no
+
+**DO NOT REPEAT:**
+
+- Do not use a normal push when local and remote histories have diverged and local should win.
+- Do not forget the post-sync handoff docs after forcing the remote.
+
 <!-- New entries go HERE, at the top -->
 
 ## SYNC-002 — Sync gitignore changes
