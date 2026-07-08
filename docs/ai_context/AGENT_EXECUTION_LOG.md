@@ -75,6 +75,44 @@ Copy this block and fill it in. Add at the TOP of the Entries section.
 
 <!-- New entries go HERE, at the top -->
 
+## SYNC-002 — Sync gitignore changes
+
+**Date:** 2026-07-08
+**Agent:** Pi
+**Model:** local
+**Status:** ✓ Complete
+
+**Approach taken:**
+Committed the local `.gitignore` edits, pushed the branch to `official/main`, and then prepared the handoff docs so the sync state is recorded for the next agent.
+
+**What worked:**
+The `.gitignore` diff was small and committed cleanly. `git push official main` updated the remote branch successfully.
+
+**What failed:**
+Nothing failed in the commit/push flow. The only necessary follow-up was updating the execution log and session state.
+
+**Root cause:**
+The repo had a local `.gitignore` modification that had not been committed yet.
+
+**Resolution:**
+Commit the `.gitignore` update as `pi: Sync gitignore updates`, push to `official/main`, and record the sync in the docs.
+
+**Files modified:**
+
+- `.gitignore`
+- `docs/ai_context/AGENT_EXECUTION_LOG.md`
+- `docs/session_state.md`
+
+**Verify result:**
+`git rev-parse HEAD` matched `git rev-parse official/main` after the push.
+
+**Model fallback used:** no
+
+**DO NOT REPEAT:**
+
+- Do not leave local `.gitignore` edits uncommitted when the request is to sync git changes.
+- Do not skip the handoff docs after a successful git sync.
+
 ## SYNC-001 — Push branch with large-file cleanup
 
 **Date:** 2026-07-08
