@@ -1,0 +1,84 @@
+--- artemis_core/src/artemis/load_balancer/balancer.py.orig
++++ artemis_core/src/artemis/load_balancer/balancer.py
+@@ -98,7 +98,8 @@
+
+     def _simulate(self, model_name: str, task_type: str, arrival_ms: float) -> SimulationResult:
+         if model_name not in self.states:
+-            # Fallback for unknown models (e.g. mocked ones)
+-            return SimulationResult(0, 100, 100, 0, 0, 1, arrival_ms+100, 0)
++            # Fallback for unknown models (e.g. mocked ones) - mark missing stats
++            logger.warning(f"Model '{model_name}' not found in load balancer states. Using fallback values.")
++            return SimulationResult(0, 100, 100, 0, 0, 1, arrival_ms+100, 0, missing_stats=["model_not_found"])
+
+         state = self.states[model_name]
+@@ -122,6 +123,9 @@
+     def _schedule_optimized(self, output: RouterOutput, ctx: SchedulingContext, candidates: List[str], strategy: str) -> SchedulingDecision:
+         valid = []
+         pref_acc = self.stats.estimate_accuracy(output.task_type, output.preferred_model)
++
++        # Skip accuracy constraint if we have no baseline (pref_acc == 0.0 means no stats)
++        enforce_accuracy_drop = pref_acc > 0.0
+
+         for model in candidates:
+             sim = self._simulate(model, output.task_type, ctx.arrival_ts_ms)
+@@ -131,7 +135,8 @@
+             if sim.total_latency_ms > sla:
+                 continue
+
+-            if strategy in ["capacity", "balanced"] and (pref_acc - sim.est_accuracy) > self.max_accuracy_drop:
++            # Only enforce accuracy drop if we have a valid baseline
++            if enforce_accuracy_drop and strategy in ["capacity", "balanced"] and (pref_acc - sim.est_accuracy) > self.max_accuracy_drop:
+                 continue
+
+             valid.append((model, sim))
+
+--- artemis_final/common/data_utils.py.orig
++++ artemis_final/common/data_utils.py
+@@ -74,6 +74,11 @@
+         logger.warning("No accuracy column found to compute oracle.")
+         return eval_df
+
++    # Validate required columns exist
++    if 'estimated_cost_usd' not in eval_df.columns:
++        logger.warning("Missing 'estimated_cost_usd' column for oracle computation.")
++        return eval_df
++
+     # Sort to prioritize accuracy (desc) then cost (asc)
+     sorted_df = eval_df.sort_values(
+         by=['sample_id', acc_col, 'estimated_cost_usd'],
+
+--- artemis_final/router/core/inference_reward_router.py.orig
++++ artemis_final/router/core/inference_reward_router.py
+@@ -104,12 +104,7 @@
+
+         # Load configuration from checkpoint with custom unpickler
+-        # Load configuration from checkpoint with custom unpickler
+-        try:
+-            checkpoint = _load_checkpoint_safe(checkpoint_path, map_location=self.device)
+-        except Exception as e:
+-            if verbose:
+-                print(f"[ERROR] Failed to load checkpoint safe: {e}")
+-                # Try fallback just in case, but usually _load_checkpoint_safe covers it
+-            raise e
++        # Let exceptions propagate naturally with their original type
++        checkpoint = _load_checkpoint_safe(checkpoint_path, map_location=self.device)
+
+         # Extract config - handle various checkpoint formats
+@@ -387,10 +382,13 @@
+             )
+
+-        # Handle swapped arguments (common user error: passing (image, prompt))
+-        if not isinstance(prompt, str) and isinstance(image, str):
+-            if self.verbose:
+-                print("[INFO] Detected swapped arguments in route(). Swapping prompt and image.")
+-            prompt, image = image, prompt
++        # Validate prompt is a string
++        if not isinstance(prompt, str):
++            raise TypeError(f"prompt must be a string, got {type(prompt)}")
++
++        # Validate image is None, PIL.Image, or str path
++        if image is not None and not isinstance(image, (Image.Image, str)):
++            raise TypeError(f"image must be None, PIL.Image, or str path, got {type(image)}")
+
+         # Format text with image metadata
+         sample_text = self.format_sample_text(prompt, image, metadata)
