@@ -110,6 +110,45 @@ Use a force push from local `main` to `official/main` when local history should 
 - Do not use a normal push when local and remote histories have diverged and local should win.
 - Do not forget the post-sync handoff docs after forcing the remote.
 
+## AUDIT-001 — Phase 1 discovery and Phase 2 TODO list
+
+**Date:** 2026-07-12
+**Agent:** Pi
+**Model:** local
+**Status:** ✓ Complete
+
+**Approach taken:**
+Scanned the repository structure, reconstructed the module inventory from the code itself, resolved the authoritative codebase via git history, and saved the audit deliverables in `docs/ai_context/`.
+
+**What worked:**
+`git log`, file timestamp checks, checkpoint inspection, and direct code reads confirmed that `artemis_final/` produced the trained checkpoint and `multitask_eval_summary.csv`.
+
+**What failed:**
+Nothing failed during discovery. The main issue was stale documentation: several module counts/statuses in `SYSTEM_STATE.md` did not match the actual tree.
+
+**Root cause:**
+The existing docs were derived from an older scan and mixed ARTEMIS-native modules with copied baseline projects.
+
+**Resolution:**
+Saved a fresh Phase 1 discovery report and a Phase 2 executable TODO list under `docs/ai_context/` for review before execution.
+
+**Files modified:**
+
+- `docs/ai_context/PHASE1_DISCOVERY_REPORT.md`
+- `docs/ai_context/PHASE2_TODO_LIST.md`
+- `docs/session_state.md`
+
+**Verify result:**
+`git status --short` showed the new docs before commit.
+
+**Model fallback used:** no
+
+**DO NOT REPEAT:**
+
+- Do not trust the old module inventory without re-scanning the filesystem.
+- Do not assume `artemis_core/` produced the paper results; it was added later.
+- Do not skip saving the audit output in `docs/ai_context/`.
+
 <!-- New entries go HERE, at the top -->
 
 ## SYNC-002 — Sync gitignore changes
